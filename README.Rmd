@@ -1,0 +1,44 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# raoBust: Robust Rao (score) tests for Generalized Linear Models
+
+`raoBust`, at its core, gives you all the important information from `glm()`, but also with model misspecification-robust Rao tests (also called score tests) and Wald tests. 
+
+Robust score tests have outstanding error rate performance in small samples, **and** when your data is not drawn from a parametric family (i.e., always). It's shocking to me (Amy) how well they perform. They have a reputation for being conservative in small samples, but I would argue that this is a *very good thing*. 
+
+For now (because it's what I need for my work) I only have implementations for Poisson GLMs with log links. If you have another specific case you'd like to request, please let me know at [Issues](https://github.com/statdivlab/raoBust/issues) and label it as a "feature request". 
+
+## Installation
+
+You can install the development version of raoBust from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("statdivlab/raoBust")
+```
+
+## Example
+
+This is a really silly example to show you the syntax. It looks just like `glm()` on the input side, but outputs a summary table that includes robust Wald and Rao tests as well as others. 
+
+```{r example}
+library(raoBust)
+glm_test(dist ~ speed, data = cars, family=poisson(link="log"))
+```
+
+## People
+
+The software was written by Amy D Willis, with input, insight and inspiration from former lab member David S Clausen. All errors are Amy's fault. 
