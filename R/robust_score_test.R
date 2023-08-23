@@ -1,15 +1,16 @@
 #' Robust score (Rao) test for Poisson regression
 #'
-#' @param my_formula The model under the alternative
-#' @param df A dataframe or tibble required to fit the model
+#' @param glm_object The fitted glm under the alternative.
+#' @param call_to_model The call used to fit the model. Used internally.
 #' @param param which parameter do you want to test?
 #'
 #' @importFrom stats glm poisson model.matrix glm.fit pchisq
 #'
 #' @export
-robust_score_test <- function(my_formula, df, param = 1) {
+robust_score_test <- function(glm_object, call_to_model, param = 1) {
 
-  model1 <- glm(formula = my_formula, data = df, family = poisson(link = "log"))
+  # stop("no")
+  model1 <- glm_object
   model1_estimates <- model1$coef
   model1_fits <- model1$fitted.values
 
@@ -20,10 +21,20 @@ robust_score_test <- function(my_formula, df, param = 1) {
   xx0 <- xx[ , -param]
   pp0 <- length(param)
 
-  model0 <- glm.fit(x = xx0,
-                    y = yy,
-                    intercept = FALSE,
-                    family = poisson(link = "log"))
+  # stop("no")
+  withCallingHandlers({
+    model0 <- glm.fit(x = xx0,
+                      y = yy,
+                      intercept = FALSE,
+                      offset = with(model1$data, eval(call_to_model$offset)),
+                      weights = with(model1$data, eval(call_to_model$weights)),
+                      family = eval(call_to_model$family))
+
+  }, warning = function(w) {
+    if (startsWith(conditionMessage(w), "non-integer x"))
+      invokeRestart("muffleWarning")
+  })
+
   model0_fits <- model0$fitted.values
   fitted_cols0 <- matrix(rep(model0_fits, each = pp - 1), nrow = nn, ncol = pp - 1, byrow = T)
 

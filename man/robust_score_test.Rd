@@ -4,12 +4,12 @@
 \alias{robust_score_test}
 \title{Robust score (Rao) test for Poisson regression}
 \usage{
-robust_score_test(my_formula, df, param = 1)
+robust_score_test(glm_object, call_to_model, param = 1)
 }
 \arguments{
-\item{my_formula}{The model under the alternative}
+\item{glm_object}{The fitted glm under the alternative.}
 
-\item{df}{A dataframe or tibble required to fit the model}
+\item{call_to_model}{The call used to fit the model. Used internally.}
 
 \item{param}{which parameter do you want to test?}
 }
