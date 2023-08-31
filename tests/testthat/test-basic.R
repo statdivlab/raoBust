@@ -42,3 +42,4 @@ test_that("offsets work", {
               "double")
 
 })
+

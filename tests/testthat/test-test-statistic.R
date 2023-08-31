@@ -45,50 +45,45 @@ test_that("returns legitimate p-values", {
 })
 
 
-test_that("nominal level test for n=100 under correct model specification", {
-
+test_that("nominal level test for n = 100 under correct model specification", {
+  
+  set.seed(1)
+  nsim <- 200
+  ps <- vector("numeric", length = nsim)
+  
   expect_silent({
-    set.seed(1)
-    nsim = 200
-    ps <- vector("numeric", length=nsim)
-    nn <- 100
-
-    for (i in 1:nsim) {
-      covariate1 <- rnorm(nn)
-      yy <- rpois(nn, lambda = 5 + 0*covariate1)
-      ps[i] <- glm_test(yy ~ covariate1, data = data.frame(covariate1, yy), family=poisson(link="log"))[2, "Robust Score p"]
-
+    for (j in 1:nsim) {
+      ps[j] <- glm_test(yy ~ covariate1,
+                        data = simulate_random_data(),
+                        family = poisson(link = "log"))[2, "Robust Score p"]
     }
   })
 
-
-  expect_true(mean(ps < 0.05) < 0.05 + 2.575*sqrt(0.05*0.95/nsim))
-  expect_true(mean(ps < 0.05) > 0.05 - 2.575*sqrt(0.05*0.95/nsim))
-
+  expect_true(mean(ps < 0.05) < 0.05 + 2.575 * sqrt(0.05 * 0.95/nsim))
+  expect_true(mean(ps < 0.05) > 0.05 - 2.575 * sqrt(0.05 * 0.95/nsim))
 
 })
 
 test_that("p-values are correlated with robust Wald under null", {
 
   set.seed(2)
-  nsim = 200
+  nsim <- 200
   ps_score <- vector("numeric", length=nsim)
-  # ps_rwald <- vector("numeric", length=nsim)
   ps_wald <- vector("numeric", length=nsim)
   nn <- 100
 
   for (i in 1:nsim) {
-    covariate1 <- rnorm(nn)
-    yy <- rpois(nn, lambda = 5 + 0*covariate1)
-    the_glm <- glm_test(yy ~ covariate1, data = data.frame(covariate1, yy), family=poisson(link="log"))
+    the_glm <- glm_test(yy ~ covariate1, 
+                        data = simulate_random_data(), 
+                        family = poisson(link = "log"))
     ps_score[i] <- the_glm[2, "Robust Score p"]
     ps_wald[i] <- the_glm[2, "Robust Wald p"]
   }
 
   lm_res <- coef(summary(lm(ps_score ~ ps_wald)))
-  print(lm_res)
-  expect_equal(lm_res[1,1], 0, tolerance=0.02)
-  expect_equal(lm_res[2,1], 1, tolerance=0.02)
+
+  expect_equal(lm_res[1,1], 0, tolerance = 0.02)
+  expect_equal(lm_res[2,1], 1, tolerance = 0.02)
 
   expect_true(cor(ps_score, ps_wald) > 0.97)
 
