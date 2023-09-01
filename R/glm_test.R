@@ -19,7 +19,7 @@ glm_test <- function(...) {
 
   ### fit the glm, ignoring warnings about non integer inputs, as we take an estimating equations mindset
   withCallingHandlers({
-    glm_result <- eval(cl) ### is the issue here??
+    glm_result <- eval(cl, envir = rlang::caller_env()) ### is the issue here??
   }, warning=function(w) {
     if (startsWith(conditionMessage(w), "non-integer x"))
       invokeRestart("muffleWarning")

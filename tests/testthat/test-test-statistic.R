@@ -45,6 +45,16 @@ test_that("returns legitimate p-values", {
 })
 
 
+nsim <- 200
+nn <- 100
+simulate_random_data <- function() {
+  covariate1 <- rnorm(nn)
+  yy <- rpois(nn, lambda = 5 + 0*covariate1)
+  df <- data.frame(covariate1 = covariate1,
+                   yy = yy)
+  return(df)
+}
+
 test_that("nominal level test for n = 100 under correct model specification", {
   
   set.seed(1)
