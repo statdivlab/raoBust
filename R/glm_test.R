@@ -4,6 +4,7 @@
 #'
 #' @importFrom sandwich sandwich
 #' @importFrom stats coef glm pnorm
+#' @import rlang
 #'
 #' @examples
 #' # glm_test(dist ~ speed, data = cars, family=poisson(link="log"))
