@@ -1,6 +1,6 @@
 Package: raoBust
 Title: Robust score tests for Poisson regression
-Version: 0.0.2.0
+Version: 0.0.2.1
 Authors@R: 
     c(person("Amy", "Willis", , "adwillis@uw.edu", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-2802-4317")), 
@@ -15,6 +15,7 @@ Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Imports: 
+    geepack, 
     magrittr,
     rlang,
     sandwich
