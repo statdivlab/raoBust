@@ -25,7 +25,7 @@ gee_test <- function(...) {
   }
 
   if (!is.null(cl$weights)) {
-    wts <- eval(cl$data)[[cl$weights]]
+    wts <- eval(cl$data, envir = rlang::caller_env())[[cl$weights]]
     if(!all(wts[1] == wts)) {
       warning("Amy isn't quite sure how weights interact with the replication structure. Perhaps chat with her before using?")
     }
@@ -43,13 +43,13 @@ gee_test <- function(...) {
 
   ## enforce robust Wald
   cl <- call_modify(cl,
-                    "id" = as.factor(eval(cl$data)[[cl$id]]),
+                    "id" = as.factor(eval(cl$data, envir = rlang::caller_env())[[cl$id]]),
                     "corstr" = "exchangeable",
                     "std.err" = "san.se")
-  the_reorder <- order(eval(cl$data)[[id_col]])
+  the_reorder <- order(eval(cl$data, envir = rlang::caller_env())[[id_col]])
   cl <- call_modify(cl,
-                    "data" = eval(cl$data)[the_reorder, ],
-                    "id" = eval(cl$id)[the_reorder])
+                    "data" = eval(cl$data, envir = rlang::caller_env())[the_reorder, ],
+                    "id" = eval(cl$id, envir = rlang::caller_env())[the_reorder])
 
 
   ### fit the glm, ignoring warnings about non integer inputs, as we take an estimating equations mindset
