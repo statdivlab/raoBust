@@ -41,11 +41,13 @@ gee_test <- function(...) {
   # print(eval(cl$data)[[cl$id]])
 
 
-  ## enforce robust Wald
+  ## enforce robust Wald using "std.err" = "san.se"
+  ## Documentation for geepack suggests bias can be substantial for sandwich se's with small # of clusters
+  ## so choose approximate jackknife as std.err="jack"
   cl <- call_modify(cl,
                     "id" = as.factor(eval(cl$data)[[cl$id]]),
                     "corstr" = "exchangeable",
-                    "std.err" = "san.se")
+                    "std.err" = "jack")
   the_reorder <- order(eval(cl$data)[[id_col]])
   cl <- call_modify(cl,
                     "data" = eval(cl$data)[the_reorder, ],
@@ -91,6 +93,12 @@ gee_test <- function(...) {
 
   output <- cbind(output, "Robust Score p" = robust_score_p)
 
-  output[, c("Estimate","Robust Std Error", "Robust Wald p", "Robust Score p")]
+  output <- output[, c("Estimate","Robust Std Error", "Robust Wald p", "Robust Score p")]
 
+  output <- rbind(output,
+                  "correlation:alpha" = c(geeglm_result$geese$alpha, # "Estimate"
+                                          geeglm_result$geese$valpha.ajs, # "Robust Std Error"
+                                          NA, # "Robust Wald p"
+                                          NA)) # "Robust Score p"
+  output
 }
