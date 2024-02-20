@@ -76,6 +76,7 @@ test_that("replicates work", {
 
 
   #### I've implemented score tests with clusters
+  #### I still haven't, so this is failing for now
   expect_false(
     any(is.na(gee_test(dist ~ speed,
                        data = cars2,

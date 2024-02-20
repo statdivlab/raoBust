@@ -13,7 +13,7 @@ gee_test(...)
 Generalized Estimating Equations under technical replication with robust and non-robust Wald and Rao (score) tests
 }
 \examples{
-TODO
+# TODO
 
 
 }

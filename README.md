@@ -48,6 +48,8 @@ glm_test(dist ~ speed, data = cars, family=poisson(link="log"))
 
 ## People
 
-The software was written by Amy D Willis, with input, insight and
-inspiration from former lab member David S Clausen. All errors are Amy’s
-fault.
+This software project was started by Amy D Willis, with input and
+insights from former lab member David S Clausen. Sarah Teichman is an
+amazing collaborator and coauthor.
+
+All errors are Amy’s fault.
