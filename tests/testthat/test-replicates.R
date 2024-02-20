@@ -69,13 +69,13 @@ test_that("replicates work", {
   cars3 <- rbind(cars, cars, cars)
   cars3$dist <- cars3$dist + sample(-2:2, replace=TRUE, size = length(cars3$dist))
   cars3$batch <- 1:length(cars$dist)
-  expect_true(gee_test(dist ~ speed,
+  expect_gt(gee_test(dist ~ speed,
                        data = cars3,
                        id = batch,
-                       family=poisson(link="log"))[3, "Estimate"] > 0.9)
+                       family=poisson(link="log"))[3, "Estimate"], 0.9)
 
 
-  #### I've implemented score tests
+  #### I've implemented score tests with clusters
   expect_false(
     any(is.na(gee_test(dist ~ speed,
                        data = cars2,
