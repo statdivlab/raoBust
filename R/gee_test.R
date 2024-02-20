@@ -8,7 +8,7 @@
 #' @importFrom geepack geeglm
 #'
 #' @examples
-#' TODO
+#' # TODO
 #'
 #'
 #' @export
