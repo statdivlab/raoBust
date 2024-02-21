@@ -3,6 +3,12 @@
 
 # raoBust: Robust Rao (score) tests for Generalized Linear Models
 
+<!-- badges: start -->
+
+[![R-CMD-check](https://github.com/statdivlab/raoBust/workflows/R-CMD-check/badge.svg)](https://github.com/statdivlab/raoBust/actions)
+[![codecov](https://codecov.io/github/statdivlab/raoBust/coverage.svg?branch=main)](https://app.codecov.io/github/statdivlab/raoBust)
+<!-- badges: end -->
+
 `raoBust`, at its core, gives you all the important information from
 `glm()`, but also with model misspecification-robust Rao tests (also
 called score tests) and Wald tests.
