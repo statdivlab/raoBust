@@ -4,3 +4,6 @@
 .Rbuildignore
 .Rproj.user
 .Rproj
+*.Rproj
+README.Rmd
+.gitignore
