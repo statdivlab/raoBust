@@ -75,14 +75,13 @@ test_that("replicates work", {
                        family=poisson(link="log"))[3, "Estimate"], 0.9)
 
 
-  #### I've implemented score tests with clusters
-  #### I still haven't, so this is failing for now
+  #### check I've implemented score tests with clusters
   expect_false(
     any(is.na(gee_test(dist ~ speed,
                        data = cars2,
                        id = batch3,
                        family=poisson(link="log"),
-                       offset = wts)[["Robust Score p"]]))
+                       offset = wts)[["Robust Score p"]][1:2]))
   )
 })
 
