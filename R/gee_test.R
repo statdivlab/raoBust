@@ -6,7 +6,7 @@
 #' @importFrom stats coef glm pnorm
 #' @importFrom rlang call_match caller_env
 #' @importFrom geepack geeglm
-#' @importFrom geeasy geelm
+#' @import geeasy
 #'
 #' @examples
 #' # TODO
