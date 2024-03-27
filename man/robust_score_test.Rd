@@ -4,7 +4,7 @@
 \alias{robust_score_test}
 \title{Robust score (Rao) test for Poisson regression}
 \usage{
-robust_score_test(glm_object, call_to_model, param = 1)
+robust_score_test(glm_object, call_to_model, param = 1, id = NA)
 }
 \arguments{
 \item{glm_object}{The fitted glm under the alternative.}
@@ -12,6 +12,8 @@ robust_score_test(glm_object, call_to_model, param = 1)
 \item{call_to_model}{The call used to fit the model. Used internally.}
 
 \item{param}{which parameter do you want to test?}
+
+\item{id}{observations with the same id are in the same cluster}
 }
 \description{
 Robust score (Rao) test for Poisson regression

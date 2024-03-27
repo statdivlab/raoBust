@@ -14,7 +14,6 @@
 #' @export
 gee_test <- function(...) {
 
-  # cl_orig <- rlang::call_match(defaults = TRUE)
   cl_orig <- match.call()
 
   cl <- cl_orig
@@ -31,18 +30,10 @@ gee_test <- function(...) {
     }
   }
 
-  # print(cl)
-
   id_col <- cl$id
 
-
-  # print(eval(cl$data))
-  # print(cl$id)
-  # print(eval(cl$data)[[cl$id]])
-
-
   ## enforce robust Wald using "std.err" = "san.se"
-  ## Documentation for geepack suggests bias can be substantial for sandwich se's with small # of clusters
+  ## Documentation for geepack suggests bias can be substantial for sandwich se's with small number of clusters
   ## so choose approximate jackknife as std.err="jack"
   cl <- call_modify(cl,
                     "id" = as.factor(eval(cl$data, envir = rlang::caller_env())[[cl$id]]),
@@ -85,10 +76,10 @@ gee_test <- function(...) {
 
   for (p_marginal in 1:pp) {
 
-    # robust_score_p[p_marginal] <- robust_score_test(glm_object = geeglm_result,
-    #                                                 call_to_model = cl,
-    #                                                 param = p_marginal)
-    robust_score_p[p_marginal] <- NA
+    robust_score_p[p_marginal] <- robust_score_test(glm_object = geeglm_result,
+                                                    call_to_model = cl,
+                                                    param = p_marginal,
+                                                    id = geeglm_result$geese$id)
   }
 
   output <- cbind(output, "Robust Score p" = robust_score_p)
