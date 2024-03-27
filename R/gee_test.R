@@ -6,6 +6,7 @@
 #' @importFrom stats coef glm pnorm
 #' @importFrom rlang call_match caller_env
 #' @importFrom geepack geeglm
+#' @importFrom geeasy geelm
 #'
 #' @examples
 #' # TODO
@@ -46,6 +47,18 @@ gee_test <- function(...) {
 
 
   ### fit the glm, ignoring warnings about non integer inputs, as we take an estimating equations mindset
+  # first, run geeasy::geelm() to see if it converges 
+  # (to avoid an infinite loop with geepack::geeglm())
+  cl_check <- cl
+  cl_check[1] <- call("geelm")
+  cl_check <- call_modify(cl_check, std.err = zap())
+  geelm_result <- try({
+    eval(cl_check, envir = rlang::caller_env())
+  })
+  if (inherits(geelm_result, "try-error")) {
+    stop("GEE does not converge. Sarah and Amy are working on figuring out why!")
+  }
+  
   withCallingHandlers({
     geeglm_result <- eval(cl, envir = rlang::caller_env()) ### is the issue here??
   }, warning=function(w) {
