@@ -4,9 +4,11 @@
 \alias{gee_test}
 \title{Generalized Estimating Equations under technical replication with robust and non-robust Wald and Rao (score) tests}
 \usage{
-gee_test(...)
+gee_test(use_geeasy = TRUE, ...)
 }
 \arguments{
+\item{use_geeasy}{When TRUE, uses \code{geeasy} for gee estimation, when FALSE uses \code{geepack}}
+
 \item{...}{Arguments that you would pass to a regular \code{geepack::geeglm} call. Note that for now we only have functionality for Poisson tests with log link}
 }
 \description{
