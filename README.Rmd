@@ -15,6 +15,11 @@ knitr::opts_chunk$set(
 
 # raoBust: Robust Rao (score) tests for Generalized Linear Models
 
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/statdivlab/raoBust/workflows/R-CMD-check/badge.svg)](https://github.com/statdivlab/raoBust/actions)
+[![codecov](https://codecov.io/github/statdivlab/raoBust/coverage.svg?branch=main)](https://app.codecov.io/github/statdivlab/raoBust)
+<!-- badges: end -->
+
 `raoBust`, at its core, gives you all the important information from `glm()`, but also with model misspecification-robust Rao tests (also called score tests) and Wald tests. 
 
 Robust score tests have outstanding error rate performance in small samples, **and** when your data is not drawn from a parametric family (i.e., always). It's shocking to me (Amy) how well they perform. They have a reputation for being conservative in small samples, but I would argue that this is a *very good thing*. 

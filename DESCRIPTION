@@ -18,4 +18,5 @@ Imports:
     geepack, 
     magrittr,
     rlang,
-    sandwich
+    sandwich,
+    geeasy
