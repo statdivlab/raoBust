@@ -36,7 +36,7 @@ get_multinom_score <- function(X, Y, joint = FALSE, j = NULL) {
     H1[1:p, ((j-1)*(p+1) + 2):(j*(p+1))] <- diag(nrow = p, ncol = p)
 
 
-    betanonj_null1mle <- tryCatch({stats::nlm(f = multinom_mle_weak_null, p = betanonj,Y = Y, X = X, j = j)$estimate},
+    betanonj_null1mle <- tryCatch({stats::nlm(f = multinom_mle_weak_null, p = betanonj, Y = Y, X = X, j = j)$estimate},
                                     error = function(cond) {return(NA)}) #get optimal values of beta
 
     #return NA when optimization does not converge under null constraint
