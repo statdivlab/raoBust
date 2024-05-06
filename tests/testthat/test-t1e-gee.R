@@ -19,7 +19,7 @@ test_that("nominal level generalized score test for n = 100 under correct model 
 
   expect_silent({
     for (j in 1:nsim) {
-      ps[j] <- gee_test(yy ~ covariate1,
+      ps[j] <- gee_test(formula = yy ~ covariate1,
                         data = simulate_null_data(),
                         id = batch,
                         family = poisson(link = "log"))[2, "Robust Score p"]
