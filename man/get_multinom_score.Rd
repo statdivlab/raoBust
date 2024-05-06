@@ -7,17 +7,17 @@
 get_multinom_score(X, Y, joint = FALSE, j = NULL)
 }
 \arguments{
-\item{X}{This should be the n x p design matrix of covariates.}
+\item{X}{This should be the \eqn{n x p} design matrix of covariates.}
 
-\item{Y}{This should be the n x J data matrix of outcomes.}
+\item{Y}{This should be the \eqn{n x J} data matrix of outcomes.}
 
-\item{joint}{This is by default specified as FALSE to compute the robust score statistic to test the weak null that for one specific j, \beta_j = 0.
-If specified to be TRUE, the function instead computes the robust score statistic to test the global null that \beta_1 = \beta_2 = \dots = \beta_{J-1} = 0.}
+\item{joint}{This is by default specified as FALSE to compute the robust score statistic to test the weak null that for one specific \eqn{j}, \eqn{\beta_j = 0}.
+If specified to be TRUE, the function instead computes the robust score statistic to test the global null that \eqn{\beta_1 = \beta_2 = \dots = \beta_{J-1} = 0}.}
 
-\item{j}{If \code{join} is specified as FALSE, this argument must be supplied. This specifies for which category j you want to test the weak null hypothesis that \beta_j = 0.}
+\item{j}{If \code{join} is specified as FALSE, this argument must be supplied. This specifies for which category \eqn{j} you want to test the weak null hypothesis that \eqn{\beta_j = 0}.}
 }
 \value{
-The robust score test statistic for the specified hypothesis test according to the\code{joint} and \code{j} parameters.
+The robust score test statistic for the specified hypothesis test according to thejoint and j parameters.
 }
 \description{
 Robust score (Rao) test for multinomial regression.

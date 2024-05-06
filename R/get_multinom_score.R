@@ -1,16 +1,73 @@
+
+
+#' Objective function to find MLE under weak null (\eqn{\beta_j = 0} for specific j)
+#'
+#' @param betanonj A vector containing the initial values for all \eqn{\beta_k}, with \eqn{k \neq j}, as well as all \eqn{\beta_{k0}, for k = 1, \dots, J-1}. 
+#' In particular, this vector should be so that the first \eqn{(J-2)(p+1)} entries are \eqn{\beta_{10}, \beta_{1}^{\top}, \beta_{20}, \beta_{2}^{\top}, \dots, \beta_{(j-1)0}, \beta_{j-1}^{\top},  \beta_{(j+1)0}, \beta_{j+1}^{\top}, \dots,  \beta_{(J-1)0}, \beta_{J-1}^{\top}, \beta_{j0}}.
+#' @param betaj This is the null hypothesized value for \eqn{\beta_j}, which is by default set to be \eqn{\beta_j = 0}.
+#' @param Y This should be the \eqn{n x J} data matrix of outcomes.
+#' @param X This should be the \eqn{n x p} design matrix of covariates.
+#' @param j This specifies for which category you want to compute the MLE under the constraint that \eqn{\beta_j = 0}.
+#' @return A vector containing the optimal betanonj values to maximize the log-likelihood under the null constraint that \eqn{\beta_j = 0}. The components are listed out in the same manner as in the betanonj parameter.
+null1objective <- function(betanonj, betaj = rep(0, p), Y, X, j) {
+  n <- nrow(Y) #get sample size
+  J <- ncol(Y) #get number of taxa
+  N <- matrix(apply(Y, MARGIN = 1, FUN = sum), nrow = n) #totals by sample
+  beta <- matrix(rep(0, (p+1)*(J-1)), ncol = J-1) #initialize full (p+1) x (J-1) beta matrix
+  for (k in 1:(J-1)) {
+    if (k < j) {
+      beta[ ,k] <- betanonj[((k-1)*(p+1)+1):(k*(p+1))]
+    } else if (k == j) {
+      beta[,k] <- c(betanonj[(p+1)*(J-2)+1], betaj)
+    } else if (k > j) {
+      beta[ ,k] <- betanonj[((k-2)*(p+1)+1):((k-1)*(p+1))]
+    }
+  }
+  
+  Xaug <- cbind(matrix(rep(1, n), ncol = 1), X) #augmented covariate matrix
+  XaugBeta <- Xaug %*% beta
+  pJ <- (1 + rowSums(exp(XaugBeta)))^(-1)
+  ps <- as.vector(pJ)*exp(XaugBeta)
+  ps_full <- cbind(ps, pJ)
+  
+  loglik <- sum(Y*log(ps_full))
+  
+  return(-loglik)
+}
+
+
+#' Objective function to find MLE under global null (\eqn{\beta_1 = beta_2 = \dots = \beta_{J-1} = 0)}
+#'
+#' @param betanots A vector containing the initial values for all \eqn{\beta_{k0}, for k = 1, \dots, J-1}. 
+#' In particular, this vector should be so that the entries are ordered as \eqn{\beta_{10}, \beta_{20}, \dots, \beta_{(J-1)0}}.
+#' @param Y This should be the n x J data matrix of outcomes.
+#' @param X This should be the n x p design matrix of covariates.
+#' @return A vector containing the optimal values for betanots  to maximize the log-likelihood under the null constraint that \eqn{\beta_1 = beta_2 = \dots = \beta_{J-1} = 0}. 
+#' The components are listed out in the same manner as in the betanots parameter.
+
+null2objective <- function(betanots, Y, X) {
+  n <- nrow(Y) #get sample size
+  J <- ncol(Y) #get number of taxa
+  N <- matrix(apply(Y, MARGIN = 1, FUN = sum), nrow = n) #totals by sample
+  
+  pJ <- (1 + sum(exp(betanots)))^(-1)
+  ps <- pJ*exp(betanots)
+  ps_full <- matrix(rep(c(ps, pJ), n), nrow = n, byrow = TRUE)
+  
+  loglik <- sum(Y*log(ps_full))
+  
+  
+  return(-loglik)
+}
+
 #' Robust score (Rao) test for multinomial regression.
 #'
 #' @param Y This should be the n x J data matrix of outcomes.
 #' @param X This should be the n x p design matrix of covariates.
-#' @param joint This is by default specified as FALSE to compute the robust score statistic to test the weak null that for one specific j, \beta_j = 0.
+#' @param joint This is by default specified as FALSE to compute the robust score statistic to test the weak null that for one specific j, \beta_j = 0. 
 #' If specified to be TRUE, the function instead computes the robust score statistic to test the global null that \beta_1 = \beta_2 = \dots = \beta_{J-1} = 0.
-#' @param j If `joint` is specified as FALSE, this argument must be supplied. This specifies for which category j you want to test the weak null hypothesis that \beta_j = 0.
-#'
-#' @author Shirley Mathur
-#'
+#' @param j If `join` is specified as FALSE, this argument must be supplied. This specifies for which category j you want to test the weak null hypothesis that \beta_j = 0.
 #' @return The robust score test statistic for the specified hypothesis test according to the`joint` and `j` parameters.
-#'
-#' @export
 get_multinom_score <- function(X, Y, joint = FALSE, j = NULL) {
 
   #get n, p, J values (used throughout rest of the function to compute relevant quantities)

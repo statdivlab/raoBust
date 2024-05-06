@@ -2,25 +2,25 @@
 % Please edit documentation in R/multinomial_robust_score_test.R
 \name{null1objective}
 \alias{null1objective}
-\title{Objective function to find MLE under weak null (\beta_j = 0 for specific j)}
+\title{Objective function to find MLE under weak null (\eqn{\beta_j = 0} for specific j)}
 \usage{
 null1objective(betanonj, betaj = rep(0, p), Y, X, j)
 }
 \arguments{
-\item{betanonj}{A vector containing the initial values for all \beta_k, with k \neq j, as well as all \beta_{k0}, for k = 1, \dots, J-1.
-In particular, this vector should be so that the first (J-2)*(p+1) entries are \beta_{10}, \beta_{1}^{\top}, \beta_{20}, \beta_{2}^{\top}, \dots, \beta_{(j-1)0}, \beta_{j-1}^{\top},  \beta_{(j+1)0}, \beta_{j+1}^{\top}, \dots,  \beta_{(J-1)0}, \beta_{J-1}^{\top}, \beta_{j0}.}
+\item{betanonj}{A vector containing the initial values for all \eqn{\beta_k}, with \eqn{k \neq j}, as well as all \eqn{\beta_{k0}, for k = 1, \dots, J-1}.
+In particular, this vector should be so that the first \eqn{(J-2)(p+1)} entries are \eqn{\beta_{10}, \beta_{1}^{\top}, \beta_{20}, \beta_{2}^{\top}, \dots, \beta_{(j-1)0}, \beta_{j-1}^{\top},  \beta_{(j+1)0}, \beta_{j+1}^{\top}, \dots,  \beta_{(J-1)0}, \beta_{J-1}^{\top}, \beta_{j0}}.}
 
-\item{betaj}{This is the null hypothesized value for \beta_j, which is by default set to be \beta_j = 0.}
+\item{betaj}{This is the null hypothesized value for \eqn{\beta_j}, which is by default set to be \eqn{\beta_j = 0}.}
 
-\item{Y}{This should be the n x J data matrix of outcomes.}
+\item{Y}{This should be the \eqn{n x J} data matrix of outcomes.}
 
-\item{X}{This should be the n x p design matrix of covariates.}
+\item{X}{This should be the \eqn{n x p} design matrix of covariates.}
 
-\item{j}{This specifies for which category you want to compute the MLE under the constraint that \beta_j = 0.}
+\item{j}{This specifies for which category you want to compute the MLE under the constraint that \eqn{\beta_j = 0}.}
 }
 \value{
-A vector containing the optimal \code{betanonj} values to maximize the log-likelihood under the null constraint that \beta_j = 0. The components are listed out in the same manner as in the betanonj parameter.
+A vector containing the optimal betanonj values to maximize the log-likelihood under the null constraint that \eqn{\beta_j = 0}. The components are listed out in the same manner as in the betanonj parameter.
 }
 \description{
-Objective function to find MLE under weak null (\beta_j = 0 for specific j)
+Objective function to find MLE under weak null (\eqn{\beta_j = 0} for specific j)
 }
