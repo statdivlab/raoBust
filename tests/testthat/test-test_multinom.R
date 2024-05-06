@@ -21,24 +21,25 @@ simulate_null_data_mult <- function(global = FALSE) {
 
 df <- simulate_null_data_mult()
 get_multinom_score(df$X, df$Y, joint = FALSE, j = 2)
+get_multinom_score(df$X, df$Y, joint = TRUE)
 
 
 test_that("global multinomial test controls T1E", {
 
-  ts <- rep(NA, nsim)
-  for (i in 1:nsim) {
-    df <- simulate_null_data_mult(global=TRUE)
-    ts[i] <- get_multinom_score(df$X, df$Y, joint = TRUE)
-  }
-  ts[ts < 0] <- 0
-  summary(ts)
-
-  pchisq(12, df = jj - 1, lower.tail=FALSE)
-
-  qqplot(ts, rchisq(1000, 4))
-
-  ps <- pchisq(ts, df = jj - 1, lower.tail=FALSE)
-  hist(ps)
-  100*c(mean(ps < 0.01), mean(ps < 0.05), mean(ps < 0.10)) ## should be 1, 5, 10% to be nominal
+  # ts <- rep(NA, nsim)
+  # for (i in 1:nsim) {
+  #   df <- simulate_null_data_mult(global=TRUE)
+  #   ts[i] <- get_multinom_score(df$X, df$Y, joint = TRUE)
+  # }
+  # ts[ts < 0] <- 0
+  # summary(ts)
+  #
+  # pchisq(12, df = jj - 1, lower.tail=FALSE)
+  #
+  # qqplot(ts, rchisq(1000, 4))
+  #
+  # ps <- pchisq(ts, df = jj - 1, lower.tail=FALSE)
+  # hist(ps)
+  # 100*c(mean(ps < 0.01), mean(ps < 0.05), mean(ps < 0.10)) ## should be 1, 5, 10% to be nominal
 
 })

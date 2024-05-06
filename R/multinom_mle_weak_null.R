@@ -1,20 +1,27 @@
-#' Objective function to find Multinomial MLE under weak null ($\beta_j = 0$ for specific j)
+#' Objective function to find Multinomial MLE under weak null (\eqn{\beta_j = 0} for specific j)
 #'
-#' @param betanonj A vector containing the initial values for all \beta_k, with k \neq j, as well as all \beta_{k0}, for k = 1, \dots, J-1.
-#' In particular, this vector should be so that the first (J-2)*(p+1) entries are \beta_{10}, \beta_{1}^{\top}, \beta_{20}, \beta_{2}^{\top}, \dots, \beta_{(j-1)0}, \beta_{j-1}^{\top},  \beta_{(j+1)0}, \beta_{j+1}^{\top}, \dots,  \beta_{(J-1)0}, \beta_{J-1}^{\top}, \beta_{j0}.
-#' @param betaj This is the null hypothesized value for \beta_j, which is by default set to be \beta_j = 0.
-#' @param Y This should be the n x J data matrix of outcomes.
-#' @param X This should be the n x p design matrix of covariates.
-#' @param j This specifies for which category you want to compute the MLE under the constraint that \beta_j = 0.
+#'
+#' @param betanonj A vector containing the initial values for all \eqn{\beta_k}, with \eqn{k \neq j}, as well as all \eqn{\beta_{k0}, for k = 1, \dots, J-1}.
+#' In particular, this vector should be so that the first \eqn{(J-2)(p+1)} entries are \eqn{\beta_{10}, \beta_{1}^{\top}, \beta_{20}, \beta_{2}^{\top}, \dots, \beta_{(j-1)0}, \beta_{j-1}^{\top},  \beta_{(j+1)0}, \beta_{j+1}^{\top}, \dots,  \beta_{(J-1)0}, \beta_{J-1}^{\top}, \beta_{j0}}.
+#' @param betaj This is the null hypothesized value for \eqn{\beta_j}, which is by default set to be \eqn{\beta_j = 0}.
+#' @param Y This should be the \eqn{n x J} data matrix of outcomes.
+#' @param X This should be the \eqn{n x p} design matrix of covariates.
+#' @param j This specifies for which category you want to compute the MLE under the constraint that \eqn{\beta_j = 0}.
+#'
+#' @return A vector containing the optimal betanonj values to maximize the log-likelihood under the null constraint that \eqn{\beta_j = 0}. The components are listed out in the same manner as in the betanonj parameter.
+#'
 #'
 #' @author Shirley Mathur
 #'
-#' @return A vector containing the optimal `betanonj` values to maximize the log-likelihood under the null constraint that \beta_j = 0. The components are listed out in the same manner as in the betanonj parameter.
 #'
-multinom_mle_weak_null <- function(betanonj, betaj = rep(0, p), Y, X, j) {
+multinom_mle_weak_null <- function(betanonj, betaj = NULL, Y, X, j) {
   n <- nrow(Y) #get sample size
   J <- ncol(Y) #get number of taxa
+  p <- ncol(X)
   N <- matrix(apply(Y, MARGIN = 1, FUN = sum), nrow = n) #totals by sample
+  if (is.null(betaj)) {
+    betaj <- rep(0, p)
+  }
   beta <- matrix(rep(0, (p+1)*(J-1)), ncol = J-1) #initialize full (p+1) x (J-1) beta matrix
   for (k in 1:(J-1)) {
     if (k < j) {
