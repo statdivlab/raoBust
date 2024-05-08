@@ -1,4 +1,4 @@
-#' Objective function to find Multinomial MLE under global null (\eqn{\beta_1 = beta_2 = \dots = \beta_{J-1} = 0)}
+#' Negative log-likelihood for multinomial data under the strong null (\eqn{\beta_1 = beta_2 = \dots = \beta_{J-1} = 0)}
 #'
 #'
 #' @param betanots A vector containing the initial values for all \eqn{\beta_{k0}, for k = 1, \dots, J-1}.
@@ -11,7 +11,7 @@
 #' @return A vector containing the optimal values for betanots  to maximize the log-likelihood under the null constraint that \eqn{\beta_1 = beta_2 = \dots = \beta_{J-1} = 0}.
 #' The components are listed out in the same manner as in the betanots parameter.
 #'
-multinom_mle_global_null <- function(betanots, Y, X) {
+multinom_mle_strong_null <- function(betanots, Y, X) {
   n <- nrow(Y) #get sample size
   J <- ncol(Y) #get number of taxa
   N <- matrix(apply(Y, MARGIN = 1, FUN = sum), nrow = n) #totals by sample
@@ -21,7 +21,6 @@ multinom_mle_global_null <- function(betanots, Y, X) {
   ps_full <- matrix(rep(c(ps, pJ), n), nrow = n, byrow = TRUE)
 
   loglik <- sum(Y*log(ps_full))
-
 
   return(-loglik)
 }

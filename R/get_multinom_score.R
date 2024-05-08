@@ -1,19 +1,19 @@
-#' Robust score (Rao) test for multinomial regression.
+#' Robust score (Rao) tests for multinomial regression.
 #'
 #' @param Y This should be the \eqn{n x J} data matrix of outcomes.
 #' @param X This should be the \eqn{n x p} design matrix of covariates.
-#' @param joint This is by default specified as FALSE to compute the robust score statistic to test the weak null that for one specific \eqn{j}, \eqn{\beta_j = 0}.
-#' If specified to be TRUE, the function instead computes the robust score statistic to test the global null that \eqn{\beta_1 = \beta_2 = \dots = \beta_{J-1} = 0}.
-#' @param j If `joint` is specified as FALSE, this argument must be supplied. This specifies for which category \eqn{j} you want to test the weak null hypothesis that \eqn{\beta_j = 0}.
+#' @param strong This is by default specified as FALSE to compute the robust score statistic to test the weak null that for one specific \eqn{j}, \eqn{\beta_j = 0}.
+#' If specified to be TRUE, the function instead computes the robust score statistic to test the strong null that \eqn{\beta_1 = \beta_2 = \dots = \beta_{J-1} = 0}.
+#' @param j If `strong` is specified as FALSE, this argument must be supplied. This specifies for which category \eqn{j} you want to test the weak null hypothesis that \eqn{\beta_j = 0}.
 #'
-#' @return The robust score test statistic for the specified hypothesis test according to thejoint and j parameters.
+#' @return The robust score test statistic for the specified hypothesis test according to the strong and j parameters.
 #'
 #' @importFrom stats nlm optim
 #'
 #' @author Shirley Mathur
 #'
 #' @export
-get_multinom_score <- function(X, Y, joint = FALSE, j = NULL) {
+get_multinom_score <- function(X, Y, strong = FALSE, j = NULL) {
 
   #get n, p, J values (used throughout rest of the function to compute relevant quantities)
   n <- nrow(Y)
@@ -21,7 +21,7 @@ get_multinom_score <- function(X, Y, joint = FALSE, j = NULL) {
   J <- ncol(Y)
 
   #compute test statistics under weak null that \beta_j = 0 for user-specified j
-  if (joint == FALSE) {
+  if (strong == FALSE) {
     #report error if user specified marginal test but does not supply an argument for j
     if(is.null(j)) {
       stop("Marginal test specified by user, but no argument to j provided to test null hypothesis of \beta_j = 0 for a user-specified category j.")
@@ -110,7 +110,7 @@ get_multinom_score <- function(X, Y, joint = FALSE, j = NULL) {
 
 
     #compute mle under null constraint
-    betanots_null2mle <- optim(betanots, multinom_mle_global_null, Y = Y, X = X)$par #get optimal values of beta_k0's
+    betanots_null2mle <- optim(betanots, multinom_mle_strong_null, Y = Y, X = X)$par #get optimal values of beta_k0's
     beta_null2mle <- matrix(rep(0, (p+1)*(J-1)), ncol = J-1) #initialize full (p+1) x (J-1) beta matrix
     beta_null2mle[1, ] <- betanots_null2mle
 

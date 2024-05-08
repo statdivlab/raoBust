@@ -2,12 +2,12 @@
 % Please edit documentation in R/multinom_mle_weak_null.R
 \name{multinom_mle_weak_null}
 \alias{multinom_mle_weak_null}
-\title{Objective function to find Multinomial MLE under weak null (\eqn{\beta_j = 0} for specific j)}
+\title{Negative log-likelihood for multinomial data under the weak null (\eqn{\beta_j = 0} for specific j)}
 \usage{
 multinom_mle_weak_null(betanonj, betaj = NULL, Y, X, j)
 }
 \arguments{
-\item{betanonj}{A vector containing the initial values for all \eqn{\beta_k}, with \eqn{k \neq j}, as well as all \eqn{\beta_{k0}, for k = 1, \dots, J-1}.
+\item{betanonj}{A vector containing the values for all \eqn{\beta_k}, with \eqn{k \neq j}, as well as all \eqn{\beta_{k0}, for k = 1, \dots, J-1}.
 In particular, this vector should be so that the first \eqn{(J-2)(p+1)} entries are \eqn{\beta_{10}, \beta_{1}^{\top}, \beta_{20}, \beta_{2}^{\top}, \dots, \beta_{(j-1)0}, \beta_{j-1}^{\top},  \beta_{(j+1)0}, \beta_{j+1}^{\top}, \dots,  \beta_{(J-1)0}, \beta_{J-1}^{\top}, \beta_{j0}}.}
 
 \item{betaj}{This is the null hypothesized value for \eqn{\beta_j}, which is by default set to be \eqn{\beta_j = 0}.}
@@ -19,10 +19,10 @@ In particular, this vector should be so that the first \eqn{(J-2)(p+1)} entries 
 \item{j}{This specifies for which category you want to compute the MLE under the constraint that \eqn{\beta_j = 0}.}
 }
 \value{
-A vector containing the optimal betanonj values to maximize the log-likelihood under the null constraint that \eqn{\beta_j = 0}. The components are listed out in the same manner as in the betanonj parameter.
+The value of the log likelihood for the input \eqn{\beta}
 }
 \description{
-Objective function to find Multinomial MLE under weak null (\eqn{\beta_j = 0} for specific j)
+Negative log-likelihood for multinomial data under the weak null (\eqn{\beta_j = 0} for specific j)
 }
 \author{
 Shirley Mathur
