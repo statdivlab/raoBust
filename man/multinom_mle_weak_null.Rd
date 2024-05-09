@@ -4,19 +4,19 @@
 \alias{multinom_mle_weak_null}
 \title{Negative log-likelihood for multinomial data under the weak null (\eqn{\beta_j = 0} for specific j)}
 \usage{
-multinom_mle_weak_null(betanonj, betaj = NULL, Y, X, j)
+multinom_mle_weak_null(beta_as_vector, Y, X, j, beta_j_null = NULL)
 }
 \arguments{
-\item{betanonj}{A vector containing the values for all \eqn{\beta_k}, with \eqn{k \neq j}, as well as all \eqn{\beta_{k0}, for k = 1, \dots, J-1}.
+\item{beta_as_vector}{A vector containing the values for all \eqn{\beta_k}, with \eqn{k \neq j}, as well as all \eqn{\beta_{k0}, for k = 1, \dots, J-1}.
 In particular, this vector should be so that the first \eqn{(J-2)(p+1)} entries are \eqn{\beta_{10}, \beta_{1}^{\top}, \beta_{20}, \beta_{2}^{\top}, \dots, \beta_{(j-1)0}, \beta_{j-1}^{\top},  \beta_{(j+1)0}, \beta_{j+1}^{\top}, \dots,  \beta_{(J-1)0}, \beta_{J-1}^{\top}, \beta_{j0}}.}
-
-\item{betaj}{This is the null hypothesized value for \eqn{\beta_j}, which is by default set to be \eqn{\beta_j = 0}.}
 
 \item{Y}{This should be the \eqn{n x J} data matrix of outcomes.}
 
 \item{X}{This should be the \eqn{n x p} design matrix of covariates.}
 
 \item{j}{This specifies for which category you want to compute the MLE under the constraint that \eqn{\beta_j = 0}.}
+
+\item{beta_j_null}{This is the null hypothesized value for \eqn{\beta_j}, which is by default set to be \eqn{\beta_j = 0}.}
 }
 \value{
 The value of the log likelihood for the input \eqn{\beta}

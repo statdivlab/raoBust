@@ -6,7 +6,7 @@
 #' If specified to be TRUE, the function instead computes the robust score statistic to test the strong null that \eqn{\beta_1 = \beta_2 = \dots = \beta_{J-1} = 0}.
 #' @param j If `strong` is specified as FALSE, this argument must be supplied. This specifies for which category \eqn{j} you want to test the weak null hypothesis that \eqn{\beta_j = 0}.
 #'
-#' @return The robust score test statistic for the specified hypothesis test according to the strong and j parameters.
+#' @return The robust score test statistic for the specified hypothesis test according to the strong and j parameters. TODO
 #'
 #' @importFrom stats nlm optim
 #'
@@ -20,6 +20,10 @@ get_multinom_score <- function(X, Y, strong = FALSE, j = NULL) {
   p <- ncol(X)
   J <- ncol(Y)
 
+  n <- nrow(Y)
+  N <- matrix(apply(Y, MARGIN = 1, FUN = sum), nrow = n) #totals by sample
+  Xaug <- cbind(matrix(rep(1, n), ncol = 1), X) #augmented covariate matrix
+
   #compute test statistics under weak null that \beta_j = 0 for user-specified j
   if (strong == FALSE) {
     #report error if user specified marginal test but does not supply an argument for j
@@ -28,20 +32,16 @@ get_multinom_score <- function(X, Y, strong = FALSE, j = NULL) {
     }
 
     #set up betas
-    betanonj <- rep(0, (p+1)*(J-2)+1) #vector of non \beta_j parameters, include all \beta_{k0} values and \beta_{k} for k \neq j, and \beta_{j0} as final element
+    betanonj <- rep(-0.02, (p+1)*(J-2)+1) #vector of non \beta_j parameters, include all \beta_{k0} values and \beta_{k} for k \neq j, and \beta_{j0} as final element
     betaj <- rep(0, p) #\beta_j null value
 
-    #jacobian of function of parameter h(\beta) = 0
-    H1 <- matrix(data = rep(0, p*(p+1)*(J-1)), ncol = (p+1)*(J-1), nrow = p)
-    H1[1:p, ((j-1)*(p+1) + 2):(j*(p+1))] <- diag(nrow = p, ncol = p)
-
+    stats::nlm(f = multinom_mle_weak_null, p = rep(-0.02, (p+1)*(J-1)), Y = Y, X = X, j = j)
 
     betanonj_null1mle <- tryCatch({stats::nlm(f = multinom_mle_weak_null, p = betanonj, Y = Y, X = X, j = j)$estimate},
                                     error = function(cond) {return(NA)}) #get optimal values of beta
 
-    #return NA when optimization does not converge under null constraint
     if (any(is.na(betanonj_null1mle))) {
-      return(NA)
+      stop("Could not find MLE under H0")
     }
 
     beta_null1mle <- matrix(rep(0, (p+1)*(J-1)), ncol = J-1) #initialize full (p+1) x (J-1) beta matrix
@@ -55,10 +55,11 @@ get_multinom_score <- function(X, Y, strong = FALSE, j = NULL) {
       }
     }
 
+    #jacobian of function of parameter h(\beta) = 0
+    H1 <- matrix(data = rep(0, p*(p+1)*(J-1)), ncol = (p+1)*(J-1), nrow = p)
+    H1[1:p, ((j-1)*(p+1) + 2):(j*(p+1))] <- diag(nrow = p, ncol = p)
+
     #terms necessary for computation of S, I, D matrices
-    n <- nrow(Y)
-    N <- matrix(apply(Y, MARGIN = 1, FUN = sum), nrow = n) #totals by sample
-    Xaug <- cbind(matrix(rep(1, n), ncol = 1), X) #augmented covariate matrix
     XaugBeta1 <- Xaug %*% beta_null1mle
     pJ <- (1 + rowSums(exp(XaugBeta1)))^(-1)
     ps <- as.vector(pJ)*exp(XaugBeta1)
@@ -93,8 +94,14 @@ get_multinom_score <- function(X, Y, strong = FALSE, j = NULL) {
       }
     }
 
+    the_mle <- betanonj_null1mle
+    the_df <- p
+    my_misc <- beta_null1mle
+
     #compute statistic!
-    T_GS<- tryCatch({as.numeric(t(S1) %*% solve(I1) %*% t(H1) %*% (solve(H1 %*% solve(I1) %*% D1 %*% solve(I1) %*% t(H1))) %*% H1 %*% solve(I1) %*% S1)},
+    T_GS<- tryCatch({as.numeric(t(S1) %*% solve(I1) %*% t(H1) %*%
+                                  (solve(H1 %*% solve(I1) %*% D1 %*% solve(I1) %*% t(H1))) %*%
+                                  H1 %*% solve(I1) %*% S1)},
                              error = function(cond) {return(NA)})
 
   } else {
@@ -107,18 +114,15 @@ get_multinom_score <- function(X, Y, strong = FALSE, j = NULL) {
       H2[ ((k-1)*p + 1):(k*p), ((k-1)*(p+1) + 2):(k*(p+1))] <- diag(nrow = p, ncol = p)
     }
 
-
-
     #compute mle under null constraint
     betanots_null2mle <- optim(betanots, multinom_mle_strong_null, Y = Y, X = X)$par #get optimal values of beta_k0's
-    beta_null2mle <- matrix(rep(0, (p+1)*(J-1)), ncol = J-1) #initialize full (p+1) x (J-1) beta matrix
-    beta_null2mle[1, ] <- betanots_null2mle
+
+    ## AW TODO below not needed?
+    # beta_null2mle <- matrix(rep(0, (p+1)*(J-1)), ncol = J-1) #initialize full (p+1) x (J-1) beta matrix
+    # beta_null2mle[1, ] <- betanots_null2mle
 
 
     #terms necessary for computation of S, I, D matrices
-    n <- nrow(Y)
-    N <- matrix(apply(Y, MARGIN = 1, FUN = sum), nrow = n) #totals by sample
-    Xaug <- cbind(rep(1,n), X)
     pJ <- (1 + sum(exp(betanots_null2mle)))^(-1)
     ps <- pJ*exp(betanots_null2mle)
     ps_full <- matrix(rep(c(ps, pJ), n), nrow = n, byrow = TRUE)
@@ -152,13 +156,22 @@ get_multinom_score <- function(X, Y, strong = FALSE, j = NULL) {
       }
     }
 
+    the_mle <- betanots_null2mle
+    the_df <- p*(J-1)
+    my_misc <- NA # beta_null2mle
+
     #compute statistic!
-    T_GS <- tryCatch({as.numeric(t(S2) %*% solve(I2) %*% t(H2) %*% (solve(H2 %*% solve(I2) %*% D2 %*% solve(I2) %*% t(H2))) %*% H2 %*% solve(I2) %*% S2)},
+    T_GS <- tryCatch({as.numeric(t(S2) %*% solve(I2) %*% t(H2) %*%
+                                   (solve(H2 %*% solve(I2) %*% D2 %*% solve(I2) %*% t(H2))) %*%
+                                   H2 %*% solve(I2) %*% S2)},
                      error = function(cond) {return(NA)})
 
 
   }
 
-  return(T_GS)
+  return(list("test_stat" = T_GS,
+              "p" = pchisq(T_GS, df = the_df, lower.tail=FALSE),
+              "mle0" = the_mle,
+              "misc" = my_misc))
 
 }

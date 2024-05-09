@@ -17,7 +17,7 @@ If specified to be TRUE, the function instead computes the robust score statisti
 \item{j}{If \code{strong} is specified as FALSE, this argument must be supplied. This specifies for which category \eqn{j} you want to test the weak null hypothesis that \eqn{\beta_j = 0}.}
 }
 \value{
-The robust score test statistic for the specified hypothesis test according to the strong and j parameters.
+The robust score test statistic for the specified hypothesis test according to the strong and j parameters. TODO
 }
 \description{
 Robust score (Rao) tests for multinomial regression.
