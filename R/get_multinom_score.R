@@ -19,8 +19,8 @@ get_multinom_score <- function(X, Y, strong = FALSE, j = NULL) {
   n <- nrow(Y)
   p <- ncol(X)
   J <- ncol(Y)
-
-  n <- nrow(Y)
+  
+  #compute other necessary quantities needed for computations
   N <- matrix(apply(Y, MARGIN = 1, FUN = sum), nrow = n) #totals by sample
   Xaug <- cbind(matrix(rep(1, n), ncol = 1), X) #augmented covariate matrix
 
@@ -35,7 +35,7 @@ get_multinom_score <- function(X, Y, strong = FALSE, j = NULL) {
     betanonj <- rep(-0.02, (p+1)*(J-2)+1) #vector of non \beta_j parameters, include all \beta_{k0} values and \beta_{k} for k \neq j, and \beta_{j0} as final element
     betaj <- rep(0, p) #\beta_j null value
 
-    stats::nlm(f = multinom_mle_weak_null, p = rep(-0.02, (p+1)*(J-1)), Y = Y, X = X, j = j)
+    stats::nlm(f = multinom_mle_weak_null, p = rep(-0.2, (p+1)*(J-1)), Y = Y, X = X, j = j, print.level = 2)
 
     betanonj_null1mle <- tryCatch({stats::nlm(f = multinom_mle_weak_null, p = betanonj, Y = Y, X = X, j = j)$estimate},
                                     error = function(cond) {return(NA)}) #get optimal values of beta
@@ -168,10 +168,16 @@ get_multinom_score <- function(X, Y, strong = FALSE, j = NULL) {
 
 
   }
+  
+  
+  #compute mle under alternative
+  beta_alt <- rep(-0.02, (p+1)*(J-1))
+  mle_alt <- matrix(optim(beta_alt, multinom_mle_alternative, Y = Y, X = X)$par,  nrow = p + 1, ncol = J-1)
 
   return(list("test_stat" = T_GS,
               "p" = pchisq(T_GS, df = the_df, lower.tail=FALSE),
               "mle0" = the_mle,
+              "mle1" = mle_alt,
               "misc" = my_misc))
 
 }
