@@ -81,7 +81,9 @@ gee_test <- function(use_geeasy = TRUE, use_jack_se = FALSE, ...) {
 
   # get jackknife standard errors if needed 
   if (use_jack_se) {
-    output[, 2] <- jackknife_se(object = gee_result, 
+    gee_result_new <- gee_result
+    gee_result_new$call$formula <- eval(gee_result$call$formula, rlang::caller_env())
+    output[, 2] <- jackknife_se(object = gee_result_new, 
                                 dat = eval(cl$data, envir = rlang::caller_env())[the_reorder, ],
                                 id = eval(cl$id, envir = rlang::caller_env())[the_reorder])
   }
