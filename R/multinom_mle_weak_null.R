@@ -50,7 +50,7 @@ multinom_mle_weak_null <- function(beta_as_vector, Y, X, j, beta_j_null = NULL) 
     # print(beta)
     # print("ps_full")
     # print(ps_full)
-    stop("Some probabilities are estimated to be zero")
+    # stop("Some probabilities are estimated to be zero")
   }
 
 

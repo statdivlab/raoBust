@@ -32,12 +32,12 @@ get_multinom_score <- function(X, Y, strong = FALSE, j = NULL) {
     }
 
     #set up betas
-    betanonj <- rep(-0.02, (p+1)*(J-2)+1) #vector of non \beta_j parameters, include all \beta_{k0} values and \beta_{k} for k \neq j, and \beta_{j0} as final element
+    betanonj <- rep(5, (p+1)*(J-2)+1) #vector of non \beta_j parameters, include all \beta_{k0} values and \beta_{k} for k \neq j, and \beta_{j0} as final element
     betaj <- rep(0, p) #\beta_j null value
 
-    stats::nlm(f = multinom_mle_weak_null, p = rep(-0.2, (p+1)*(J-1)), Y = Y, X = X, j = j, print.level = 2)
+    optim(par = betanonj, fn = multinom_mle_weak_null,, Y = Y, X = X, j = j)
 
-    betanonj_null1mle <- tryCatch({stats::nlm(f = multinom_mle_weak_null, p = betanonj, Y = Y, X = X, j = j)$estimate},
+    betanonj_null1mle <- tryCatch({optim(par = betanonj, fn = multinom_mle_weak_null,, Y = Y, X = X, j = j)$par},
                                     error = function(cond) {return(NA)}) #get optimal values of beta
 
     if (any(is.na(betanonj_null1mle))) {
@@ -77,9 +77,9 @@ get_multinom_score <- function(X, Y, strong = FALSE, j = NULL) {
     for (k in 1:(J-1)) {
       for (l in 1:(J-1)) {
         if (l < k || l > k) {
-          I1[((l-1)*(p+1) + 1):(l*(p+1)),((k-1)*(p+1) + 1):(k*(p+1))] <- t(Xaug) %*% (as.vector(ps_full[ ,k]*ps_full[ ,l]*N)*Xaug)
+          I1[((l-1)*(p+1) + 1):(l*(p+1)),((k-1)*(p+1) + 1):(k*(p+1))] <-  (as.vector(-ps_full[ ,k]*ps_full[ ,l]*N)*t(Xaug)) %*% Xaug
         } else if (l == k) {
-          I1[((k-1)*(p+1) + 1):(k*(p+1)),((k-1)*(p+1) + 1):(k*(p+1))] <- t(Xaug) %*% (as.vector(ps_full[ ,k]*(-1 + ps_full[ ,l])*N)*Xaug)
+          I1[((k-1)*(p+1) + 1):(k*(p+1)),((k-1)*(p+1) + 1):(k*(p+1))] <- (as.vector(-ps_full[ ,k]*(-1 + ps_full[ ,l])*N)*t(Xaug)) %*% Xaug
         }
       }
     }
@@ -89,7 +89,7 @@ get_multinom_score <- function(X, Y, strong = FALSE, j = NULL) {
     for (k in 1:(J-1)) {
       for (l in 1:(J-1)) {
         S1_k <- as.vector(Y[ ,k] - ps_full[ ,k]*N)*Xaug
-        S1_l <- as.vector(Y[ ,l] - ps_full[ ,k]*N)*Xaug
+        S1_l <- as.vector(Y[ ,l] - ps_full[ ,l]*N)*Xaug
         D1[((k-1)*(p+1) + 1):(k*(p+1)) ,((l-1)*(p+1) + 1):(l*(p+1))] <- t(S1_k)%*%S1_l
       }
     }
@@ -139,9 +139,9 @@ get_multinom_score <- function(X, Y, strong = FALSE, j = NULL) {
     for (k in 1:(J-1)) {
       for (l in 1:(J-1)) {
         if (l < k || l > k) {
-          I2[((l-1)*(p+1) + 1):(l*(p+1)),((k-1)*(p+1) + 1):(k*(p+1))] <- t(Xaug) %*% (as.vector(ps_full[ ,k]*ps_full[ ,l]*N)*Xaug)
+          I2[((l-1)*(p+1) + 1):(l*(p+1)),((k-1)*(p+1) + 1):(k*(p+1))] <- t(Xaug) %*% (-as.vector(ps_full[ ,k]*ps_full[ ,l]*N)*Xaug)
         } else if (l == k) {
-          I2[((k-1)*(p+1) + 1):(k*(p+1)),((k-1)*(p+1) + 1):(k*(p+1))] <- t(Xaug) %*% (as.vector(ps_full[ ,k]*(-1 + ps_full[ ,l])*N)*Xaug)
+          I2[((k-1)*(p+1) + 1):(k*(p+1)),((k-1)*(p+1) + 1):(k*(p+1))] <- t(Xaug) %*% (-as.vector(ps_full[ ,k]*(-1 + ps_full[ ,l])*N)*Xaug)
         }
       }
     }
@@ -151,7 +151,7 @@ get_multinom_score <- function(X, Y, strong = FALSE, j = NULL) {
     for (k in 1:(J-1)) {
       for (l in 1:(J-1)) {
         S2_k <- as.vector(Y[ ,k] - ps_full[ ,k]*N)*Xaug
-        S2_l <- as.vector(Y[ ,l] - ps_full[ ,k]*N)*Xaug
+        S2_l <- as.vector(Y[ ,l] - ps_full[ ,l]*N)*Xaug
         D2[((k-1)*(p+1) + 1):(k*(p+1)) ,((l-1)*(p+1) + 1):(l*(p+1))] <- t(S2_k)%*%S2_l
       }
     }
