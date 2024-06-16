@@ -1,4 +1,4 @@
-beta_vector_to_matrix <- function(beta_vector, null_j = NULL) {
+beta_matrix_to_vector <- function(beta_vector, null_j = NULL) {
   
   # if (is.null(null_j)) {
   #   null_j <- rep(0, p)

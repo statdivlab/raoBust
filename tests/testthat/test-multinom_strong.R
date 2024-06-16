@@ -7,6 +7,7 @@ test_that("strong multinomial test controls T1E under DGP for small n", {
   nn <- 20
   set.seed(240506)
   ts <- rep(NA, nsim)
+  ps <- rep(NA, nsim)
   for (i in 1:nsim) {
     df <- simulate_null_data_mult(nn = nn, strong=TRUE)
     result <- get_multinom_score(df$X, df$Y, strong=FALSE, j=2)
@@ -31,6 +32,7 @@ test_that("strong multinomial test controls T1E under DGP for large n", {
   nn <- 500
   set.seed(240507)
   ts <- rep(NA, nsim)
+  ps <- rep(NA, nsim)
   for (i in 1:nsim) {
     df <- simulate_null_data_mult(nn = nn, strong=TRUE)
     result <- get_multinom_score(df$X, df$Y, strong=FALSE, j=2)
@@ -49,6 +51,7 @@ test_that("strong multinomial test controls T1E for overdispersed data for large
   nn <- 500
   set.seed(2405071)
   ts <- rep(NA, nsim)
+  ps <- rep(NA, nsim)
   for (i in 1:nsim) {
     df <- simulate_null_data_mult(nn = nn, strong=TRUE, overdispersion=1)
     result <- get_multinom_score(df$X, df$Y, strong=FALSE, j=2)
@@ -67,6 +70,7 @@ test_that("strong multinomial test controls T1E for overdispersed data for small
   nn <- 20
   set.seed(2405072)
   ts <- rep(NA, nsim)
+  ps <- rep(NA, nsim)
   for (i in 1:nsim) {
     df <- simulate_null_data_mult(nn = nn, strong=TRUE, overdispersion=1)
     result <- get_multinom_score(df$X, df$Y, strong=FALSE, j=2)

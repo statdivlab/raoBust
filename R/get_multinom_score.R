@@ -31,59 +31,25 @@ get_multinom_score <- function(X, Y, strong = FALSE, j = NULL) {
       stop("Marginal test specified by user, but no argument to j provided to test null hypothesis of \beta_j = 0 for a user-specified category j.")
     }
 
-    #set up betas
-    betanonj <- rep(5, (p+1)*(J-2)+1) #vector of non \beta_j parameters, include all \beta_{k0} values and \beta_{k} for k \neq j, and \beta_{j0} as final element
-    betaj <- rep(0, p) #\beta_j null value
-
-    optim(par = betanonj, fn = multinom_mle_weak_null,, Y = Y, X = X, j = j)
-
-    betanonj_null1mle <- tryCatch({optim(par = betanonj, fn = multinom_mle_weak_null,, Y = Y, X = X, j = j)$par},
-                                    error = function(cond) {return(NA)}) #get optimal values of beta
-
-    if (any(is.na(betanonj_null1mle))) {
-      stop("Could not find MLE under H0")
-    }
-
-    beta_null1mle <- matrix(rep(0, (p+1)*(J-1)), ncol = J-1) #initialize full (p+1) x (J-1) beta matrix
-    for (k in 1:(J-1)) {
-      if (k < j) {
-        beta_null1mle[ ,k] <- betanonj_null1mle[((k-1)*(p+1)+1):(k*(p+1))] #populate column k where k < j
-      } else if (k == j) {
-        beta_null1mle[,k] <- c(betanonj_null1mle[(p+1)*(J-2)+1], betaj) #populate j-th column
-      } else if (k > j) {
-        beta_null1mle[ ,k] <- betanonj_null1mle[((k-2)*(p+1)+1):((k-1)*(p+1))] #populate column k where k > j (have to shift further down by 1 in index since j not in vector)
-      }
-    }
+    #get beta mle under weak null constraint, first setting up initial value of beta and then optimizing
+    beta_init <- matrix(1, nrow = p + 1, ncol = J-1)
+    beta_init[(2:(p+1)), j] <- 0
+    beta_null1mle <- multinom_fisher_scoring(beta_init, X, Y, strong = FALSE, null_j = j)
 
     #jacobian of function of parameter h(\beta) = 0
     H1 <- matrix(data = rep(0, p*(p+1)*(J-1)), ncol = (p+1)*(J-1), nrow = p)
     H1[1:p, ((j-1)*(p+1) + 2):(j*(p+1))] <- diag(nrow = p, ncol = p)
 
     #terms necessary for computation of S, I, D matrices
-    XaugBeta1 <- Xaug %*% beta_null1mle
-    pJ <- (1 + rowSums(exp(XaugBeta1)))^(-1)
-    ps <- as.vector(pJ)*exp(XaugBeta1)
-    ps_full <- cbind(ps, pJ)
+    ps_full <- multinom_get_probs(X, Y, beta_null1mle)
 
 
     #score of \beta evaluated at mle under null constraint
-    S1 <- matrix(data = rep(0, (p+1)*(J-1)), ncol = 1) #initialize matrix for score
-    for (k in 1:(J-1)) {
-      S1[((k-1)*(p+1) + 1):(k*(p+1)) ,] <- colSums(as.vector(Y[ ,k] - ps_full[ ,k]*N)*Xaug)
-    }
+    S1 <- multinom_score_vector(X, Y, ps_full)
 
     #information matrix evaluated at mle under null constraint
-    I1 <- matrix(data = rep(0, (p+1)^2*(J-1)^2), ncol = (p+1)*(J-1)) #initialize matrix for information matrix
-    for (k in 1:(J-1)) {
-      for (l in 1:(J-1)) {
-        if (l < k || l > k) {
-          I1[((l-1)*(p+1) + 1):(l*(p+1)),((k-1)*(p+1) + 1):(k*(p+1))] <-  (as.vector(-ps_full[ ,k]*ps_full[ ,l]*N)*t(Xaug)) %*% Xaug
-        } else if (l == k) {
-          I1[((k-1)*(p+1) + 1):(k*(p+1)),((k-1)*(p+1) + 1):(k*(p+1))] <- (as.vector(-ps_full[ ,k]*(-1 + ps_full[ ,l])*N)*t(Xaug)) %*% Xaug
-        }
-      }
-    }
-
+    I1 <- multinom_info_mat(X, Y, ps_full)
+    
     #D matrix (sum of S_iS_i^T for all i = 1, \dots, n)
     D1 <- matrix(data = rep(0, length(S1)^2), ncol = length(S1))
     for (k in 1:(J-1)) {
@@ -94,7 +60,7 @@ get_multinom_score <- function(X, Y, strong = FALSE, j = NULL) {
       }
     }
 
-    the_mle <- betanonj_null1mle
+    the_mle <- beta_null1mle
     the_df <- p
     my_misc <- beta_null1mle
 
@@ -106,7 +72,7 @@ get_multinom_score <- function(X, Y, strong = FALSE, j = NULL) {
 
   } else {
     #initialize value for beta_k0 for all k = 1, \dots, J-1
-    betanots <- rep(1, J-1)
+    #betanots <- rep(1, J-1)
 
     #jacobian of function of parameter h(\beta) = 0
     H2 <- matrix(data = rep(0, p*(J-1)*(p+1)*(J-1)), ncol = (p+1)*(J-1), nrow = p*(J-1))
@@ -115,7 +81,9 @@ get_multinom_score <- function(X, Y, strong = FALSE, j = NULL) {
     }
 
     #compute mle under null constraint
-    betanots_null2mle <- optim(betanots, multinom_mle_strong_null, Y = Y, X = X)$par #get optimal values of beta_k0's
+    beta_init <- matrix(0, nrow = p + 1, ncol = J-1)
+    beta_init[1,] <- 1
+    beta_null2mle <- multinom_fisher_scoring(beta_init, X, Y, strong = TRUE)
 
     ## AW TODO below not needed?
     # beta_null2mle <- matrix(rep(0, (p+1)*(J-1)), ncol = J-1) #initialize full (p+1) x (J-1) beta matrix
@@ -123,28 +91,14 @@ get_multinom_score <- function(X, Y, strong = FALSE, j = NULL) {
 
 
     #terms necessary for computation of S, I, D matrices
-    pJ <- (1 + sum(exp(betanots_null2mle)))^(-1)
-    ps <- pJ*exp(betanots_null2mle)
-    ps_full <- matrix(rep(c(ps, pJ), n), nrow = n, byrow = TRUE)
+    ps_full <- multinom_get_probs(X, Y, beta_null2mle)
 
 
     #score of \beta evaluated at mle under null constraint
-    S2 <- matrix(data = rep(0, (p+1)*(J-1)), ncol = 1) #initialize matrix for score
-    for (k in 1:(J-1)) {
-      S2[((k-1)*(p+1) + 1):(k*(p+1)) ,] <- colSums(as.vector(Y[ ,k] - ps_full[ ,k]*N)*Xaug)
-    }
+    S2 <- multinom_score_vector(X, Y, ps_full)
 
     #information matrix evaluated at mle under null constraint
-    I2 <- matrix(data = rep(0, (p+1)^2*(J-1)^2), ncol = (p+1)*(J-1)) #initialize matrix for information matrix
-    for (k in 1:(J-1)) {
-      for (l in 1:(J-1)) {
-        if (l < k || l > k) {
-          I2[((l-1)*(p+1) + 1):(l*(p+1)),((k-1)*(p+1) + 1):(k*(p+1))] <- t(Xaug) %*% (-as.vector(ps_full[ ,k]*ps_full[ ,l]*N)*Xaug)
-        } else if (l == k) {
-          I2[((k-1)*(p+1) + 1):(k*(p+1)),((k-1)*(p+1) + 1):(k*(p+1))] <- t(Xaug) %*% (-as.vector(ps_full[ ,k]*(-1 + ps_full[ ,l])*N)*Xaug)
-        }
-      }
-    }
+    I2 <- multinom_info_mat(X, Y, ps_full)
 
     #D matrix (sum of S_iS_i^T for all i = 1, \dots, n)
     D2 <- matrix(data = rep(0, length(S2)^2), ncol = length(S2))
@@ -156,7 +110,7 @@ get_multinom_score <- function(X, Y, strong = FALSE, j = NULL) {
       }
     }
 
-    the_mle <- betanots_null2mle
+    the_mle <- beta_null2mle
     the_df <- p*(J-1)
     my_misc <- NA # beta_null2mle
 
