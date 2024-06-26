@@ -47,7 +47,7 @@ test_that("strong multinomial test controls T1E under DGP for large n", {
 
 
 test_that("strong multinomial test has increasing power under DGP with increasing n", {
-  
+
   nn <- 15
   set.seed(240506)
   ts <- rep(NA, nsim)
@@ -58,7 +58,7 @@ test_that("strong multinomial test has increasing power under DGP with increasin
     ts[i] <- result$test_stat
     ps[i] <- result$p
   }
-  
+
   nn <- 100
   set.seed(240506)
   ts_big_n <- rep(NA, nsim)
@@ -69,13 +69,13 @@ test_that("strong multinomial test has increasing power under DGP with increasin
     ts_big_n[i] <- result$test_stat
     ps_big_n[i] <- result$p
   }
-  
+
   expect_true(mean(ps < 0.05) < mean(ps_big_n < 0.05))
-  
+
 })
 
 test_that("strong multinomial test has increasing power under DGP with increasing magnitude", {
-  
+
   nn <- 30
   set.seed(240506)
   ts <- rep(NA, nsim)
@@ -86,7 +86,7 @@ test_that("strong multinomial test has increasing power under DGP with increasin
     ts[i] <- result$test_stat
     ps[i] <- result$p
   }
-  
+
   nn <- 30
   set.seed(240506)
   ts_big_b <- rep(NA, nsim)
@@ -97,9 +97,9 @@ test_that("strong multinomial test has increasing power under DGP with increasin
     ts_big_b[i] <- result$test_stat
     ps_big_b[i] <- result$p
   }
-  
+
   expect_true(mean(ps < 0.05) < mean(ps_big_b < 0.05))
-  
+
 })
 
 test_that("strong multinomial test controls T1E for overdispersed data for large n", {
@@ -142,7 +142,7 @@ test_that("strong multinomial test controls T1E for overdispersed data for small
 })
 
 test_that("strong multinomial test has increasing power for overdispersed data with increasing n", {
-  
+
   nn <- 30
   set.seed(240506)
   ts <- rep(NA, nsim)
@@ -153,7 +153,7 @@ test_that("strong multinomial test has increasing power for overdispersed data w
     ts[i] <- result$test_stat
     ps[i] <- result$p
   }
-  
+
   nn <- 100
   set.seed(240506)
   ts_big_n <- rep(NA, nsim)
@@ -164,13 +164,13 @@ test_that("strong multinomial test has increasing power for overdispersed data w
     ts_big_n[i] <- result$test_stat
     ps_big_n[i] <- result$p
   }
-  
+
   expect_true(mean(ps < 0.05) < mean(ps_big_n < 0.05))
-  
+
 })
 
 test_that("strong multinomial test has increasing power for overdispersed data with increasing magnitude", {
-  
+
   nn <- 50
   set.seed(240506)
   ts <- rep(NA, nsim)
@@ -181,7 +181,7 @@ test_that("strong multinomial test has increasing power for overdispersed data w
     ts[i] <- result$test_stat
     ps[i] <- result$p
   }
-  
+
   nn <- 50
   set.seed(240506)
   ts_big_b <- rep(NA, nsim)
@@ -192,7 +192,18 @@ test_that("strong multinomial test has increasing power for overdispersed data w
     ts_big_b[i] <- result$test_stat
     ps_big_b[i] <- result$p
   }
-  
+
   expect_true(mean(ps < 0.05) < mean(ps_big_b < 0.05))
-  
+
+})
+
+
+test_that("strong multinomial test gives p-value even in absurd example", {
+
+  mt <- multinom_test(X = structure(c(0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1), dim = c(6L, 2L)),
+                      Y = structure(c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                      0, 1, 1, 2, 1, 1, 2), dim = c(6L, 4L)),
+                      strong=TRUE)
+  expect_true(!is.na(mt$p))
+
 })
