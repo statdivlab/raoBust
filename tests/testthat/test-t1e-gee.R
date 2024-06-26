@@ -26,6 +26,12 @@ test_that("nominal level generalized score test for n = 100 under correct model 
     }
   })
 
+  # for (j in 1:nsim) {
+  #   ps[j] <- glm_test(yy ~ covariate1,
+  #                     data = simulate_null_data(),
+  #                     family = poisson(link = "log"))[2, "Robust Score p"]
+  # }
+
   # 100*c(mean(ps < 0.01), mean(ps < 0.05), mean(ps < 0.10))
 
   ### for 100 batches of 5, (1%, 5%, 10%) error is (0.8, 4.8, 10.8)% with no correction (500 sims)

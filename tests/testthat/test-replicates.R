@@ -1,12 +1,12 @@
-test_that("replicates work", {
+set.seed(1)
+data(cars)
+cars2 <- cars
+cars2$wts <- log(rnorm(nrow(cars), 20))
+cars2$batch1 <- rep(LETTERS[1:5], each = 10)
+cars2$batch2 <- rep(LETTERS[6:10], 10)
+cars2$batch3 <- rep(1:5, each = 10)
 
-  set.seed(1)
-  data(cars)
-  cars2 <- cars
-  cars2$wts <- log(rnorm(nrow(cars), 20))
-  cars2$batch1 <- rep(LETTERS[1:5], each = 10)
-  cars2$batch2 <- rep(LETTERS[6:10], 10)
-  cars2$batch3 <- rep(1:5, each = 10)
+test_that("replicates work", {
 
   ### fails in test unless `cars` is loaded?
   gee_test(formula = dist ~ speed,
@@ -86,13 +86,6 @@ test_that("replicates work", {
 })
 
 test_that("geeasy and geepack give similar results", {
-  set.seed(1)
-  data(cars)
-  cars2 <- cars
-  cars2$wts <- log(rnorm(nrow(cars), 20))
-  cars2$batch1 <- rep(LETTERS[1:5], each = 10)
-  cars2$batch2 <- rep(LETTERS[6:10], 10)
-  cars2$batch3 <- rep(1:5, each = 10)
   
   geeasy_test <- gee_test(formula = dist ~ speed,
                           data = cars2,
@@ -107,5 +100,25 @@ test_that("geeasy and geepack give similar results", {
                            family=poisson(link="log"),
                            offset = wts)
   expect_true((geeasy_test$Estimate[1] - geepack_test$Estimate[1])/geeasy_test$Estimate[1] < 0.01)
+})
+
+test_that("jackknife standard errors work", {
+  cars2_obj <- geelm(formula = dist ~ speed, data = cars2, id = batch3, 
+                      family = poisson(link = "log"), offset = wts, corstr = "exchangeable")
+
+  jack_se <- jackknife_se(cars2_obj, cars2)
+  jack_se_cluster <- jackknife_se(cars2_obj, cars2, id = cars2$batch3)
+  sand_se <- summary(cars2_obj)$coef$Std.err
+  # expect that non-clustered se's are closer to robust se's because this data has no inherent clustering
+  expect_true(sum((jack_se - sand_se)^2) < sum((jack_se_cluster - sand_se)^2))
+  
+  gee_res <- gee_test(formula = dist ~ speed,
+                      data = cars2,
+                      id = batch3,
+                      family=poisson(link="log"),
+                      offset = wts,
+                      use_jack_se = TRUE)
+  # expect that gee test robust standard errors are equal to those directly from jackknife function
+  expect_true(all.equal(gee_res$`Robust Std Error`[1:2], as.vector(jack_se_cluster)))
 })
 

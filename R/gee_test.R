@@ -1,6 +1,7 @@
 #' Generalized Estimating Equations under technical replication with robust and non-robust Wald and Rao (score) tests
 #'
 #' @param use_geeasy When TRUE, uses `geeasy` for gee estimation, when FALSE uses `geepack`
+#' @param use_jack_se When TRUE uses jackknife standard errors (which take longer), when FALSE uses sandwich standard errors
 #' @param ... Arguments that you would pass to a regular `geepack::geeglm` call. Note that for now we only have functionality for Poisson tests with log link
 #'
 #' @importFrom sandwich sandwich
@@ -14,10 +15,10 @@
 #'
 #'
 #' @export
-gee_test <- function(use_geeasy = TRUE, ...) {
-
+gee_test <- function(use_geeasy = TRUE, use_jack_se = FALSE, ...) {
+  
   cl_orig <- match.call()
-  cl_orig <- call_modify(cl_orig, use_geeasy = zap())
+  cl_orig <- call_modify(cl_orig, use_geeasy = zap(), use_jack_se = zap())
 
   cl <- cl_orig
   if (use_geeasy) {
@@ -78,7 +79,15 @@ gee_test <- function(use_geeasy = TRUE, ...) {
   colnames(output)[3] <- "Robust Wald p"                ## "Pr(>|W|)"
   colnames(output)[2] <- "Robust Std Error"             ## "Std. Error"
 
-
+  # get jackknife standard errors if needed 
+  if (use_jack_se) {
+    gee_result_new <- gee_result
+    gee_result_new$call$formula <- eval(gee_result$call$formula, rlang::caller_env())
+    output[, 2] <- jackknife_se(object = gee_result_new, 
+                                dat = eval(cl$data, envir = rlang::caller_env())[the_reorder, ],
+                                id = eval(cl$id, envir = rlang::caller_env())[the_reorder])
+  }
+  
   #### run robust score tests
   pp <- nrow(output)
   robust_score_p <- rep(NA, length = pp)
