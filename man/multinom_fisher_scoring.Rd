@@ -31,14 +31,14 @@ Default is FALSE.}
 
 \item{null_j}{If \code{strong} is FALSE, this argument must be supplied. This gives the category \eqn{j} in the weak null hypothesis that \eqn{\beta_j = 0}.}
 
-\item{tol}{This is tolerance used to determine how much better update function value must be prior to stopping algorithm.}
+\item{tol}{TThe tolerance used to determine how much better update function value must be prior to stopping algorithm.}
 
-\item{stepSize}{This is the size of the step to take during the parameter update step.}
+\item{stepSize}{The size of the step to take during the parameter update step.}
 
 \item{arm_c}{Control parameter for checking Armijo condition.}
 }
 \value{
-The optimal beta values under the null constraint.
+The optimal beta values under the null or alternative model.
 }
 \description{
 Optimization under null or alternative for multinomial model via Fisher scoring.

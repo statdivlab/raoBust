@@ -8,11 +8,10 @@
 #' If TRUE, this function instead computes the robust score statistic to test the strong null that \eqn{\beta_1 = \beta_2 = \dots = \beta_{J-1} = 0} for all length \eqn{p} vectors \eqn{\beta_j}, \eqn{j\in\{1,\ldots,J-1\}}. 
 #' Default is FALSE.
 #' @param null_j If `strong` is FALSE, this argument must be supplied. This gives the category \eqn{j} in the weak null hypothesis that \eqn{\beta_j = 0}.
-#' @param tol This is tolerance used to determine how much better update function value must be prior to stopping algorithm.
-#' @param stepSize This is the size of the step to take during the parameter update step.
+#' @param tol TThe tolerance used to determine how much better update function value must be prior to stopping algorithm.
+#' @param stepSize The size of the step to take during the parameter update step.
 #' @param arm_c Control parameter for checking Armijo condition.
-#' @return The optimal beta values under the null constraint.
-#'
+#' @return The optimal beta values under the null or alternative model.
 #'
 #' @author Shirley Mathur
 #'
