@@ -11,7 +11,7 @@
 #' @author Shirley Mathur
 #'
 #' @export
-multinom_mle_alternative <- function(beta_as_vector, Y, X) {
+multinom_log_lik_alternative <- function(beta_as_vector, Y, X) {
   
   n <- nrow(Y) #get sample size
   J <- ncol(Y) #get number of taxa
@@ -28,10 +28,6 @@ multinom_mle_alternative <- function(beta_as_vector, Y, X) {
   ps_full <- cbind(ps, pJ)
   
   if (any(ps_full <= 0)) {
-    # print("beta")
-    # print(beta)
-    # print("ps_full")
-    # print(ps_full)
     stop("Some probabilities are estimated to be zero")
   }
   

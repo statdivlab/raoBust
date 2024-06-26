@@ -1,20 +1,35 @@
 #' Robust score (Rao) tests for multinomial regression.
 #'
-#' @param Y This should be the \eqn{n x J} data matrix of outcomes.
-#' @param X This should be the \eqn{n x p} design matrix of covariates.
-#' @param strong This is by default specified as FALSE to compute the robust score statistic to test the weak null that for one specific \eqn{j}, \eqn{\beta_j = 0}.
-#' If specified to be TRUE, the function instead computes the robust score statistic to test the strong null that \eqn{\beta_1 = \beta_2 = \dots = \beta_{J-1} = 0}.
-#' @param j If `strong` is specified as FALSE, this argument must be supplied. This specifies for which category \eqn{j} you want to test the weak null hypothesis that \eqn{\beta_j = 0}.
+#' @param Y A \eqn{n x J} data matrix of outcomes.
+#' @param X A \eqn{n x p} design matrix of covariates.
+#' @param strong If FALSE, this function will compute the robust score statistic to test the weak null that for one specific \eqn{j}, \eqn{\beta_j = 0} for the length \eqn{p} vector \eqn{\beta_j}.
+#' If TRUE, this function instead computes the robust score statistic to test the strong null that \eqn{\beta_1 = \beta_2 = \dots = \beta_{J-1} = 0} for all length \eqn{p} vectors \eqn{\beta_j}, \eqn{j\in\{1,\ldots,J-1\}}. 
+#' Default is FALSE.
+#' @param j If `strong` is FALSE, this argument must be supplied. This gives the category \eqn{j} in the weak null hypothesis that \eqn{\beta_j = 0}.
 #'
-#' @return The robust score test statistic for the specified hypothesis test according to the strong and j parameters. TODO
+#' @return The robust score test statistic for the specified hypothesis test. A list including the test statistic, p-value,
+#' estimated parameters under the null hypothesis, and estimated parameters under the alternative hypothesis.
 #'
 #' @importFrom stats nlm optim
 #'
 #' @author Shirley Mathur
 #'
 #' @export
-get_multinom_score <- function(X, Y, strong = FALSE, j = NULL) {
+multinom_test <- function(X, Y, strong = FALSE, j = NULL) {
 
+  # check that X and Y have the same number of rows, if not throw error 
+  if (nrow(X) != nrow(Y)) {
+    stop("Please make sure that X and Y have the same number of observations.")
+  }
+  
+  # check that if X and Y have rownames they are the same, if not throw warning
+  if (!is.null(rownames(X)) & !is.null(rownames(Y))) {
+    if (!(all.equal(rownames(X), rownames(Y)) == TRUE)) {
+      warn("X and Y both have rownames, and they do not match. Please check that the rows of X and Y correspond to the 
+         same observations.")
+    }
+  }
+  
   #get n, p, J values (used throughout rest of the function to compute relevant quantities)
   n <- nrow(Y)
   p <- ncol(X)
@@ -28,7 +43,7 @@ get_multinom_score <- function(X, Y, strong = FALSE, j = NULL) {
   if (strong == FALSE) {
     #report error if user specified marginal test but does not supply an argument for j
     if(is.null(j)) {
-      stop("Marginal test specified by user, but no argument to j provided to test null hypothesis of \beta_j = 0 for a user-specified category j.")
+      stop("If testing under the weak null hypothesis with `strong = FALSE`, you must include the argument `j`.")
     }
 
     #get beta mle under weak null constraint, first setting up initial value of beta and then optimizing
@@ -62,7 +77,6 @@ get_multinom_score <- function(X, Y, strong = FALSE, j = NULL) {
 
     the_mle <- beta_null1mle
     the_df <- p
-    my_misc <- beta_null1mle
 
     #compute statistic!
     T_GS<- tryCatch({as.numeric(t(S1) %*% solve(I1) %*% t(H1) %*%
@@ -112,7 +126,6 @@ get_multinom_score <- function(X, Y, strong = FALSE, j = NULL) {
 
     the_mle <- beta_null2mle
     the_df <- p*(J-1)
-    my_misc <- NA # beta_null2mle
 
     #compute statistic!
     T_GS <- tryCatch({as.numeric(t(S2) %*% solve(I2) %*% t(H2) %*%
@@ -123,15 +136,13 @@ get_multinom_score <- function(X, Y, strong = FALSE, j = NULL) {
 
   }
   
-  
   #compute mle under alternative
-  beta_alt <- rep(-0.02, (p+1)*(J-1))
-  mle_alt <- matrix(optim(beta_alt, multinom_mle_alternative, Y = Y, X = X)$par,  nrow = p + 1, ncol = J-1)
+  beta_alt <- matrix(-0.02, nrow = p + 1, ncol = J-1)
+  mle_alt <- multinom_fisher_scoring(beta_alt, X, Y, null = FALSE)
 
   return(list("test_stat" = T_GS,
-              "p" = pchisq(T_GS, df = the_df, lower.tail=FALSE),
+              "p" = pchisq(T_GS, df = the_df, lower.tail = FALSE),
               "mle0" = the_mle,
-              "mle1" = mle_alt,
-              "misc" = my_misc))
+              "mle1" = mle_alt))
 
 }

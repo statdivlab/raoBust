@@ -11,7 +11,7 @@
 #' @return A vector containing the optimal values for betanots  to maximize the log-likelihood under the null constraint that \eqn{\beta_1 = beta_2 = \dots = \beta_{J-1} = 0}.
 #' The components are listed out in the same manner as in the betanots parameter.
 #'
-multinom_mle_strong_null <- function(betanots, Y, X) {
+multinom_log_lik_strong_null <- function(betanots, Y, X) {
   n <- nrow(Y) #get sample size
   J <- ncol(Y) #get number of taxa
   N <- matrix(apply(Y, MARGIN = 1, FUN = sum), nrow = n) #totals by sample

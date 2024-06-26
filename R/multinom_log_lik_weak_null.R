@@ -14,7 +14,7 @@
 #' @author Shirley Mathur
 #'
 #' @export
-multinom_mle_weak_null <- function(beta_as_vector, Y, X, j, beta_j_null = NULL) {
+multinom_log_lik_weak_null <- function(beta_as_vector, Y, X, j, beta_j_null = NULL) {
   n <- nrow(Y) #get sample size
   J <- ncol(Y) #get number of taxa
   p <- ncol(X) #get number of covariates
