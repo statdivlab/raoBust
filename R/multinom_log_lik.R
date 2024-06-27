@@ -11,7 +11,7 @@
 #' @author Shirley Mathur
 #'
 #' @export
-multinom_log_lik_alternative <- function(beta_as_vector, Y, X) {
+multinom_log_lik <- function(beta_as_vector, Y, X) {
   
   n <- nrow(Y) #get sample size
   J <- ncol(Y) #get number of taxa

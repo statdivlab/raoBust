@@ -11,12 +11,13 @@
 #' @param tol TThe tolerance used to determine how much better update function value must be prior to stopping algorithm.
 #' @param stepSize The size of the step to take during the parameter update step.
 #' @param arm_c Control parameter for checking Armijo condition.
+#' @param maxit Maximum number of iterations for Fisher scoring. Defaults to 250.
 #' @return The optimal beta values under the null or alternative model.
 #'
 #' @author Shirley Mathur
 #'
 #' @export
-multinom_fisher_scoring <- function(beta, X, Y, null = TRUE, strong = FALSE, null_j = NULL, tol = 1e-5, stepSize = 0.5, arm_c = 0.5) {
+multinom_fisher_scoring <- function(beta, X, Y, null = TRUE, strong = FALSE, null_j = NULL, tol = 1e-5, stepSize = 0.5, arm_c = 0.5, maxit = 250) {
   
   # check that if strong is FALSE, j is provided 
   if (null & !strong) {
@@ -55,9 +56,10 @@ multinom_fisher_scoring <- function(beta, X, Y, null = TRUE, strong = FALSE, nul
 
   #initialize converged as FALSE
   converged <- FALSE
+  n_it <- 1
 
   #do algorithm for finding optimal values of beta
-  while (!converged) {
+  while (!converged & n_it < maxit) {
     #compute score vector
     score <- multinom_score_vector(X, Y, probs_current)
     score <- score[optim_indices]
@@ -115,6 +117,11 @@ multinom_fisher_scoring <- function(beta, X, Y, null = TRUE, strong = FALSE, nul
       beta_values_current <- beta_values_update
       probs_current <- probs_update
       logLik_current <- logLik_update
+    }
+    
+    n_it <- n_it + 1
+    if (n_it > maxit) {
+      message("Maximum number of iterations for MLE reached, exiting optimization")
     }
   }
   

@@ -92,8 +92,8 @@ test_that("estimation under the alternative is not strictly worse than nnet", {
     result_nnet5_summ <- summary(result_nnet5)
     
     # negative log likelihood 
-    neg_ll_df[sim, 1] <- multinom_log_lik_alternative(as.vector(result_strong5$mle1), df$Y, df$X)
-    neg_ll_df[sim, 2] <- multinom_log_lik_alternative(as.vector(t(result_nnet5_summ$coefficients)), df$Y, df$X)
+    neg_ll_df[sim, 1] <- multinom_log_lik(as.vector(result_strong5$mle1), df$Y, df$X)
+    neg_ll_df[sim, 2] <- multinom_log_lik(as.vector(t(result_nnet5_summ$coefficients)), df$Y, df$X)
    
     expect_true(all.equal(as.vector(result_strong5$mle1), as.vector(t(result_nnet5_summ$coefficients)), 
                           tolerance = 0.05)) 
@@ -125,8 +125,8 @@ test_that("estimation under the alternative is not strictly worse than nnet, dat
     result_nnet5_summ <- summary(result_nnet5)
     
     # negative log likelihood 
-    neg_ll_df[sim, 1] <- multinom_log_lik_alternative(as.vector(result_strong5$mle1), df$Y, df$X)
-    neg_ll_df[sim, 2] <- multinom_log_lik_alternative(as.vector(t(result_nnet5_summ$coefficients)), df$Y, df$X)
+    neg_ll_df[sim, 1] <- multinom_log_lik(as.vector(result_strong5$mle1), df$Y, df$X)
+    neg_ll_df[sim, 2] <- multinom_log_lik(as.vector(t(result_nnet5_summ$coefficients)), df$Y, df$X)
     
     expect_true(all.equal(as.vector(result_strong5$mle1), as.vector(t(result_nnet5_summ$coefficients)), 
                  tolerance = 0.05))
@@ -158,8 +158,8 @@ test_that("estimation under the strong null is not strictly worse than nnet and 
     result_nnet5_summ <- summary(result_nnet5)
     
     # negative log likelihood 
-    neg_ll_df[sim, 1] <- multinom_log_lik_alternative(as.vector(result_strong5$mle0), df$Y, df$X)
-    neg_ll_df[sim, 2] <- multinom_log_lik_alternative(as.vector(t(result_nnet5_summ$coefficients)), df$Y, df$X)
+    neg_ll_df[sim, 1] <- multinom_log_lik(as.vector(result_strong5$mle0), df$Y, df$X)
+    neg_ll_df[sim, 2] <- multinom_log_lik(as.vector(t(result_nnet5_summ$coefficients)), df$Y, df$X)
 
     expect_equal(result_strong5$mle0[1, ], as.vector(result_nnet5_summ$coefficients), 
                  tolerance = 0.05)
@@ -193,8 +193,8 @@ test_that("estimation under the strong null is not strictly worse than nnet and 
     result_nnet5_summ <- summary(result_nnet5)
     
     # negative log likelihood 
-    neg_ll_df[sim, 1] <- multinom_log_lik_alternative(as.vector(result_strong5$mle0), df$Y, df$X)
-    neg_ll_df[sim, 2] <- multinom_log_lik_alternative(as.vector(t(result_nnet5_summ$coefficients)), df$Y, df$X)
+    neg_ll_df[sim, 1] <- multinom_log_lik(as.vector(result_strong5$mle0), df$Y, df$X)
+    neg_ll_df[sim, 2] <- multinom_log_lik(as.vector(t(result_nnet5_summ$coefficients)), df$Y, df$X)
     
     expect_equal(result_strong5$mle0[1, ], as.vector(result_nnet5_summ$coefficients), 
                  tolerance = 0.05)
@@ -224,8 +224,8 @@ test_that("estimation under the weak null is not strictly worse than using the t
     result_strong5 <- multinom_test(df$X, df$Y, strong=FALSE, j = 2)
     
     # negative log likelihood 
-    neg_ll_df[sim, 1] <- multinom_log_lik_alternative(as.vector(result_strong5$mle0), df$Y, df$X)
-    neg_ll_df[sim, 2] <- multinom_log_lik_alternative(as.vector(df$B), df$Y, df$X)
+    neg_ll_df[sim, 1] <- multinom_log_lik(as.vector(result_strong5$mle0), df$Y, df$X)
+    neg_ll_df[sim, 2] <- multinom_log_lik(as.vector(df$B), df$Y, df$X)
     
     expect_equal(result_strong5$mle0[1, ], df$B[1, ], 
                  tolerance = 0.05)
@@ -238,3 +238,13 @@ test_that("estimation under the weak null is not strictly worse than using the t
   
 })
 
+test_that("strong multinomial test gives p-value even in absurd example", {
+  
+  expect_warning({mt <- multinom_test(X = structure(c(0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1), dim = c(6L, 2L)),
+                      Y = structure(c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                      0, 1, 1, 2, 1, 1, 2), dim = c(6L, 4L)),
+                      strong=TRUE)})
+  
+  expect_true(!is.na(mt$p))
+  
+})

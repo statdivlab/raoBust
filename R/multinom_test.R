@@ -6,6 +6,7 @@
 #' If TRUE, this function instead computes the robust score statistic to test the strong null that \eqn{\beta_1 = \beta_2 = \dots = \beta_{J-1} = 0} for all length \eqn{p} vectors \eqn{\beta_j}, \eqn{j\in\{1,\ldots,J-1\}}. 
 #' Default is FALSE.
 #' @param j If `strong` is FALSE, this argument must be supplied. This gives the category \eqn{j} in the weak null hypothesis that \eqn{\beta_j = 0}.
+#' @param penalty If TRUE will apply a Firth penalty to estimation under the alternative and under the null. Defaults to FALSE (ask Amy her preference)
 #'
 #' @return The robust score test statistic for the specified hypothesis test. A list including the test statistic, p-value,
 #' estimated parameters under the null hypothesis, and estimated parameters under the alternative hypothesis.
@@ -15,7 +16,7 @@
 #' @author Shirley Mathur
 #'
 #' @export
-multinom_test <- function(X, Y, strong = FALSE, j = NULL) {
+multinom_test <- function(X, Y, strong = FALSE, j = NULL, penalty = FALSE) {
 
   # check that X and Y have the same number of rows, if not throw error 
   if (nrow(X) != nrow(Y)) {
@@ -82,7 +83,10 @@ multinom_test <- function(X, Y, strong = FALSE, j = NULL) {
     T_GS<- tryCatch({as.numeric(t(S1) %*% solve(I1) %*% t(H1) %*%
                                   (solve(H1 %*% solve(I1) %*% D1 %*% solve(I1) %*% t(H1))) %*%
                                   H1 %*% solve(I1) %*% S1)},
-                             error = function(cond) {return(NA)})
+                             error = function(cond) {
+                               print(cond)
+                               return(NA)
+                               })
 
   } else {
     #initialize value for beta_k0 for all k = 1, \dots, J-1
@@ -131,7 +135,11 @@ multinom_test <- function(X, Y, strong = FALSE, j = NULL) {
     T_GS <- tryCatch({as.numeric(t(S2) %*% solve(I2) %*% t(H2) %*%
                                    (solve(H2 %*% solve(I2) %*% D2 %*% solve(I2) %*% t(H2))) %*%
                                    H2 %*% solve(I2) %*% S2)},
-                     error = function(cond) {return(NA)})
+                     error = function(cond) {
+                       warning("Test statistic cannot be calculated due to the error printed above.")
+                       print(cond)
+                       return(NA)
+                       })
 
 
   }
