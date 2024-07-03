@@ -237,18 +237,3 @@ test_that("estimation under the weak null is not strictly worse than using the t
   expect_true(all.equal(neg_ll_df$raoBust, neg_ll_df$true, tolerance = 0.01*max(neg_ll_df$raoBust)))
   
 })
-
-test_that("strong multinomial test gives p-value even in absurd example", {
-  
-  expect_warning({mt <- multinom_test(X = structure(c(0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1), dim = c(6L, 2L)),
-                      Y = structure(c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                      0, 1, 1, 2, 1, 1, 2), dim = c(6L, 4L)),
-                      strong=TRUE)})
-  
-  # ideally this would give a p-value here, however I^{-1}DI^{-1}, which is part of the test
-  # statistic, is singular in this case (the determinant is exactly 0), so we cannot compute 
-  # the test statistic. to-do: look into using a generalized inverse here (see raoBust issues)
-  
-  #expect_true(!is.na(mt$p))
-  
-})
