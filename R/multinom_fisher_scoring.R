@@ -80,7 +80,7 @@ multinom_fisher_scoring <- function(beta, X, Y, null = TRUE, strong = FALSE, nul
 
       if (null) {
         if (strong == FALSE) {
-          beta_prop <- beta_vector_to_matrix(beta_values_prop, p, J, null_j)
+          beta_prop <- multinom_beta_vector_to_matrix(beta_values_prop, p, J, null_j)
         } else {
           beta_prop <- matrix(0, nrow = p + 1, ncol = J - 1)
           beta_prop[1,] <- beta_values_prop

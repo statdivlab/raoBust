@@ -1,6 +1,6 @@
 # taken directly from github.com/statdivlab/radEmu, included in raoBust to avoid dependence on radEmu
 # helper function for multinomial logistic regression with Firth penalty
-X_cup_from_X <- function(X, J) {
+multinom_X_cup_from_X <- function(X, J) {
   
   p <- ncol(X)
   

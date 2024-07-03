@@ -37,10 +37,10 @@ multinom_penalized_estimation <- function(beta, X, Y, null = TRUE, strong = FALS
   
   # calculate H matrix for augmentations
   # get expanded X matrix
-  X_cup <- X_cup_from_X(Xaug, J)
+  X_cup <- multinom_X_cup_from_X(Xaug, J)
   
   # get G matrix
-  G <- get_G(Xaug, J, X_cup)
+  G <- multinom_get_G(Xaug, J, X_cup)
   
   #initialize converged as FALSE and n_it as 1
   converged <- FALSE
@@ -55,7 +55,7 @@ multinom_penalized_estimation <- function(beta, X, Y, null = TRUE, strong = FALS
     z <- log(rowSums(Y)) - log(rowSums(exp(Xaug %*% beta_curr)))
     
     # calculate augmentations
-    augs <- get_augmentations(G, Y, beta_curr, z)
+    augs <- multinom_get_augmentations(G, Y, beta_curr, z)
     Y_curr <- Y + augs
     
     # get new beta values

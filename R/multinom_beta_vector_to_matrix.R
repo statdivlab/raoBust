@@ -13,7 +13,7 @@
 #'
 #' @author Shirley Mathur
 #'
-beta_vector_to_matrix <- function(values, p, J, null_j, beta_j_null = NULL) {
+multinom_beta_vector_to_matrix <- function(values, p, J, null_j, beta_j_null = NULL) {
   
   if(is.null(beta_j_null)) {
     beta_j_null <- rep(0,p) #set default value of beta_j_null to 0 if not pre-specified by user

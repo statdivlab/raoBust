@@ -10,7 +10,7 @@ test_that("beta vector to matrix function works as expected", {
   J <- ncol(beta_true) + 1
   beta_values <- c(as.vector(beta_true[, -null_j]), beta_true[1, null_j])
   
-  beta_copy <- beta_vector_to_matrix(beta_values, p, J, null_j)
+  beta_copy <- multinom_beta_vector_to_matrix(beta_values, p, J, null_j)
   
   expect_true(beta_true[1, 2] == beta_copy[1, 2])
   expect_true(beta_true[3, 1] == beta_copy[3, 1])
