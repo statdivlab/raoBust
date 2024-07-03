@@ -14,7 +14,8 @@ simulate_data_mult(
   jj_null = NULL,
   sd_beta0s = NULL,
   sd_beta1s = NULL,
-  overdispersion = 0
+  overdispersion = 0,
+  covariate = NULL
 )
 }
 \arguments{
@@ -37,6 +38,8 @@ simulate_data_mult(
 \item{sd_beta1s}{The beta1's are drawn from a normal distribution with mean zero under the null or non-zero under the alternative. This is the standard deviation of that distribution.}
 
 \item{overdispersion}{An additional normal random variable can be added to the link function to add dispersion above a multinomial distribution. This is the standard aviation for that normal variable. Useful for confirming error rate control under model misspecification.}
+
+\item{covariate}{An optional covariate vector, if not provided the covariate will be a sequence of increasing values from 0 to 1.}
 }
 \description{
 By default, \eqn{p = 2} with a single Uniform(0,1) continuous covariate.

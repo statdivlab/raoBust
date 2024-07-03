@@ -12,6 +12,7 @@
 #' @param sd_beta0s The beta0's are drawn from a normal distribution with mean zero. This is the standard deviation of that distribution.
 #' @param sd_beta1s The beta1's are drawn from a normal distribution with mean zero under the null or non-zero under the alternative. This is the standard deviation of that distribution.
 #' @param overdispersion An additional normal random variable can be added to the link function to add dispersion above a multinomial distribution. This is the standard aviation for that normal variable. Useful for confirming error rate control under model misspecification.
+#' @param covariate An optional covariate vector, if not provided the covariate will be a sequence of increasing values from 0 to 1.
 #'
 #'
 #' @importFrom stats rnorm rmultinom
@@ -29,7 +30,8 @@ simulate_data_mult <- function(nn,
                                jj_null = NULL,
                                sd_beta0s = NULL,
                                sd_beta1s = NULL,
-                               overdispersion = 0) {
+                               overdispersion = 0,
+                               covariate = NULL) {
 
   if (is.null(sd_beta0s)) {
     sd_beta0s <- 1
@@ -56,7 +58,12 @@ simulate_data_mult <- function(nn,
     beta1s[jj_null] <- 0
   }
 
-  covariate1 <- cbind(1, seq(from = 0, to = 1, length.out = nn))
+  if (is.null(covariate)) {
+    covariate1 <- cbind(1, seq(from = 0, to = 1, length.out = nn))
+  } else {
+    covariate1 <- cbind(1, covariate)
+  }
+  
   xbetas <- covariate1 %*% rbind(beta0s, beta1s)
 
   if (overdispersion > 0) {

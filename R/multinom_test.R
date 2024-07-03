@@ -50,7 +50,11 @@ multinom_test <- function(X, Y, strong = FALSE, j = NULL, penalty = FALSE) {
     #get beta mle under weak null constraint, first setting up initial value of beta and then optimizing
     beta_init <- matrix(1, nrow = p + 1, ncol = J-1)
     beta_init[(2:(p+1)), j] <- 0
-    beta_null1mle <- multinom_fisher_scoring(beta_init, X, Y, strong = FALSE, null_j = j)
+    if (!penalty) {
+      beta_null1mle <- multinom_fisher_scoring(beta_init, X, Y, strong = FALSE, null_j = j)
+    } else {
+      beta_null1mle <- multinom_penalized_estimation(beta_init, X, Y, strong = FALSE, null_j = j)
+    }
 
     #jacobian of function of parameter h(\beta) = 0
     H1 <- matrix(data = rep(0, p*(p+1)*(J-1)), ncol = (p+1)*(J-1), nrow = p)
@@ -101,7 +105,11 @@ multinom_test <- function(X, Y, strong = FALSE, j = NULL, penalty = FALSE) {
     #compute mle under null constraint
     beta_init <- matrix(0, nrow = p + 1, ncol = J-1)
     beta_init[1,] <- 1
-    beta_null2mle <- multinom_fisher_scoring(beta_init, X, Y, strong = TRUE)
+    if (!penalty) {
+      beta_null2mle <- multinom_fisher_scoring(beta_init, X, Y, strong = TRUE)
+    } else {
+      beta_null2mle <- multinom_penalized_estimation(beta_init, X, Y, strong = TRUE)
+    }
 
     ## AW TODO below not needed?
     # beta_null2mle <- matrix(rep(0, (p+1)*(J-1)), ncol = J-1) #initialize full (p+1) x (J-1) beta matrix
@@ -147,10 +155,16 @@ multinom_test <- function(X, Y, strong = FALSE, j = NULL, penalty = FALSE) {
   #compute mle under alternative
   beta_alt <- matrix(-0.02, nrow = p + 1, ncol = J-1)
   mle_alt <- multinom_fisher_scoring(beta_alt, X, Y, null = FALSE)
+  if (!penalty) {
+    mle_alt <- multinom_fisher_scoring(beta_alt, X, Y, null = FALSE)
+  } else {
+    mle_alt <- multinom_penalized_estimation(beta_alt, X, Y, null = FALSE)
+  }
 
   return(list("test_stat" = T_GS,
               "p" = pchisq(T_GS, df = the_df, lower.tail = FALSE),
               "mle0" = the_mle,
-              "mle1" = mle_alt))
+              "mle1" = mle_alt,
+              "penalty" = penalty))
 
 }
