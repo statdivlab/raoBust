@@ -22,4 +22,5 @@ Imports:
     magrittr,
     rlang,
     sandwich,
-    geeasy
+    geeasy,
+    Matrix
