@@ -15,7 +15,8 @@ multinom_penalized_estimation(
   stepSize = 0.5,
   arm_c = 0.5,
   maxit = 250,
-  maxit_fs = 5
+  maxit_fs = 5,
+  pseudo_inv = FALSE
 )
 }
 \arguments{
@@ -42,6 +43,8 @@ Default is FALSE.}
 \item{maxit}{Maximum number of iterations for augmentation algorithm. Defaults to 250.}
 
 \item{maxit_fs}{Maximum number of iterations for Fisher scoring. Defaults to 5.}
+
+\item{pseudo_inv}{Use the pseudo-inverse of the Fisher information matrix for the update (in case the inverse in computationally singular)}
 }
 \value{
 The optimal beta values under the null or alternative model.

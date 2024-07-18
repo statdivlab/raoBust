@@ -12,12 +12,13 @@
 #' @param stepSize The size of the step to take during the parameter update step.
 #' @param arm_c Control parameter for checking Armijo condition.
 #' @param maxit Maximum number of iterations for Fisher scoring. Defaults to 250.
+#' @param pseudo_inv Use the pseudo-inverse of the Fisher information matrix for the update (in case the inverse in computationally singular)
 #' @return The optimal beta values under the null or alternative model.
 #'
 #' @author Shirley Mathur
 #'
 #' @export
-multinom_fisher_scoring <- function(beta, X, Y, null = TRUE, strong = FALSE, null_j = NULL, tol = 1e-5, stepSize = 0.5, arm_c = 0.5, maxit = 250) {
+multinom_fisher_scoring <- function(beta, X, Y, null = TRUE, strong = FALSE, null_j = NULL, tol = 1e-5, stepSize = 0.5, arm_c = 0.5, maxit = 250, pseudo_inv = FALSE) {
   
   # check that if strong is FALSE, j is provided 
   if (null & !strong) {
@@ -69,7 +70,18 @@ multinom_fisher_scoring <- function(beta, X, Y, null = TRUE, strong = FALSE, nul
     info_mat <- info_mat[optim_indices, optim_indices]
     
     #compute step direction
-    step_dir <- solve(info_mat) %*% score
+    if (!pseudo_inv) {
+      step_dir <- tryCatch({solve(info_mat) %*% score},
+                           error = function(cond) {
+                             print(cont)
+                             return(NA)
+                            })
+    } else {
+      step_dir <- tryCatch({solve(info_mat) %*% score},
+                           error = function(cond) {
+                             return(MASS::ginv(info_mat) %*% score)
+                           })
+    }
     
     #first get acceptable update
     accepted <- FALSE

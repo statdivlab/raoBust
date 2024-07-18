@@ -7,6 +7,7 @@
 #' Default is FALSE.
 #' @param j If `strong` is FALSE, this argument must be supplied. This gives the category \eqn{j} in the weak null hypothesis that \eqn{\beta_j = 0}.
 #' @param penalty If TRUE will apply a Firth penalty to estimation under the alternative and under the null. Defaults to FALSE (ask Amy her preference)
+#' @param pseudo_inv Use pseudo inverse for inverted portion of the robust score test to avoid issues with nearly singular matrices.
 #'
 #' @return The robust score test statistic for the specified hypothesis test. A list including the test statistic, p-value,
 #' estimated parameters under the null hypothesis, and estimated parameters under the alternative hypothesis.
@@ -16,7 +17,7 @@
 #' @author Shirley Mathur
 #'
 #' @export
-multinom_test <- function(X, Y, strong = FALSE, j = NULL, penalty = FALSE) {
+multinom_test <- function(X, Y, strong = FALSE, j = NULL, penalty = FALSE, pseudo_inv = FALSE) {
 
   # check that X and Y have the same number of rows, if not throw error 
   if (nrow(X) != nrow(Y)) {
@@ -51,9 +52,9 @@ multinom_test <- function(X, Y, strong = FALSE, j = NULL, penalty = FALSE) {
     beta_init <- matrix(1, nrow = p + 1, ncol = J-1)
     beta_init[(2:(p+1)), j] <- 0
     if (!penalty) {
-      beta_null1mle <- multinom_fisher_scoring(beta_init, X, Y, strong = FALSE, null_j = j)
+      beta_null1mle <- multinom_fisher_scoring(beta_init, X, Y, strong = FALSE, null_j = j, pseudo_inv = pseudo_inv)
     } else {
-      beta_null1mle <- multinom_penalized_estimation(beta_init, X, Y, strong = FALSE, null_j = j)
+      beta_null1mle <- multinom_penalized_estimation(beta_init, X, Y, strong = FALSE, null_j = j, pseudo_inv = pseudo_inv)
     }
 
     #jacobian of function of parameter h(\beta) = 0
@@ -84,13 +85,24 @@ multinom_test <- function(X, Y, strong = FALSE, j = NULL, penalty = FALSE) {
     the_df <- p
 
     #compute statistic!
-    T_GS<- tryCatch({as.numeric(t(S1) %*% solve(I1) %*% t(H1) %*%
-                                  (solve(H1 %*% solve(I1) %*% D1 %*% solve(I1) %*% t(H1))) %*%
-                                  H1 %*% solve(I1) %*% S1)},
-                             error = function(cond) {
-                               print(cond)
-                               return(NA)
-                               })
+    if (!pseudo_inv) {
+      T_GS<- tryCatch({as.numeric(t(S1) %*% solve(I1) %*% t(H1) %*%
+                                    (solve(H1 %*% solve(I1) %*% D1 %*% solve(I1) %*% t(H1))) %*%
+                                    H1 %*% solve(I1) %*% S1)},
+                      error = function(cond) {
+                        print(cond)
+                        return(NA)
+                      })
+    } else {
+      T_GS<- tryCatch({as.numeric(t(S1) %*% MASS::ginv(I1) %*% t(H1) %*%
+                                    (MASS::ginv(H1 %*% MASS::ginv(I1) %*% D1 %*% MASS::ginv(I1) %*% t(H1))) %*%
+                                    H1 %*% MASS::ginv(I1) %*% S1)},
+                      error = function(cond) {
+                        print(cond)
+                        return(NA)
+                      })
+    }
+    
 
   } else {
     #initialize value for beta_k0 for all k = 1, \dots, J-1
@@ -106,9 +118,9 @@ multinom_test <- function(X, Y, strong = FALSE, j = NULL, penalty = FALSE) {
     beta_init <- matrix(0, nrow = p + 1, ncol = J-1)
     beta_init[1,] <- 1
     if (!penalty) {
-      beta_null2mle <- multinom_fisher_scoring(beta_init, X, Y, strong = TRUE)
+      beta_null2mle <- multinom_fisher_scoring(beta_init, X, Y, strong = TRUE, pseudo_inv = pseudo_inv)
     } else {
-      beta_null2mle <- multinom_penalized_estimation(beta_init, X, Y, strong = TRUE)
+      beta_null2mle <- multinom_penalized_estimation(beta_init, X, Y, strong = TRUE, pseudo_inv = pseudo_inv)
     }
 
     ## AW TODO below not needed?
@@ -140,25 +152,36 @@ multinom_test <- function(X, Y, strong = FALSE, j = NULL, penalty = FALSE) {
     the_df <- p*(J-1)
 
     #compute statistic!
-    T_GS <- tryCatch({as.numeric(t(S2) %*% solve(I2) %*% t(H2) %*%
-                                   (solve(H2 %*% solve(I2) %*% D2 %*% solve(I2) %*% t(H2))) %*%
-                                   H2 %*% solve(I2) %*% S2)},
-                     error = function(cond) {
-                       warning("Test statistic cannot be calculated due to the error printed above.")
-                       print(cond)
-                       return(NA)
+    if (!pseudo_inv) {
+      T_GS <- tryCatch({as.numeric(t(S2) %*% solve(I2) %*% t(H2) %*%
+                                     (solve(H2 %*% solve(I2) %*% D2 %*% solve(I2) %*% t(H2))) %*%
+                                     H2 %*% solve(I2) %*% S2)},
+                       error = function(cond) {
+                         warning("Test statistic cannot be calculated due to the error printed above.")
+                         print(cond)
+                         return(NA)
                        })
+    } else {
+      T_GS <- tryCatch({as.numeric(t(S2) %*% MASS::ginv(I2) %*% t(H2) %*%
+                                     (MASS::ginv(H2 %*% MASS::ginv(I2) %*% D2 %*% MASS::ginv(I2) %*% t(H2))) %*%
+                                     H2 %*% MASS::ginv(I2) %*% S2)},
+                       error = function(cond) {
+                         warning("Test statistic cannot be calculated due to the error printed above.")
+                         print(cond)
+                         return(NA)
+                       })
+    }
+    
 
 
   }
   
   #compute mle under alternative
   beta_alt <- matrix(-0.02, nrow = p + 1, ncol = J-1)
-  mle_alt <- multinom_fisher_scoring(beta_alt, X, Y, null = FALSE)
   if (!penalty) {
-    mle_alt <- multinom_fisher_scoring(beta_alt, X, Y, null = FALSE)
+    mle_alt <- multinom_fisher_scoring(beta_alt, X, Y, null = FALSE, pseudo_inv = pseudo_inv)
   } else {
-    mle_alt <- multinom_penalized_estimation(beta_alt, X, Y, null = FALSE)
+    mle_alt <- multinom_penalized_estimation(beta_alt, X, Y, null = FALSE, pseudo_inv = pseudo_inv)
   }
 
   return(list("test_stat" = T_GS,

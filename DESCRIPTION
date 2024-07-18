@@ -23,4 +23,5 @@ Imports:
     rlang,
     sandwich,
     geeasy,
-    Matrix
+    Matrix,
+    MASS

@@ -4,7 +4,14 @@
 \alias{multinom_test}
 \title{Robust score (Rao) tests for multinomial regression.}
 \usage{
-multinom_test(X, Y, strong = FALSE, j = NULL, penalty = FALSE)
+multinom_test(
+  X,
+  Y,
+  strong = FALSE,
+  j = NULL,
+  penalty = FALSE,
+  pseudo_inv = FALSE
+)
 }
 \arguments{
 \item{X}{A \eqn{n x p} design matrix of covariates.}
@@ -18,6 +25,8 @@ Default is FALSE.}
 \item{j}{If \code{strong} is FALSE, this argument must be supplied. This gives the category \eqn{j} in the weak null hypothesis that \eqn{\beta_j = 0}.}
 
 \item{penalty}{If TRUE will apply a Firth penalty to estimation under the alternative and under the null. Defaults to FALSE (ask Amy her preference)}
+
+\item{pseudo_inv}{Use pseudo inverse for inverted portion of the robust score test to avoid issues with nearly singular matrices.}
 }
 \value{
 The robust score test statistic for the specified hypothesis test. A list including the test statistic, p-value,
