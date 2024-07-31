@@ -1,7 +1,9 @@
 #' Robust score (Rao) tests for multinomial regression.
 #'
-#' @param Y A \eqn{n x J} data matrix of outcomes.
 #' @param X A \eqn{n x p} design matrix of covariates.
+#' @param Y A \eqn{n x J} data matrix of outcomes.
+#' @param formula a one-sided formula specifying the form of the mean model to be fit (use with \code{data} argument if \code{X} is not included)
+#' @param data a dataframe with \eqn{n} rows containing variables given in \code{formula} (use with \code{formula} argument if \code{X} is not included)
 #' @param strong If FALSE, this function will compute the robust score statistic to test the weak null that for one specific \eqn{j}, \eqn{\beta_j = 0} for the length \eqn{p} vector \eqn{\beta_j}.
 #' If TRUE, this function instead computes the robust score statistic to test the strong null that \eqn{\beta_1 = \beta_2 = \dots = \beta_{J-1} = 0} for all length \eqn{p} vectors \eqn{\beta_j}, \eqn{j\in\{1,\ldots,J-1\}}. 
 #' Default is FALSE.
@@ -16,8 +18,23 @@
 #' @author Shirley Mathur
 #'
 #' @export
-multinom_test <- function(X, Y, strong = FALSE, j = NULL, penalty = FALSE) {
+multinom_test <- function(X = NULL, Y, formula = NULL, data = NULL, 
+                          strong = FALSE, j = NULL, penalty = FALSE) {
 
+  # if X is null and formula and data are provided, get design matrix
+  if (is.null(X)) {
+    if (is.null(formula) | is.null(data)) {
+      stop("If design matrix X not provided, both formula and data containing
+covariates in formula must be provided.")
+    }
+    X <- model.matrix(formula, data)
+  }
+  
+  # if X has intercept column (or a column of repeating values), remove it 
+  if (all(round((X %*% solve(t(X) %*% X) %*% t(X)) %*% rep(1, nrow(X)), 1e-20) == 1)) {
+    X <- X[, -1, drop = FALSE]
+  }
+  
   # check that X and Y have the same number of rows, if not throw error 
   if (nrow(X) != nrow(Y)) {
     stop("Please make sure that X and Y have the same number of observations.")
