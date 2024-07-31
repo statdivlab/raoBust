@@ -30,8 +30,8 @@ covariates in formula must be provided.")
     X <- model.matrix(formula, data)
   }
   
-  # if X has intercept column, remove it 
-  if (sum(X[, 1] == 1) == nrow(X)) {
+  # if X has intercept column (or a column of repeating values), remove it 
+  if (all(round((X %*% solve(t(X) %*% X) %*% t(X)) %*% rep(1, nrow(X)), 1e-20) == 1)) {
     X <- X[, -1, drop = FALSE]
   }
   
