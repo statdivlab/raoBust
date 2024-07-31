@@ -55,6 +55,7 @@ test_that("X works whether or not it has an intercept column", {
 })
 
 test_that("formula and data work in place of X", {
+  nn <- 20
   df <- simulate_data_mult(nn = nn, strong = TRUE, sd_beta1s = 2, sd_beta0s = 1, jj_null = 2)
   res1 <- multinom_test(df$X, df$Y, strong = FALSE, j = 2)
   dat <- data.frame(cov = df$X[, 1], rand = rnorm(nrow(df$X)))
