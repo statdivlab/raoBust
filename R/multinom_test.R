@@ -30,9 +30,10 @@ covariates in formula must be provided.")
     X <- model.matrix(formula, data)
   }
   
-  # if X has intercept column (or a column of repeating values), remove it 
-  if (all(round((X %*% solve(t(X) %*% X) %*% t(X)) %*% rep(1, nrow(X)), 1e-20) == 1)) {
-    X <- X[, -1, drop = FALSE]
+  # if X has intercept column (or a column of constant values across all observations), remove it 
+  constant_cols <- apply(X, 2, function(x) {all(x == mean(x, na.rm = TRUE))})
+  if (sum(constant_cols) > 0) {
+    X <- X[, !constant_cols, drop = FALSE]
   }
   
   # check that X and Y have the same number of rows, if not throw error 
