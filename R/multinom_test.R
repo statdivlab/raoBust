@@ -31,7 +31,7 @@ covariates in formula must be provided.")
   }
   
   # if X has intercept column (or a column of constant values across all observations), remove it 
-  constant_cols <- apply(X, 2, function(x) {all(x == mean(x))})
+  constant_cols <- apply(X, 2, function(x) {all(x == mean(x, na.rm = TRUE))})
   if (sum(constant_cols) > 0) {
     X <- X[, !constant_cols, drop = FALSE]
   }
