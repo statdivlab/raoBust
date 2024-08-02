@@ -5,8 +5,10 @@
 \title{Robust score (Rao) tests for multinomial regression.}
 \usage{
 multinom_test(
-  X,
+  X = NULL,
   Y,
+  formula = NULL,
+  data = NULL,
   strong = FALSE,
   j = NULL,
   penalty = FALSE,
@@ -17,6 +19,10 @@ multinom_test(
 \item{X}{A \eqn{n x p} design matrix of covariates.}
 
 \item{Y}{A \eqn{n x J} data matrix of outcomes.}
+
+\item{formula}{a one-sided formula specifying the form of the mean model to be fit (use with \code{data} argument if \code{X} is not included)}
+
+\item{data}{a dataframe with \eqn{n} rows containing variables given in \code{formula} (use with \code{formula} argument if \code{X} is not included)}
 
 \item{strong}{If FALSE, this function will compute the robust score statistic to test the weak null that for one specific \eqn{j}, \eqn{\beta_j = 0} for the length \eqn{p} vector \eqn{\beta_j}.
 If TRUE, this function instead computes the robust score statistic to test the strong null that \eqn{\beta_1 = \beta_2 = \dots = \beta_{J-1} = 0} for all length \eqn{p} vectors \eqn{\beta_j}, \eqn{j\in\{1,\ldots,J-1\}}.
