@@ -11,7 +11,8 @@ multinom_test(
   data = NULL,
   strong = FALSE,
   j = NULL,
-  penalty = FALSE
+  penalty = FALSE,
+  pseudo_inv = FALSE
 )
 }
 \arguments{
@@ -30,6 +31,8 @@ Default is FALSE.}
 \item{j}{If \code{strong} is FALSE, this argument must be supplied. This gives the category \eqn{j} in the weak null hypothesis that \eqn{\beta_j = 0}.}
 
 \item{penalty}{If TRUE will apply a Firth penalty to estimation under the alternative and under the null. Defaults to FALSE (ask Amy her preference)}
+
+\item{pseudo_inv}{Use pseudo inverse for inverted portion of the robust score test to avoid issues with nearly singular matrices.}
 }
 \value{
 The robust score test statistic for the specified hypothesis test. A list including the test statistic, p-value,

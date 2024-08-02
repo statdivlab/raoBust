@@ -13,6 +13,7 @@
 #' @param arm_c Control parameter for checking Armijo condition, used in the MLE step.
 #' @param maxit Maximum number of iterations for augmentation algorithm. Defaults to 250.
 #' @param maxit_fs Maximum number of iterations for Fisher scoring. Defaults to 5.
+#' @param pseudo_inv Use the pseudo-inverse of the Fisher information matrix for the update (in case the inverse in computationally singular)
 #' @return The optimal beta values under the null or alternative model.
 #'
 #' @author Sarah Teichman
@@ -20,7 +21,7 @@
 #' @export
 multinom_penalized_estimation <- function(beta, X, Y, null = TRUE, strong = FALSE, null_j = NULL, 
                                           tol = 1e-5, stepSize = 0.5, arm_c = 0.5,
-                                          maxit = 250, maxit_fs = 5) {
+                                          maxit = 250, maxit_fs = 5, pseudo_inv = FALSE) {
   
   # check that if strong is FALSE, j is provided 
   if (null & !strong) {
@@ -63,7 +64,7 @@ multinom_penalized_estimation <- function(beta, X, Y, null = TRUE, strong = FALS
     beta_curr <- multinom_fisher_scoring(beta = beta_old, X = X, Y = Y_curr,
                                          null = null, strong = strong, null_j = null_j,
                                          tol = tol, stepSize = stepSize, arm_c = arm_c,
-                                         maxit = maxit_fs)
+                                         maxit = maxit_fs, pseudo_inv = pseudo_inv)
     
     # check for convergence 
     B_diff <- max(abs(beta_curr - beta_old))
