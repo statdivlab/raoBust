@@ -14,7 +14,8 @@ multinom_fisher_scoring(
   tol = 1e-05,
   stepSize = 0.5,
   arm_c = 0.5,
-  maxit = 250
+  maxit = 250,
+  pseudo_inv = FALSE
 )
 }
 \arguments{
@@ -39,6 +40,8 @@ Default is FALSE.}
 \item{arm_c}{Control parameter for checking Armijo condition.}
 
 \item{maxit}{Maximum number of iterations for Fisher scoring. Defaults to 250.}
+
+\item{pseudo_inv}{Use the pseudo-inverse of the Fisher information matrix for the update (in case the inverse in computationally singular)}
 }
 \value{
 The optimal beta values under the null or alternative model.

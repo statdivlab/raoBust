@@ -209,6 +209,10 @@ test_that("strong multinomial test gives p-value even in absurd example", {
   # statistic, is singular in this case (the determinant is exactly 0), so we cannot compute 
   # the test statistic. to-do: look into using a generalized inverse here (see raoBust issues)
   
-  #expect_true(!is.na(mt$p))
+  mt <- multinom_test(X = structure(c(0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1), dim = c(6L, 2L)),
+                      Y = structure(c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                      0, 1, 1, 2, 1, 1, 2), dim = c(6L, 4L)),
+                      strong=TRUE, pseudo_inv = TRUE)
+  expect_true(mt$p == 1)
   
 })
