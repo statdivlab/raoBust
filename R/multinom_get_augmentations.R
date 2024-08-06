@@ -1,6 +1,6 @@
 # adapted from github.com/statdivlab/radEmu, included in raoBust to avoid dependence on radEmu
 # helper function for multinomial logistic regression with Firth penalty
-multinom_get_augmentations <- function(G, Y, B, z) {
+multinom_get_augmentations <- function(G, Y, B, z, use_pseudo = FALSE) {
   
   n <- length(z)
   p <- nrow(B)
@@ -23,8 +23,14 @@ multinom_get_augmentations <- function(G, Y, B, z) {
   info <- Matrix::forceSymmetric(info)
   
   # get symmetric square root of inverse of info matrix
-  info_chol <- Matrix::chol(info, pivot = FALSE)
-  info_half_inv <- Matrix::solve(info_chol)
+  if (!use_pseudo) {
+    info_chol <- Matrix::chol(info, pivot = FALSE)
+    info_half_inv <- Matrix::solve(info_chol)
+  } else {
+    info_inv <- MASS::ginv(as.matrix(info))
+    info_half_inv <- Matrix::chol(info_inv, pivot = TRUE)
+  }
+  
   
   # get augmentations
   augs <- matrix(0, nrow = n, ncol = J) 
