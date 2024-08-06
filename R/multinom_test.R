@@ -197,9 +197,19 @@ covariates in formula must be provided.")
   #compute mle under alternative
   beta_alt <- matrix(-0.02, nrow = p + 1, ncol = J-1)
   if (!penalty) {
-    mle_alt <- multinom_fisher_scoring(beta_alt, X, Y, null = FALSE, pseudo_inv = pseudo_inv)
+    mle_alt <- tryCatch({multinom_fisher_scoring(beta_alt, X, Y, null = FALSE, pseudo_inv = pseudo_inv)},
+                        error = function(cond) {
+                          warning("MLE under alternative hypothesis cannot be calculated.")
+                          print(cond)
+                          return(NA)
+                        })
   } else {
-    mle_alt <- multinom_penalized_estimation(beta_alt, X, Y, null = FALSE, pseudo_inv = pseudo_inv)
+    mle_alt <- tryCatch({multinom_penalized_estimation(beta_alt, X, Y, null = FALSE, pseudo_inv = pseudo_inv)},
+                        error = function(cond) {
+                          warning("MLE under alternative hypothesis cannot be calculated.")
+                          print(cond)
+                          return(NA)
+                        })
   }
 
   return(list("test_stat" = T_GS,
