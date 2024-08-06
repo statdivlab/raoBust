@@ -56,7 +56,7 @@ multinom_penalized_estimation <- function(beta, X, Y, null = TRUE, strong = FALS
     z <- log(rowSums(Y)) - log(rowSums(exp(Xaug %*% beta_curr)))
     
     # calculate augmentations
-    augs <- multinom_get_augmentations(G, Y, beta_curr, z)
+    augs <- multinom_get_augmentations(G, Y, beta_curr, z, pseudo_inv)
     Y_curr <- Y + augs
     
     # get new beta values
