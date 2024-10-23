@@ -50,7 +50,7 @@ robust_score_test <- function(glm_object, call_to_model, param = 1,
     for (ii in 1:length(ids)) {
       indices <- which(id == ids[ii])
       n_i <- length(indices)
-      xxi <- xx[indices, ]
+      xxi <- xx[indices, , drop = FALSE]
       model0_fits_i <- model0_fits[indices]
 
       Di <- matrix(NA, nrow = pp, ncol = n_i)
@@ -62,7 +62,11 @@ robust_score_test <- function(glm_object, call_to_model, param = 1,
 
       corr_matrix <- matrix(rep(glm_object$geese$alpha, n_i^2), nrow = n_i)
       diag(corr_matrix) <- 1
-      Vi <- diag(sqrt(model0_fits_i)) %*% corr_matrix %*% diag(sqrt(model0_fits_i))
+      if (n_i > 1) {
+        Vi <- diag(sqrt(model0_fits_i)) %*% corr_matrix %*% diag(sqrt(model0_fits_i))
+      } else {
+        Vi <- sqrt(model0_fits_i) * corr_matrix * sqrt(model0_fits_i)
+      }
 
       Si <- yy[indices] - model0_fits_i
 
