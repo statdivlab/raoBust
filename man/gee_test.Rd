@@ -4,12 +4,23 @@
 \alias{gee_test}
 \title{Generalized Estimating Equations under technical replication with robust and non-robust Wald and Rao (score) tests}
 \usage{
-gee_test(use_geeasy = TRUE, use_jack_se = FALSE, ...)
+gee_test(
+  use_geeasy = TRUE,
+  use_jack_se = FALSE,
+  cluster_corr_coef = NULL,
+  skip_gee = FALSE,
+  ...
+)
 }
 \arguments{
 \item{use_geeasy}{When TRUE, uses \code{geeasy} for gee estimation, when FALSE uses \code{geepack}}
 
 \item{use_jack_se}{When TRUE uses jackknife standard errors (which take longer), when FALSE uses sandwich standard errors}
+
+\item{cluster_corr_coef}{Optional within-cluster correlation coefficient. This will only be used when parameter estimation with a GEE fails and estimation must
+instead be performed with a GLM.}
+
+\item{skip_gee}{When TRUE doesn't try to optimize with a GEE (just uses a GLM). This should only be used internally for testing.}
 
 \item{...}{Arguments that you would pass to a regular \code{geepack::geeglm} call. Note that for now we only have functionality for Poisson tests with log link}
 }
