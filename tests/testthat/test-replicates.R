@@ -122,3 +122,34 @@ test_that("jackknife standard errors work", {
   expect_true(all.equal(gee_res$`Robust Std Error`[1:2], as.vector(jack_se_cluster)))
 })
 
+test_that("glm solver works when gee solver fails", {
+  gee_res <- gee_test(formula = dist ~ speed,
+                      data = cars2,
+                      id = batch3,
+                      family=poisson(link="log"),
+                      offset = wts)
+  glm_res <- suppressWarnings(gee_test(formula = dist ~ speed,
+                                       data = cars2,
+                                       id = batch3,
+                                       family=poisson(link="log"),
+                                       offset = wts,
+                                       skip_gee = TRUE))
+  # check that estimates for coefficient for gee and glm result are similar 
+  expect_equal(gee_res[2, 1], glm_res[2, 1], tolerance = 0.1)
+  # confirm that without user-input cluster correlation coefficient, there
+  # are no robust score p-values
+  expect_true(is.na(glm_res[2, 4]))
+  
+  # check that warning is thrown when using glm instead of gee 
+  expect_warning(glm_res_user_corr <- gee_test(formula = dist ~ speed,
+                                               data = cars2,
+                                               id = batch3,
+                                               family=poisson(link="log"),
+                                               offset = wts,
+                                               skip_gee = TRUE,
+                                               cluster_corr_coef = -0.04))
+  
+  # check that robust score p-values are similar between gee and glm solver when
+  # using gee estimated alpha parameter as user-input cluster correlation coefficient
+  expect_equal(gee_res[2, 4], glm_res_user_corr[2, 4], tolerance = 0.01)
+})
