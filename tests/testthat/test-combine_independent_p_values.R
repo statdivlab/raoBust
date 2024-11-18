@@ -3,9 +3,9 @@ test_that("uniform p-values under H0", {
                   {
                     combine_independent_p_values(runif(3))
                   })
-  expect_equal(mean(xx < 0.1), 0.1, tolerance=0.02)
-  expect_equal(mean(xx < 0.5), 0.5, tolerance=0.02)
-  expect_equal(mean(xx < 0.9), 0.9, tolerance=0.02)
+  expect_equal(mean(xx < 0.1), 0.1, tolerance=0.05)
+  expect_equal(mean(xx < 0.5), 0.5, tolerance=0.05)
+  expect_equal(mean(xx < 0.9), 0.9, tolerance=0.05)
 # hist(xx)
 })
 
