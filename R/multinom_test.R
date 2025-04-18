@@ -211,11 +211,36 @@ covariates in formula must be provided.")
                           return(NA)
                         })
   }
+  
+  #compute robust Wald SE's
+  #terms necessary for computation of S, I, D matrices
+  ps_alt <-   multinom_get_probs(X, Y, mle_alt)
+  
+  #score of \beta evaluated at mle under alternative
+  S_alt <- multinom_score_vector(X, Y, ps_alt)
+  
+  #information matrix evaluated at mle under alternative
+  I_alt <- multinom_info_mat(X, Y, ps_alt)
+  
+  #D matrix (sum of S_iS_i^T for all i = 1, \dots, n) for mle under alternative
+  D_alt <- matrix(data = rep(0, length(S_alt)^2), ncol = length(S_alt))
+  for (k in 1:(J-1)) {
+    for (l in 1:(J-1)) {
+      S_alt_k <- as.vector(Y[ ,k] - ps_alt[ ,k]*N)*Xaug
+      S_alt_l <- as.vector(Y[ ,l] - ps_alt[ ,l]*N)*Xaug
+      D_alt[((k-1)*(p+1) + 1):(k*(p+1)) ,((l-1)*(p+1) + 1):(l*(p+1))] <- t(S_alt_k)%*%S_alt_l
+    }
+  }
+  
+  robust_wald_cov <- solve(I_alt) %*% D_alt %*% solve(I_alt)
+  print(robust_wald_cov)
+  robust_wald_se <- matrix(sqrt(diag(robust_wald_cov)), nrow = p+1, ncol = J-1, byrow = FALSE)
 
   return(list("test_stat" = T_GS,
               "p" = pchisq(T_GS, df = the_df, lower.tail = FALSE),
               "mle0" = the_mle,
               "mle1" = mle_alt,
+              "wald_se" = robust_wald_se,
               "penalty" = penalty))
 
 }
