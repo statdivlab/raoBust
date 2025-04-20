@@ -233,7 +233,6 @@ covariates in formula must be provided.")
   }
   
   robust_wald_cov <- solve(I_alt) %*% D_alt %*% solve(I_alt)
-  print(robust_wald_cov)
   robust_wald_se <- matrix(sqrt(diag(robust_wald_cov)), nrow = p+1, ncol = J-1, byrow = FALSE)
 
   return(list("test_stat" = T_GS,
