@@ -254,3 +254,48 @@ test_that("estimation under the weak null is not strictly worse than using the t
   expect_true(all.equal(neg_ll_df$raoBust, neg_ll_df$true, tolerance = 0.01*max(neg_ll_df$raoBust)))
   
 })
+
+
+# test_that("mean of robust Wald standard errors is similar to actual standard deviation of MLEs under alternative", {
+#   
+#   set.seed(240506)
+#   
+#   nsim <- 1000
+#   nn <- 100
+#   
+#   #fix parameters
+#   J <- formals(simulate_data_mult)$jj
+#   B_true <- matrix(runif(2*(J-1)), ncol = J-1)
+#   
+#   #make lists to store estimates under alternate and robust Wald SEs over simulation runs
+#   sim_beta_est <- array(dim = c(2, J-1, nsim))
+#   sim_robust_se <- array(dim = c(2, J-1, nsim))
+#   
+#   for (i in 1:nsim) {
+#     
+#     #compute mean based on generated covariate data
+#     covariate1 <- cbind(1, seq(from = 0, to = 1, length.out = nn))
+#     xbetas <- covariate1 %*% B_true
+#     exp_xbetas <- cbind(exp(xbetas), 1)
+#     
+#     #generate data from multinomial model
+#     probs <- exp_xbetas / rowSums(exp_xbetas)
+#     Y1 <- apply(X=probs, MARGIN=1, FUN=rmultinom, n = 1, size=10000) %>% t
+#     
+#     #generate data from dirichlet model
+#     probs_dir <- rdirichlet(100, exp_xbetas)
+#     
+#     #get estimate under null
+#     multi_test <- multinom_test(X = covariate1, Y = Y, strong = TRUE)
+#     sim_beta_est[,,i] <- multi_test$mle1
+#     sim_robust_se[,,i] <- multi_test$wald_se
+#   }
+#   
+#   #compute empirical standard deviation
+#   beta_sd <- apply(sim_beta_est, c(1,2), sd)
+#   beta_se_mean <- apply(sim_robust_se, c(1,2), mean)
+#   
+#   #check that the above are close enough (within 2%)
+#   expect_true(max(abs((beta_se_mean - beta_sd)/beta_sd)*100) <= 2)
+#   
+# })
