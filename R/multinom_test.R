@@ -22,9 +22,6 @@
 multinom_test <- function(X = NULL, Y, formula = NULL, data = NULL, 
                           strong = FALSE, j = NULL, penalty = FALSE, pseudo_inv = FALSE) {
 
-  # record function call
-  call <- match.call(expand.dots = FALSE)
-  
   # if X is null and formula and data are provided, get design matrix
   if (is.null(X)) {
     if (is.null(formula) | is.null(data)) {
@@ -238,8 +235,7 @@ covariates in formula must be provided.")
   robust_wald_cov <- solve(I_alt) %*% D_alt %*% solve(I_alt)
   robust_wald_se <- matrix(sqrt(diag(robust_wald_cov)), nrow = p+1, ncol = J-1, byrow = FALSE)
 
-  return(list("call" = call,
-              "test_stat" = T_GS,
+  return(list("test_stat" = T_GS,
               "p" = pchisq(T_GS, df = the_df, lower.tail = FALSE),
               "mle0" = the_mle,
               "mle1" = mle_alt,
