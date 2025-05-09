@@ -10,10 +10,10 @@ test_that("offsets impact the test and estimates", {
     glm_off <- glm_test(y0 ~ log(x0),
                         data = my_dff,
                         family=poisson(link="log"),
-                        offset = log(offs))
+                        offset = log(offs))$coef_tab
     glm_no_off <- glm_test(y0 ~ log(x0),
                            data = my_dff,
-                           family=poisson(link="log"))
+                           family=poisson(link="log"))$coef_tab
   })
 
   expect_equal(glm_off[2, 1],

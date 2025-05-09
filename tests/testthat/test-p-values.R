@@ -37,7 +37,7 @@ test_that("returns legitimate p-values", {
 
   r1 <- glm(age ~ sex + weight, data = mri_mini, family=poisson(link="log")) # it doesn't need to make sense
 
-  pp1 <- glm_test(age ~ sex + weight, data = mri_mini, family=poisson(link="log"))
+  pp1 <- glm_test(age ~ sex + weight, data = mri_mini, family=poisson(link="log"))$coef_tab
 
   expect_true(min(pp1[, c("Non-robust Wald p", "Robust Wald p", "Robust Score p")]) >= 0)
   expect_true(max(pp1[, c("Non-robust Wald p", "Robust Wald p", "Robust Score p")]) <= 1)

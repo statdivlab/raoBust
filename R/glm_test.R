@@ -61,7 +61,11 @@ glm_test <- function(...) {
 
   output <- cbind(output, "Robust Std Error" = robust_wald_ses)
   output <- cbind(output, "Robust Wald p" = robust_wald_ps)
-
-  output[, c("Estimate", "Non-robust Std Error", "Robust Std Error", "Non-robust Wald p", "Robust Wald p", "Robust Score p")]
+  output <- output[, c("Estimate", "Non-robust Std Error", "Robust Std Error", "Non-robust Wald p", "Robust Wald p", "Robust Score p")]
+  
+  result <- list("call" = cl,
+                 "coef_tab" = output)
+  
+  return(structure(result, class = "raoFit"))
 
 }

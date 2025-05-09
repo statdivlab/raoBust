@@ -29,10 +29,10 @@ test_that("works on a real use case", {
                      offset=log(xx),
                      data=my_df)
   })
-  expect_type(glm1,
+  expect_type(glm1$coef_tab,
               "double")
 
-  expect_type(glm2,
+  expect_type(glm2$coef_tab,
               "double")
 
 })
@@ -70,10 +70,10 @@ test_that("works on another real use case", {
                      offset=log(xx),
                      data=my_df)
   })
-  expect_type(glm1,
+  expect_type(glm1$coef_tab,
               "double")
 
-  expect_type(glm2,
+  expect_type(glm2$coef_tab,
               "double")
 
 })
