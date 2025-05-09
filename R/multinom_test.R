@@ -22,6 +22,9 @@
 multinom_test <- function(X = NULL, Y, formula = NULL, data = NULL, 
                           strong = FALSE, j = NULL, penalty = FALSE, pseudo_inv = FALSE) {
 
+  #record function call
+  cl <- match.call()
+  
   # if X is null and formula and data are provided, get design matrix
   if (is.null(X)) {
     if (is.null(formula) | is.null(data)) {
@@ -234,12 +237,43 @@ covariates in formula must be provided.")
   
   robust_wald_cov <- solve(I_alt) %*% D_alt %*% solve(I_alt)
   robust_wald_se <- matrix(sqrt(diag(robust_wald_cov)), nrow = p+1, ncol = J-1, byrow = FALSE)
+  
+  #make table of coefficients
+  cat_labs <- 1:ncol(Y)
+  if(!is.null(colnames(Y))) {
+    cat_labs <- colnames(Y)
+  }
+  
+  coef_tab <- data.frame("Category" = rep(cat_labs[1:J-1], each = p+1),
+                         "Covariate" = rep(1:(p+1), J-1),
+                         "Estimate" = rep(NA, (p+1)*(J-1)),
+                         "Robust Std Error" = rep(NA, (p+1)*(J-1)),
+                         "Robust Wald p" = rep(NA, (p+1)*(J-1)),
+                         "Robust Score p" = rep(NA, (p+1)*(J-1)),
+                         check.names = FALSE)
+  
+  #set covariate terms appropriately if formula was used in call
+  if (!is.null(formula)) {
+    
+    #get names of variables used for model fit, and then use these to populate covariate column of output table
+    coef_names <- c(labels(terms(as.formula(formula), data = data)))
+    coef_tab$Covariate <- rep(c("(intercept)",coef_names), J-1)
+    
+  }
+  
+  #populate estimate and se columns of output table with mle under alternative and robust wald se, respectively
+  coef_tab$Estimate <- c(mle_alt)
+  coef_tab$'Robust Std Error' <- c(robust_wald_se)
 
-  return(list("test_stat" = T_GS,
+  result <- list("call" = cl,
+              "test_stat" = T_GS,
               "p" = pchisq(T_GS, df = the_df, lower.tail = FALSE),
               "mle0" = the_mle,
               "mle1" = mle_alt,
               "wald_se" = robust_wald_se,
-              "penalty" = penalty))
+              "coef_tab" = coef_tab,
+              "penalty" = penalty)
+  
+  return(structure(result, class = "raoFit"))
 
 }

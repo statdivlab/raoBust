@@ -23,12 +23,12 @@ test_that("replicates work", {
              data = cars2,
              id = batch3,
              family=poisson(link="log"),
-             offset = wts),
+             offset = wts)$coef_tab,
     gee_test(formula = dist ~ speed,
              data = cars2,
              id = batch1,
              family=poisson(link="log"),
-             offset = wts)
+             offset = wts)$coef_tab
   )
 
   # devtools::load_all()
@@ -37,13 +37,13 @@ test_that("replicates work", {
              data = cars2,
              id = batch2,
              family=poisson(link="log"),
-             offset = wts)
+             offset = wts)$coef_tab
     ,
     gee_test(formula = dist ~ speed,
              data = cars2[cars2$batch2 %>% order, ],
              id = batch2,
              family=poisson(link="log"),
-             offset = wts)
+             offset = wts)$coef_tab
   )
 
   expect_true({
@@ -51,7 +51,7 @@ test_that("replicates work", {
                            data = cars2,
                            id = batch1,
                            family=poisson(link="log"),
-                           offset = wts))
+                           offset = wts)$coef_tab)
   })
 
   #### check gives warning if weights provided
@@ -72,7 +72,7 @@ test_that("replicates work", {
   expect_gt(gee_test(formula = dist ~ speed,
                        data = cars3,
                        id = batch,
-                       family=poisson(link="log"))[3, "Estimate"], 0.9)
+                       family=poisson(link="log"))$coef_tab[3, "Estimate"], 0.9)
 
 
   #### check I've implemented score tests with clusters
@@ -91,14 +91,14 @@ test_that("geeasy and geepack give similar results", {
                           data = cars2,
                           id = batch3,
                           family=poisson(link="log"),
-                          offset = wts)
+                          offset = wts)$coef_tab
   
   geepack_test <- gee_test(use_geeasy = FALSE,
                            formula = dist ~ speed,
                            data = cars2,
                            id = batch3,
                            family=poisson(link="log"),
-                           offset = wts)
+                           offset = wts)$coef_tab
   expect_true((geeasy_test$Estimate[1] - geepack_test$Estimate[1])/geeasy_test$Estimate[1] < 0.01)
 })
 
@@ -117,7 +117,7 @@ test_that("jackknife standard errors work", {
                       id = batch3,
                       family=poisson(link="log"),
                       offset = wts,
-                      use_jack_se = TRUE)
+                      use_jack_se = TRUE)$coef_tab
   # expect that gee test robust standard errors are equal to those directly from jackknife function
   expect_true(all.equal(gee_res$`Robust Std Error`[1:2], as.vector(jack_se_cluster)))
 })
@@ -127,13 +127,13 @@ test_that("glm solver works when gee solver fails", {
                       data = cars2,
                       id = batch3,
                       family=poisson(link="log"),
-                      offset = wts)
+                      offset = wts)$coef_tab
   glm_res <- suppressWarnings(gee_test(formula = dist ~ speed,
                                        data = cars2,
                                        id = batch3,
                                        family=poisson(link="log"),
                                        offset = wts,
-                                       skip_gee = TRUE))
+                                       skip_gee = TRUE))$coef_tab
   # check that estimates for coefficient for gee and glm result are similar 
   expect_equal(gee_res[2, 1], glm_res[2, 1], tolerance = 0.1)
   # confirm that without user-input cluster correlation coefficient, there
@@ -147,7 +147,7 @@ test_that("glm solver works when gee solver fails", {
                                                family=poisson(link="log"),
                                                offset = wts,
                                                skip_gee = TRUE,
-                                               cluster_corr_coef = -0.04))
+                                               cluster_corr_coef = -0.04)$coef_tab)
   
   # check that robust score p-values are similar between gee and glm solver when
   # using gee estimated alpha parameter as user-input cluster correlation coefficient

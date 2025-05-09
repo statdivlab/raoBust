@@ -191,5 +191,7 @@ gee_test <- function(use_geeasy = TRUE, use_jack_se = FALSE, cluster_corr_coef =
     }
   }
   
-  output
+  result <- list("call" = cl_orig,
+                 "coef_tab" = output)
+  return(structure(result, class = "raoFit"))
 }

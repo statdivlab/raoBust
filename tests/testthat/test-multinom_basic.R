@@ -51,7 +51,7 @@ test_that("X works whether or not it has an intercept column", {
   df <- simulate_data_mult(nn = nn, strong = TRUE, sd_beta1s = 2, sd_beta0s = 1, jj_null = 2)
   res1 <- multinom_test(df$X, df$Y, strong = FALSE, j = 2)
   res2 <- multinom_test(cbind(1, df$X), df$Y, strong = FALSE, j = 2)
-  expect_true(all.equal(res1, res2))
+  expect_true(all.equal(res1[-c(1)], res2[-c(1)]))
 })
 
 test_that("formula and data work in place of X", {
@@ -60,7 +60,7 @@ test_that("formula and data work in place of X", {
   res1 <- multinom_test(df$X, df$Y, strong = FALSE, j = 2)
   dat <- data.frame(cov = df$X[, 1], rand = rnorm(nrow(df$X)))
   res2 <- multinom_test(formula = ~cov, data = dat, Y = df$Y, strong = FALSE, j = 2)
-  expect_true(all.equal(res1, res2))
+  expect_true(all.equal(res1[-c(1,7)], res2[-c(1,7)]))
 })
 
 test_that("multinomial test statistics are all positive", {
