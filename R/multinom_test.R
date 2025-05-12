@@ -248,6 +248,8 @@ covariates in formula must be provided.")
                          "Covariate" = rep(1:(p+1), J-1),
                          "Estimate" = rep(NA, (p+1)*(J-1)),
                          "Robust Std Error" = rep(NA, (p+1)*(J-1)),
+                         "Lower 95% CI" = rep(NA, (p+1)*(J-1)),
+                         "Upper 95% CI" = rep(NA, (p+1)*(J-1)),
                          "Robust Wald p" = rep(NA, (p+1)*(J-1)),
                          "Robust Score p" = rep(NA, (p+1)*(J-1)),
                          check.names = FALSE)
@@ -259,11 +261,20 @@ covariates in formula must be provided.")
     coef_names <- c(labels(terms(as.formula(formula), data = data)))
     coef_tab$Covariate <- rep(c("(intercept)",coef_names), J-1)
     
+  } else {
+    coef_names <- colnames(X)
+    coef_tab$Covariate <- rep(c("(intercept)", coef_names), J-1)
   }
   
-  #populate estimate and se columns of output table with mle under alternative and robust wald se, respectively
+  #populate estimate, se, Wald p, and lower and upper columns of output table with appropriate quantities
   coef_tab$Estimate <- c(mle_alt)
   coef_tab$'Robust Std Error' <- c(robust_wald_se)
+  coef_tab$'Robust Wald p' <- pchisq((coef_tab$'Estimate'/coef_tab$'Robust Std Error')^2, 1, lower.tail = FALSE)
+  coef_tab$'Lower 95% CI' <- coef_tab$Estimate + qnorm(0.05)*coef_tab$'Robust Std Error'
+  coef_tab$'Upper 95% CI' <- coef_tab$Estimate + qnorm(0.95)*coef_tab$'Robust Std Error'
+  
+  #sort table by magnitude of effect size
+  coef_tab <- arrange(coef_tab, desc(abs(Estimate)))
 
   result <- list("call" = cl,
               "test_stat" = T_GS,

@@ -138,7 +138,7 @@ test_that("glm solver works when gee solver fails", {
   expect_equal(gee_res[2, 1], glm_res[2, 1], tolerance = 0.1)
   # confirm that without user-input cluster correlation coefficient, there
   # are no robust score p-values
-  expect_true(is.na(glm_res[2, 4]))
+  expect_true(is.na(glm_res[2, "Robust Score p"]))
   
   # check that warning is thrown when using glm instead of gee 
   expect_warning(glm_res_user_corr <- gee_test(formula = dist ~ speed,
@@ -151,5 +151,5 @@ test_that("glm solver works when gee solver fails", {
   
   # check that robust score p-values are similar between gee and glm solver when
   # using gee estimated alpha parameter as user-input cluster correlation coefficient
-  expect_equal(gee_res[2, 4], glm_res_user_corr[2, 4], tolerance = 0.01)
+  expect_equal(gee_res[2, "Robust Score p"], glm_res_user_corr[2, "Robust Score p"], tolerance = 0.01)
 })
