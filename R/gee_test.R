@@ -136,8 +136,8 @@ gee_test <- function(use_geeasy = TRUE, use_jack_se = FALSE, cluster_corr_coef =
   }
   
   ### compute 95% confidence intervals using robust std errors
-  ci_lower <- output[,'Estimate'] - qnorm(0.95)*output[,'Robust Std Error']
-  ci_upper <- output[,'Estimate'] + qnorm(0.95)*output[,'Robust Std Error']
+  ci_lower <- output[,'Estimate'] - qnorm(0.975)*output[,'Robust Std Error']
+  ci_upper <- output[,'Estimate'] + qnorm(0.975)*output[,'Robust Std Error']
   
   output <- cbind(output, "Lower 95% CI" = ci_lower)
   output <- cbind(output, "Upper 95% CI" = ci_upper)

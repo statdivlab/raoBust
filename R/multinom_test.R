@@ -262,16 +262,16 @@ covariates in formula must be provided.")
     coef_tab$Covariate <- rep(c("(intercept)",coef_names), J-1)
     
   } else {
-    coef_names <- colnames(X)
+    if (is.null(colnames(X))) {coef_names <- 1:ncol(X)} else {coef_names <- colnames(X)} 
     coef_tab$Covariate <- rep(c("(intercept)", coef_names), J-1)
   }
   
   #populate estimate, se, Wald p, and lower and upper columns of output table with appropriate quantities
   coef_tab$Estimate <- c(mle_alt)
   coef_tab$'Robust Std Error' <- c(robust_wald_se)
-  coef_tab$'Robust Wald p' <- pchisq((coef_tab$'Estimate'/coef_tab$'Robust Std Error')^2, 1, lower.tail = FALSE)
-  coef_tab$'Lower 95% CI' <- coef_tab$Estimate + qnorm(0.05)*coef_tab$'Robust Std Error'
-  coef_tab$'Upper 95% CI' <- coef_tab$Estimate + qnorm(0.95)*coef_tab$'Robust Std Error'
+  coef_tab$'Robust Wald p' <- 2*pnorm(abs(coef_tab$'Estimate'/coef_tab$'Robust Std Error'), lower.tail = FALSE)
+  coef_tab$'Lower 95% CI' <- coef_tab$Estimate + qnorm(0.025)*coef_tab$'Robust Std Error'
+  coef_tab$'Upper 95% CI' <- coef_tab$Estimate + qnorm(0.975)*coef_tab$'Robust Std Error'
   
   #sort table by magnitude of effect size
   coef_tab <- coef_tab[order(abs(coef_tab$Estimate), decreasing = TRUE), ]

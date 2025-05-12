@@ -59,8 +59,8 @@ glm_test <- function(...) {
                                                   adjust=TRUE)))
   robust_wald_ps <- 2*(1-pnorm(abs(output[, "Estimate"] / robust_wald_ses)))
   
-  ci_lower <- output[,'Estimate'] - qnorm(0.95)*robust_wald_ses
-  ci_upper <- output[,'Estimate'] + qnorm(0.95)*robust_wald_ses
+  ci_lower <- output[,'Estimate'] - qnorm(0.975)*robust_wald_ses
+  ci_upper <- output[,'Estimate'] + qnorm(0.975)*robust_wald_ses
   
   output <- cbind(output, "Robust Std Error" = robust_wald_ses)
   output <- cbind(output, "Robust Wald p" = robust_wald_ps)
