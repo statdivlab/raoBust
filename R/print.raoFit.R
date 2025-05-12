@@ -10,7 +10,7 @@
 #'
 #' @export
 
-print.raoFit <- function (x) {
+print.raoFit <- function (x, ...) {
   
   #print out call
   cat("\nCall:\n",

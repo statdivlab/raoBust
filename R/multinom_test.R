@@ -274,7 +274,7 @@ covariates in formula must be provided.")
   coef_tab$'Upper 95% CI' <- coef_tab$Estimate + qnorm(0.95)*coef_tab$'Robust Std Error'
   
   #sort table by magnitude of effect size
-  coef_tab <- arrange(coef_tab, desc(abs(Estimate)))
+  coef_tab <- coef_tab[order(abs(coef_tab$Estimate), decreasing = TRUE), ]
 
   result <- list("call" = cl,
               "test_stat" = T_GS,
