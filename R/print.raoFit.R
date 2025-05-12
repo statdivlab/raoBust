@@ -1,6 +1,7 @@
 #' Print function
 #'
 #' @param x Object of class \code{raoFit}
+#' @param ... further arguments passed to or from other methods.
 #'
 #' @return \code{NULL}. Displays printed model summary.
 #'
