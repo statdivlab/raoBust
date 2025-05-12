@@ -4,10 +4,12 @@
 \alias{print.raoFit}
 \title{Print function}
 \usage{
-\method{print}{raoFit}(x)
+\method{print}{raoFit}(x, ...)
 }
 \arguments{
 \item{x}{Object of class \code{raoFit}}
+
+\item{...}{further arguments passed to or from other methods.}
 }
 \value{
 \code{NULL}. Displays printed model summary.
