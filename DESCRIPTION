@@ -1,6 +1,6 @@
 Package: raoBust
 Title: Robust score tests for Poisson and Multinomial regression
-Version: 0.0.3.3
+Version: 0.1.3.3
 Authors@R: 
     c(person("Amy", "Willis", , "adwillis@uw.edu", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-2802-4317")), 
@@ -12,7 +12,7 @@ Description: Robust score tests for Poisson regression!
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 Suggests: 
     testthat (>= 3.0.0),
     nnet

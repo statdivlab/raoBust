@@ -135,6 +135,13 @@ gee_test <- function(use_geeasy = TRUE, use_jack_se = FALSE, cluster_corr_coef =
     }
   }
   
+  ### compute 95% confidence intervals using robust std errors
+  ci_lower <- output[,'Estimate'] - qnorm(0.975)*output[,'Robust Std Error']
+  ci_upper <- output[,'Estimate'] + qnorm(0.975)*output[,'Robust Std Error']
+  
+  output <- cbind(output, "Lower 95% CI" = ci_lower)
+  output <- cbind(output, "Upper 95% CI" = ci_upper)
+  
   #### run robust score tests
   pp <- nrow(output)
   robust_score_p <- rep(NA, length = pp)
@@ -159,19 +166,23 @@ gee_test <- function(use_geeasy = TRUE, use_jack_se = FALSE, cluster_corr_coef =
   
   output <- cbind(output, "Robust Score p" = robust_score_p)
 
-  output <- output[, c("Estimate","Robust Std Error", "Robust Wald p", "Robust Score p")]
+  output <- output[, c("Estimate","Robust Std Error", "Lower 95% CI", "Upper 95% CI", "Robust Wald p", "Robust Score p")]
   
   if (gee_fails) {
     if (is.null(cluster_corr_coef)) {
       output <- rbind(output,
                       "correlation:alpha" = c(NA, # no estimate of correlation coefficient from GLM fit
                                               NA, # no estimate of "Robust Std Error" 
+                                              NA, # no estimate of "Robust Std Error", so no CI computed
+                                              NA, # no estimate of "Robust Std Error", so no CI computed
                                               NA, # "Robust Wald p"
                                               NA)) # "Robust Score p"
     } else {
       output <- rbind(output,
                       "correlation:alpha" = c(cluster_corr_coef, # user-provided cluster correlation coefficient
                                               NA, # no estimate of "Robust Std Error" 
+                                              NA, # no estimate of "Robust Std Error", so no CI computed
+                                              NA, # no estimate of "Robust Std Error", so no CI computed
                                               NA, # "Robust Wald p"
                                               NA)) # "Robust Score p"
     }
@@ -180,16 +191,22 @@ gee_test <- function(use_geeasy = TRUE, use_jack_se = FALSE, cluster_corr_coef =
       output <- rbind(output,
                       "correlation:alpha" = c(gee_result$geese$alpha, # "Estimate"
                                               NA, # no estimate of "Robust Std Error" from geeasy
+                                              NA, # no estimate of "Robust Std Error", so no CI computed
+                                              NA, # no estimate of "Robust Std Error", so no CI computed
                                               NA, # "Robust Wald p"
                                               NA)) # "Robust Score p"
     } else {
       output <- rbind(output,
                       "correlation:alpha" = c(gee_result$geese$alpha, # "Estimate"
-                                              gee_result$geese$valpha.ajs, # "Robust Std Error"
+                                              gee_result$geese$valpha.ajs, # "Robust Std Error",
+                                              gee_result$geese$alpha - qnorm(0.95)*gee_result$geese$valpha.ajs, #95% ci lower
+                                              gee_result$geese$alpha + qnorm(0.95)*gee_result$geese$valpha.ajs, #95% ci upper
                                               NA, # "Robust Wald p"
                                               NA)) # "Robust Score p"
     }
   }
   
-  output
+  result <- list("call" = cl_orig,
+                 "coef_tab" = output)
+  return(structure(result, class = "raoFit"))
 }

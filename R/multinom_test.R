@@ -22,6 +22,9 @@
 multinom_test <- function(X = NULL, Y, formula = NULL, data = NULL, 
                           strong = FALSE, j = NULL, penalty = FALSE, pseudo_inv = FALSE) {
 
+  #record function call
+  cl <- match.call()
+  
   # if X is null and formula and data are provided, get design matrix
   if (is.null(X)) {
     if (is.null(formula) | is.null(data)) {
@@ -211,11 +214,77 @@ covariates in formula must be provided.")
                           return(NA)
                         })
   }
+  
+  #compute robust Wald SE's
+  #terms necessary for computation of S, I, D matrices
+  ps_alt <-   multinom_get_probs(X, Y, mle_alt)
+  
+  #score of \beta evaluated at mle under alternative
+  S_alt <- multinom_score_vector(X, Y, ps_alt)
+  
+  #information matrix evaluated at mle under alternative
+  I_alt <- multinom_info_mat(X, Y, ps_alt)
+  
+  #D matrix (sum of S_iS_i^T for all i = 1, \dots, n) for mle under alternative
+  D_alt <- matrix(data = rep(0, length(S_alt)^2), ncol = length(S_alt))
+  for (k in 1:(J-1)) {
+    for (l in 1:(J-1)) {
+      S_alt_k <- as.vector(Y[ ,k] - ps_alt[ ,k]*N)*Xaug
+      S_alt_l <- as.vector(Y[ ,l] - ps_alt[ ,l]*N)*Xaug
+      D_alt[((k-1)*(p+1) + 1):(k*(p+1)) ,((l-1)*(p+1) + 1):(l*(p+1))] <- t(S_alt_k)%*%S_alt_l
+    }
+  }
+  
+  robust_wald_cov <- solve(I_alt) %*% D_alt %*% solve(I_alt)
+  robust_wald_se <- matrix(sqrt(diag(robust_wald_cov)), nrow = p+1, ncol = J-1, byrow = FALSE)
+  
+  #make table of coefficients
+  cat_labs <- 1:ncol(Y)
+  if(!is.null(colnames(Y))) {
+    cat_labs <- colnames(Y)
+  }
+  
+  coef_tab <- data.frame("Category" = rep(cat_labs[1:J-1], each = p+1),
+                         "Covariate" = rep(1:(p+1), J-1),
+                         "Estimate" = rep(NA, (p+1)*(J-1)),
+                         "Robust Std Error" = rep(NA, (p+1)*(J-1)),
+                         "Lower 95% CI" = rep(NA, (p+1)*(J-1)),
+                         "Upper 95% CI" = rep(NA, (p+1)*(J-1)),
+                         "Robust Wald p" = rep(NA, (p+1)*(J-1)),
+                         "Robust Score p" = rep(NA, (p+1)*(J-1)),
+                         check.names = FALSE)
+  
+  #set covariate terms appropriately if formula was used in call
+  if (!is.null(formula)) {
+    
+    #get names of variables used for model fit, and then use these to populate covariate column of output table
+    coef_names <- c(labels(terms(as.formula(formula), data = data)))
+    coef_tab$Covariate <- rep(c("(intercept)",coef_names), J-1)
+    
+  } else {
+    if (is.null(colnames(X))) {coef_names <- 1:ncol(X)} else {coef_names <- colnames(X)} 
+    coef_tab$Covariate <- rep(c("(intercept)", coef_names), J-1)
+  }
+  
+  #populate estimate, se, Wald p, and lower and upper columns of output table with appropriate quantities
+  coef_tab$Estimate <- c(mle_alt)
+  coef_tab$'Robust Std Error' <- c(robust_wald_se)
+  coef_tab$'Robust Wald p' <- 2*pnorm(abs(coef_tab$'Estimate'/coef_tab$'Robust Std Error'), lower.tail = FALSE)
+  coef_tab$'Lower 95% CI' <- coef_tab$Estimate + qnorm(0.025)*coef_tab$'Robust Std Error'
+  coef_tab$'Upper 95% CI' <- coef_tab$Estimate + qnorm(0.975)*coef_tab$'Robust Std Error'
+  
+  #sort table by magnitude of effect size
+  coef_tab <- coef_tab[order(abs(coef_tab$Estimate), decreasing = TRUE), ]
 
-  return(list("test_stat" = T_GS,
+  result <- list("call" = cl,
+              "test_stat" = T_GS,
               "p" = pchisq(T_GS, df = the_df, lower.tail = FALSE),
               "mle0" = the_mle,
               "mle1" = mle_alt,
-              "penalty" = penalty))
+              "wald_se" = robust_wald_se,
+              "coef_tab" = coef_tab,
+              "penalty" = penalty)
+  
+  return(structure(result, class = "raoFit"))
 
 }

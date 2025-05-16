@@ -19,7 +19,7 @@ test_that("nominal level score test for n = 100 under correct model specificatio
     for (j in 1:nsim) {
       ps[j] <- glm_test(yy ~ covariate1,
                         data = simulate_null_data(),
-                        family = poisson(link = "log"))[2, "Robust Score p"]
+                        family = poisson(link = "log"))$coef_tab[2, "Robust Score p"]
     }
   })
 
@@ -39,7 +39,7 @@ test_that("p-values are correlated with robust Wald under null", {
   for (i in 1:nsim) {
     the_glm <- glm_test(yy ~ covariate1,
                         data = simulate_null_data(),
-                        family = poisson(link = "log"))
+                        family = poisson(link = "log"))$coef_tab
     ps_score[i] <- the_glm[2, "Robust Score p"]
     ps_wald[i] <- the_glm[2, "Robust Wald p"]
   }
@@ -73,7 +73,7 @@ test_that("score test has increasing power with n = 100 under correct model spec
     for (j in 1:nsim) {
       ps[j] <- glm_test(yy ~ covariate1,
                         data = simulate_alt_data(nn),
-                        family = poisson(link = "log"))[2, "Robust Score p"]
+                        family = poisson(link = "log"))$coef_tab[2, "Robust Score p"]
     }
   })
   power50 <- mean(ps < 0.05)
@@ -85,7 +85,7 @@ test_that("score test has increasing power with n = 100 under correct model spec
     for (j in 1:nsim) {
       ps[j] <- glm_test(yy ~ covariate1,
                         data = simulate_alt_data(nn),
-                        family = poisson(link = "log"))[2, "Robust Score p"]
+                        family = poisson(link = "log"))$coef_tab[2, "Robust Score p"]
     }
   })
   power100 <- mean(ps < 0.05)
@@ -97,7 +97,7 @@ test_that("score test has increasing power with n = 100 under correct model spec
     for (j in 1:nsim) {
       ps[j] <- glm_test(yy ~ covariate1,
                         data = simulate_alt_data(nn),
-                        family = poisson(link = "log"))[2, "Robust Score p"]
+                        family = poisson(link = "log"))$coef_tab[2, "Robust Score p"]
     }
   })
   power200 <- mean(ps < 0.05)

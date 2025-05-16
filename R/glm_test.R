@@ -37,7 +37,7 @@ glm_test <- function(...) {
                "You requested link", glm_result$family$link, "\n",
                "Please open a GitHub issue if you're interested in other link functions"))
   }
-
+  
   output <- coef(summary(glm_result))[, -3]                 ## "z value"
   colnames(output)[3] <- "Non-robust Wald p"                ## "Pr(>|z|)"
   colnames(output)[2] <- "Non-robust Std Error"             ## "Std. Error"
@@ -58,10 +58,20 @@ glm_test <- function(...) {
   robust_wald_ses <- sqrt(diag(sandwich::sandwich(glm_result,
                                                   adjust=TRUE)))
   robust_wald_ps <- 2*(1-pnorm(abs(output[, "Estimate"] / robust_wald_ses)))
-
+  
+  ci_lower <- output[,'Estimate'] - qnorm(0.975)*robust_wald_ses
+  ci_upper <- output[,'Estimate'] + qnorm(0.975)*robust_wald_ses
+  
   output <- cbind(output, "Robust Std Error" = robust_wald_ses)
   output <- cbind(output, "Robust Wald p" = robust_wald_ps)
-
-  output[, c("Estimate", "Non-robust Std Error", "Robust Std Error", "Non-robust Wald p", "Robust Wald p", "Robust Score p")]
+  output <- cbind(output, "Lower 95% CI" = ci_lower)
+  output <- cbind(output, "Upper 95% CI" = ci_upper)
+  
+  output <- output[, c("Estimate", "Non-robust Std Error", "Robust Std Error", "Lower 95% CI", "Upper 95% CI", "Non-robust Wald p", "Robust Wald p", "Robust Score p")]
+  
+  result <- list("call" = cl,
+                 "coef_tab" = output)
+  
+  return(structure(result, class = "raoFit"))
 
 }
