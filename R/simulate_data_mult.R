@@ -9,6 +9,7 @@
 #' @param jj Number of taxa
 #' @param ms Number of counts per sample
 #' @param jj_null For the weak null, which taxon should be null
+#' @param Beta User-specified value of the true beta (if you wish to draw from a fixed beta rather than generate beta0's and beta1's).
 #' @param sd_beta0s The beta0's are drawn from a normal distribution with mean zero. This is the standard deviation of that distribution.
 #' @param sd_beta1s The beta1's are drawn from a normal distribution with mean zero under the null or non-zero under the alternative. This is the standard deviation of that distribution.
 #' @param overdispersion An additional normal random variable can be added to the link function to add dispersion above a multinomial distribution. This is the standard aviation for that normal variable. Useful for confirming error rate control under model misspecification.
@@ -28,42 +29,49 @@ simulate_data_mult <- function(nn,
                                jj = 5,
                                ms = 10000,
                                jj_null = NULL,
+                               Beta = NULL,
                                sd_beta0s = NULL,
                                sd_beta1s = NULL,
                                overdispersion = 0,
                                covariate = NULL) {
 
-  if (is.null(sd_beta0s)) {
-    sd_beta0s <- 1
-  }
-
-  if (is.null(sd_beta1s)) {
-    sd_beta1s <- 1
-  }
-
-  if (strong) {
-    sd_beta1s <- 0
+  if(is.null(Beta)) {
+    if (is.null(sd_beta0s)) {
+      sd_beta0s <- 1
+    }
+    
+    if (is.null(sd_beta1s)) {
+      sd_beta1s <- 1
+    }
+    
+    if (strong) {
+      sd_beta1s <- 0
+    }
+    
+    if (null) {
+      beta1_mean <- 0
+    } else {
+      beta1_mean <- alt_magnitude
+    }
+    
+    beta0s <- rnorm(n = jj - 1, mean = 0, sd = sd_beta0s)
+    beta1s <- rnorm(n = jj - 1, mean = beta1_mean, sd = sd_beta1s)
+    
+    if (null & !is.null(jj_null)) {
+      beta1s[jj_null] <- 0
+    }
+    
+  } else {
+    beta0s <- Beta[1,]
+    beta1s <- Beta[2,]
   }
   
-  if (null) {
-    beta1_mean <- 0
-  } else {
-    beta1_mean <- alt_magnitude
-  }
-
-  beta0s <- rnorm(n = jj - 1, mean = 0, sd = sd_beta0s)
-  beta1s <- rnorm(n = jj - 1, mean = beta1_mean, sd = sd_beta1s)
-
-  if (null & !is.null(jj_null)) {
-    beta1s[jj_null] <- 0
-  }
-
   if (is.null(covariate)) {
     covariate1 <- cbind(1, seq(from = 0, to = 1, length.out = nn))
   } else {
     covariate1 <- cbind(1, covariate)
   }
-  
+
   xbetas <- covariate1 %*% rbind(beta0s, beta1s)
 
   if (overdispersion > 0) {

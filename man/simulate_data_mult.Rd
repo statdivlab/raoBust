@@ -12,6 +12,7 @@ simulate_data_mult(
   jj = 5,
   ms = 10000,
   jj_null = NULL,
+  Beta = NULL,
   sd_beta0s = NULL,
   sd_beta1s = NULL,
   overdispersion = 0,
@@ -32,6 +33,8 @@ simulate_data_mult(
 \item{ms}{Number of counts per sample}
 
 \item{jj_null}{For the weak null, which taxon should be null}
+
+\item{Beta}{User-specified value of the true beta (if you wish to draw from a fixed beta rather than generate beta0's and beta1's).}
 
 \item{sd_beta0s}{The beta0's are drawn from a normal distribution with mean zero. This is the standard deviation of that distribution.}
 

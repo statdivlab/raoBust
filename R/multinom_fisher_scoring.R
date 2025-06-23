@@ -3,12 +3,12 @@
 #' @param beta The initial values provided for the \eqn{\beta} parameters.
 #' @param Y The \eqn{n x J} data matrix of outcomes.
 #' @param X The \eqn{n x p} design matrix of covariates.
-#' @param null If TRUE, optimizes under the null, if FALSE, optimizes under the alternative. Defauls to TRUE.
+#' @param null If TRUE, optimizes under the null, if FALSE, optimizes under the alternative. Defaults to TRUE.
 #' @param strong If FALSE, this function will compute the robust score statistic to test the weak null that for one specific \eqn{j}, \eqn{\beta_j = 0} for the length \eqn{p} vector \eqn{\beta_j}.
 #' If TRUE, this function instead computes the robust score statistic to test the strong null that \eqn{\beta_1 = \beta_2 = \dots = \beta_{J-1} = 0} for all length \eqn{p} vectors \eqn{\beta_j}, \eqn{j\in\{1,\ldots,J-1\}}. 
 #' Default is FALSE.
 #' @param null_j If `strong` is FALSE, this argument must be supplied. This gives the category \eqn{j} in the weak null hypothesis that \eqn{\beta_j = 0}.
-#' @param tol TThe tolerance used to determine how much better update function value must be prior to stopping algorithm.
+#' @param tol The tolerance used to determine how much better update function value must be prior to stopping algorithm.
 #' @param stepSize The size of the step to take during the parameter update step.
 #' @param arm_c Control parameter for checking Armijo condition.
 #' @param maxit Maximum number of iterations for Fisher scoring. Defaults to 250.
