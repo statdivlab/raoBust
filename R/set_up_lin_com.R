@@ -6,11 +6,12 @@
 #' 
 #' @param n_hypotheses Number of hypotheses to test.
 #'
-#' @return The multinomial probabilities for a given value of \eqn{\beta}.
+#' @return An 'A' matrix with `n_hypotheses` rows and `(J-1) x (p+1)` columns with the various coefficient and category combinations as column names.
+#' The matrix is filled with all 0's, but can be modified by the user to reflect the linear combinations they wish to test.
 #'
 #' @author Shirley Mathur
 #'
-#'
+#'@export
 
 set_up_lin_com <- function (J, p, n_hypotheses) {
   
