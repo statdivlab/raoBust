@@ -50,9 +50,6 @@
 
 lincom <- function(test_object, A, c) {
   
-
-lincom <- function(test_object, A, c) {
-  
   #get and compute relevant quantities
   n_hyp <- nrow(A)
   n <- nrow(test_object$design_matrix)
