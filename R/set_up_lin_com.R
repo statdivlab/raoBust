@@ -13,6 +13,7 @@
 #'
 #'@export
 
+
 set_up_lin_com <- function (J, p, n_hypotheses) {
   
   num_params <- (p+1)*(J-1)

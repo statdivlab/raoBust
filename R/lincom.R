@@ -11,6 +11,8 @@
 #' @author Shirley Mathur
 #'
 #' @export
+#' 
+#' @examples
 #' #set true value of beta for DGP
 #' beta0s <- rnorm(n = 4)
 #' beta1s <- rnorm(n = 4)
@@ -45,6 +47,9 @@
 #' #print result
 #' sample_lincom_test
 #' 
+
+lincom <- function(test_object, A, c) {
+  
 
 lincom <- function(test_object, A, c) {
   
