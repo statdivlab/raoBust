@@ -7,10 +7,7 @@
 #' @param strong If FALSE, this function will compute the robust score statistic to test the weak null that for one specific \eqn{j}, \eqn{\beta_j = 0} for the length \eqn{p} vector \eqn{\beta_j}.
 #' If TRUE, this function instead computes the robust score statistic to test the strong null that \eqn{\beta_1 = \beta_2 = \dots = \beta_{J-1} = 0} for all length \eqn{p} vectors \eqn{\beta_j}, \eqn{j\in\{1,\ldots,J-1\}}. 
 #' Default is FALSE.
-#' @param null_j If  `strong` is FALSE, this argument must be supplied. This gives the category \eqn{j} in the weak null hypothesis that \eqn{\beta_j = 0}.
-#' Default is NULL.
-#' @param j_ind If `strong` is FALSE and `null_j` is NULL, this argument must be supplied. This gives the category index of the individual covariate that is tested in the weak null hypothesis that \eqn{\beta_{kj} = 0}.
-#' @param k_ind If `strong` is FALSE and `null_j` is NULL, this argument must be supplied. This gives the covariate index of the individual covariate that is tested in the weak null hypothesis that \eqn{\beta_{kj} = 0}.
+#' @param null_j If `strong` is FALSE, this argument must be supplied. This gives the category \eqn{j} in the weak null hypothesis that \eqn{\beta_j = 0}.
 #' @param tol The tolerance used to determine how much better update function value must be prior to stopping algorithm.
 #' @param stepSize The size of the step to take during the parameter update step.
 #' @param arm_c Control parameter for checking Armijo condition.
@@ -21,23 +18,14 @@
 #' @author Shirley Mathur
 #'
 #' @export
-multinom_fisher_scoring <- function(beta, X, Y, null = TRUE, strong = FALSE, null_j = NULL, j_ind = NULL, k_ind = NULL, tol = 1e-5, stepSize = 0.5, arm_c = 0.5, maxit = 250, pseudo_inv = FALSE) {
+multinom_fisher_scoring <- function(beta, X, Y, null = TRUE, strong = FALSE, null_j = NULL, tol = 1e-5, stepSize = 0.5, arm_c = 0.5, maxit = 250, pseudo_inv = FALSE) {
   
-  # check that j_ind and k_ind are provided if strong is FALSE and null_j is NULL
-  if (null & !strong & is.null(null_j)) {
-    if (is.null(j_ind) || is.null(k_ind)) {
-      stop("If testing under the weak null hypothesis with `strong = FALSE` and null_j = NULL, you must include both arguments `j_ind` and `k_ind`.")
-    }
-  }
-  
-  # check that if strong is FALSE AND j_ind and k_ind are NULL, j is provided 
-  if (null & !strong & is.null(j_ind) & is.null(k_ind)) {
+  # check that if strong is FALSE, j is provided 
+  if (null & !strong) {
     if (is.null(null_j)) {
-      stop("If testing under the weak null hypothesis with `strong = FALSE`, j_ind = NULL and k_ind = NULL, you must include the argument `null_j`.")
+      stop("If testing under the weak null hypothesis with `strong = FALSE`, you must include the argument `null_j`.")
     }
   }
-  
-  
   
   #get relevant quantities needed for computations
   n <- nrow(Y)
@@ -52,16 +40,12 @@ multinom_fisher_scoring <- function(beta, X, Y, null = TRUE, strong = FALSE, nul
   #get indices of beta components that need to be optimized over
   if (null) {
     if (strong == FALSE) {
-      if (is.null(null_j)) {
-        optim_indices <-  (1:((p+1)*(J-1)))[-c((j_ind-1)*(p+1) + k_ind)]
-      } else {
-        optim_indices <-  (1:((p+1)*(J-1)))[-c(((null_j-1)*(p+1)+2):(null_j*(p+1)))] #take all indices that are not set to 0 under weak null
-        optim_indices <- c(optim_indices[-((null_j-1)*(p+1) + 1)], optim_indices[((null_j-1)*(p+1) + 1)])
-      }
+      optim_indices <-  (1:((p+1)*(J-1)))[-c(((null_j-1)*(p+1)+2):(null_j*(p+1)))] #take all indices that are not set to 0 under weak null
+      optim_indices <- c(optim_indices[-((null_j-1)*(p+1) + 1)], optim_indices[((null_j-1)*(p+1) + 1)])
     } else {
       optim_indices <- (1:((p+1)*(J-1)))[((0:(J-2))*(p+1)+1)] #take all indices that are not set to 0 under strong null
     }
-  } else  {
+  } else {
     optim_indices <- (1:((p+1)*(J-1)))
   }
   
@@ -98,25 +82,17 @@ multinom_fisher_scoring <- function(beta, X, Y, null = TRUE, strong = FALSE, nul
                              return(MASS::ginv(info_mat) %*% score)
                            })
     }
-
+    
     #first get acceptable update
     accepted <- FALSE
+    
     while(!accepted) {
       #compute proposed beta
       beta_values_prop <- beta_values_current + stepSize*step_dir
+
       if (null) {
         if (strong == FALSE) {
-          if (is.null(null_j)) {
-            if (j_ind == 1 & k_ind == 1) {
-              beta_prop <- matrix(c(0, beta_values_prop), nrow = p+1)
-            } else if (j_ind == J-1 & k_ind == p+1) {
-              beta_prop <- matrix(c(beta_values_prop, 0), nrow = p+1)
-            } else {
-              beta_prop <- matrix(c(beta_values_prop[1:((j_ind-1)*(p+1) + k_ind - 1)], 0, beta_values_prop[((j_ind-1)*(p+1) + k_ind):((p+1)*(J-1)-1)]), nrow = p+1)
-            }
-          } else {
-            beta_prop <- multinom_beta_vector_to_matrix(beta_values_prop, p, J, null_j)
-          }
+          beta_prop <- multinom_beta_vector_to_matrix(beta_values_prop, p, J, null_j)
         } else {
           beta_prop <- matrix(0, nrow = p + 1, ncol = J - 1)
           beta_prop[1,] <- beta_values_prop
@@ -125,9 +101,11 @@ multinom_fisher_scoring <- function(beta, X, Y, null = TRUE, strong = FALSE, nul
         beta_prop <- matrix(beta_values_prop, nrow = p + 1, ncol = J - 1)
       }
       
+      
       #compute likelihood for proposed beta
       probs_prop <- multinom_get_probs(X, Y, beta_prop)
       logLik_prop <- sum(Y*log(probs_prop))
+      
       #check if update is acceptable
       if (logLik_prop >= logLik_current + stepSize*arm_c*norm(score %*% step_dir)) {
         beta_values_update <- beta_values_prop
