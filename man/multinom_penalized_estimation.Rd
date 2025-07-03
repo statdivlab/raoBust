@@ -11,6 +11,8 @@ multinom_penalized_estimation(
   null = TRUE,
   strong = FALSE,
   null_j = NULL,
+  j_ind = NULL,
+  k_ind = NULL,
   tol = 1e-05,
   stepSize = 0.5,
   arm_c = 0.5,
@@ -33,6 +35,10 @@ If TRUE, this function instead computes the robust score statistic to test the s
 Default is FALSE.}
 
 \item{null_j}{If \code{strong} is FALSE, this argument must be supplied. This gives the category \eqn{j} in the weak null hypothesis that \eqn{\beta_j = 0}.}
+
+\item{j_ind}{If \code{strong} is FALSE and \code{null_j} is NULL, this argument must be supplied. This gives the category index of the individual covariate that is tested in the weak null hypothesis that \eqn{\beta_{kj} = 0}.}
+
+\item{k_ind}{If \code{strong} is FALSE and \code{null_j} is NULL, this argument must be supplied. This gives the covariate index of the individual covariate that is tested in the weak null hypothesis that \eqn{\beta_{kj} = 0}.}
 
 \item{tol}{The tolerance used to determine how much better update function value must be prior to stopping algorithm.}
 
