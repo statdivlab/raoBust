@@ -14,7 +14,8 @@ set_up_lin_com(J, p, n_hypotheses)
 \item{n_hypotheses}{Number of hypotheses to test.}
 }
 \value{
-The multinomial probabilities for a given value of \eqn{\beta}.
+An 'A' matrix with \code{n_hypotheses} rows and \verb{(J-1) x (p+1)} columns with the various coefficient and category combinations as column names.
+The matrix is filled with all 0's, but can be modified by the user to reflect the linear combinations they wish to test.
 }
 \description{
 Create matrix to be populated with coefficients for user-specified number of hypotheses.
