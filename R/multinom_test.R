@@ -14,7 +14,7 @@
 #' @return The robust score test statistic for the specified hypothesis test. A list including the test statistic, p-value,
 #' estimated parameters under the null hypothesis, and estimated parameters under the alternative hypothesis.
 #'
-#' @importFrom stats nlm optim
+#' @importFrom stats nlm optim formula qnorm
 #'
 #' @author Shirley Mathur
 #'
@@ -269,7 +269,7 @@ covariates in formula must be provided.")
   #populate estimate, se, Wald p, and lower and upper columns of output table with appropriate quantities
   coef_tab$Estimate <- c(mle_alt)
   coef_tab$'Robust Std Error' <- c(robust_wald_se)
-  coef_tab$'Robust Wald p' <- 2*pnorm(abs(coef_tab$'Estimate'/coef_tab$'Robust Std Error'), lower.tail = FALSE)
+  coef_tab$'Robust Wald p' <- pchisq((coef_tab$'Estimate'/coef_tab$'Robust Std Error')^2, df=1, lower.tail = FALSE)
   coef_tab$'Lower 95% CI' <- coef_tab$Estimate + qnorm(0.025)*coef_tab$'Robust Std Error'
   coef_tab$'Upper 95% CI' <- coef_tab$Estimate + qnorm(0.975)*coef_tab$'Robust Std Error'
   
@@ -277,13 +277,15 @@ covariates in formula must be provided.")
   coef_tab <- coef_tab[order(abs(coef_tab$Estimate), decreasing = TRUE), ]
 
   result <- list("call" = cl,
-              "test_stat" = T_GS,
-              "p" = pchisq(T_GS, df = the_df, lower.tail = FALSE),
-              "mle0" = the_mle,
-              "mle1" = mle_alt,
-              "wald_se" = robust_wald_se,
-              "coef_tab" = coef_tab,
-              "penalty" = penalty)
+                 "design_matrix" = Xaug,
+                 "test_stat" = T_GS,
+                 "p" = pchisq(T_GS, df = the_df, lower.tail = FALSE),
+                 "mle0" = the_mle,
+                 "mle1" = mle_alt,
+                 "wald_cov" = robust_wald_cov,
+                 "wald_se" = robust_wald_se,
+                 "coef_tab" = coef_tab,
+                 "penalty" = penalty)
   
   return(structure(result, class = "raoFit"))
 
