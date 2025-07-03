@@ -8,6 +8,7 @@
 #' If TRUE, this function instead computes the robust score statistic to test the strong null that \eqn{\beta_1 = \beta_2 = \dots = \beta_{J-1} = 0} for all length \eqn{p} vectors \eqn{\beta_j}, \eqn{j\in\{1,\ldots,J-1\}}. 
 #' Default is FALSE.
 #' @param j If `strong` is FALSE, this argument must be supplied. This gives the category \eqn{j} in the weak null hypothesis that \eqn{\beta_j = 0}.
+#' @param all_score This specifies is scores tests for each individual covariate and category pair should be run. Default is FALSE.
 #' @param penalty If TRUE will apply a Firth penalty to estimation under the alternative and under the null. Defaults to FALSE (ask Amy her preference)
 #' @param pseudo_inv Use pseudo inverse for inverted portion of the robust score test to avoid issues with nearly singular matrices.
 #'
@@ -20,7 +21,7 @@
 #'
 #' @export
 multinom_test <- function(X = NULL, Y, formula = NULL, data = NULL, 
-                          strong = FALSE, j = NULL, penalty = FALSE, pseudo_inv = FALSE) {
+                          strong = FALSE, j = NULL, all_score = FALSE, penalty = FALSE, pseudo_inv = FALSE) {
 
   #record function call
   cl <- match.call()
@@ -197,6 +198,76 @@ covariates in formula must be provided.")
 
   }
   
+  
+  #run score test for each coefficient (all covariate and category pairs) if desired
+  score_test_pvals <- matrix(NA, nrow = p+1, ncol = J-1)
+  if (all_score) {
+    for (j in 1:(J-1)) {
+      for (m in 1:(p+1)) {
+        #jacobian of function of parameter h(\beta) = 0
+        H3 <- matrix(data = rep(0, (p+1)*(J-1)), nrow = 1)
+        H3[1,(j-1)*(p+1)+m] <- 1
+        
+        #compute mle under null constraint
+        beta_init <- matrix(1, nrow = p + 1, ncol = J-1)
+        beta_init[m,j] <- 0
+        if (!penalty) {
+          beta_null3mle <- multinom_fisher_scoring(beta_init, X, Y, j_ind = j, k_ind = m, pseudo_inv = pseudo_inv)
+        } else {
+          beta_null3mle <- multinom_penalized_estimation(beta_init, X, Y, j_ind = j, k_ind = m, pseudo_inv = pseudo_inv)
+        }
+        
+        #terms necessary for computation of S, I, D matrices
+        ps_full <- multinom_get_probs(X, Y, beta_null3mle)
+        
+        
+        #score of \beta evaluated at mle under null constraint
+        S3 <- multinom_score_vector(X, Y, ps_full)
+        
+        #information matrix evaluated at mle under null constraint
+        I3 <- multinom_info_mat(X, Y, ps_full)
+        
+        #D matrix (sum of S_iS_i^T for all i = 1, \dots, n)
+        D3 <- matrix(data = rep(0, length(S3)^2), ncol = length(S3))
+        for (k in 1:(J-1)) {
+          for (l in 1:(J-1)) {
+            S3_k <- as.vector(Y[ ,k] - ps_full[ ,k]*N)*Xaug
+            S3_l <- as.vector(Y[ ,l] - ps_full[ ,l]*N)*Xaug
+            D3[((k-1)*(p+1) + 1):(k*(p+1)) ,((l-1)*(p+1) + 1):(l*(p+1))] <- t(S3_k)%*%S3_l
+          }
+        }
+        
+        temp_mle <- beta_null3mle
+        
+        #compute statistic!
+        if (!pseudo_inv) {
+          temp_GS <- tryCatch({as.numeric(t(S3) %*% solve(I3) %*% t(H3) %*%
+                                            (solve(H3 %*% solve(I3) %*% D3 %*% solve(I3) %*% t(H3))) %*%
+                                            H3 %*% solve(I3) %*% S3)},
+                              error = function(cond) {
+                                warning("Test statistic cannot be calculated due to the error printed above.")
+                                print(cond)
+                                return(NA)
+                              })
+        } else {
+          temp_GS <- tryCatch({as.numeric(t(S3) %*% MASS::ginv(I3) %*% t(H3) %*%
+                                            (MASS::ginv(H3 %*% MASS::ginv(I3) %*% D3 %*% MASS::ginv(I3) %*% t(H3))) %*%
+                                            H3 %*% MASS::ginv(I3) %*% S3)},
+                              error = function(cond) {
+                                warning("Test statistic cannot be calculated due to the error printed above.")
+                                print(cond)
+                                return(NA)
+                              })
+        }
+        
+        #get pval for test and record
+        score_test_pvals[m,j] <- pchisq(temp_GS, df = 1, lower.tail = FALSE)
+      }
+    }
+    
+  }
+
+  
   #compute mle under alternative
   beta_alt <- matrix(-0.02, nrow = p + 1, ncol = J-1)
   if (!penalty) {
@@ -272,6 +343,7 @@ covariates in formula must be provided.")
   coef_tab$'Robust Wald p' <- pchisq((coef_tab$'Estimate'/coef_tab$'Robust Std Error')^2, df=1, lower.tail = FALSE)
   coef_tab$'Lower 95% CI' <- coef_tab$Estimate + qnorm(0.025)*coef_tab$'Robust Std Error'
   coef_tab$'Upper 95% CI' <- coef_tab$Estimate + qnorm(0.975)*coef_tab$'Robust Std Error'
+  coef_tab$'Robust Score p' <- c(score_test_pvals)
   
   #sort table by magnitude of effect size
   coef_tab <- coef_tab[order(abs(coef_tab$Estimate), decreasing = TRUE), ]
