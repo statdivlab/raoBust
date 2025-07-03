@@ -3,7 +3,7 @@
 #' @param ... Arguments that you would pass to a regular `glm` call. Note that for now we only have functionality for Poisson tests with log link
 #'
 #' @importFrom sandwich sandwich
-#' @importFrom stats coef glm pnorm
+#' @importFrom stats coef glm pnorm qnorm
 #' @import rlang
 #'
 #' @examples

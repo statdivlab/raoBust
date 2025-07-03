@@ -14,7 +14,7 @@
 #' @return The robust score test statistic for the specified hypothesis test. A list including the test statistic, p-value,
 #' estimated parameters under the null hypothesis, and estimated parameters under the alternative hypothesis.
 #'
-#' @importFrom stats nlm optim
+#' @importFrom stats nlm optim formula qnorm
 #'
 #' @author Shirley Mathur
 #'

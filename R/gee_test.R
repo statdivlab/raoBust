@@ -8,7 +8,7 @@
 #' @param ... Arguments that you would pass to a regular `geepack::geeglm` call. Note that for now we only have functionality for Poisson tests with log link
 #'
 #' @importFrom sandwich sandwich vcovJK
-#' @importFrom stats coef glm pnorm
+#' @importFrom stats coef glm pnorm qnorm
 #' @importFrom rlang call_match caller_env
 #' @importFrom geepack geeglm
 #' @importFrom stats glm

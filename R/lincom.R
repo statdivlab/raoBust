@@ -7,6 +7,8 @@
 #' @param c Vector that has user-specified null hypothesis value for user-specified linear combinations of parameters of interest.
 #'
 #' @return Table with relevant quantities of interest for hypothesis tests.
+#' 
+#' @importFrom stats rnorm
 #'
 #' @author Shirley Mathur
 #'
