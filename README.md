@@ -15,13 +15,16 @@ called score tests) and Wald tests.
 
 Robust score tests have outstanding error rate performance in small
 samples, **and** when your data is not drawn from a parametric family
-(i.e., always). It’s shocking to me (Amy) how well they perform. They
-have a reputation for being conservative in small samples, but I would
-argue that this is a *very good thing*.
+(i.e., always). It is shocking how well they perform. They are
+generally conservative in small samples, which is a very good thing. 
+You *should* err on conservative when you have few samples. Most 
+other tests are anti-conservative in small samples. 
 
-For now (because it’s what I need for my work) I only have
-implementations for Poisson GLMs with log links. If you have another
-specific case you’d like to request, please let me know at
+We currently have Rao tests for coefficients in Poisson GLMs (log 
+link), Binomial GLMs (logit link), and Multinomial GLMs (log link), 
+including for linear combinations of parameters and simultaneous testing
+("ANOVA"). If you have another
+specific case you’d like to request, please let us know at
 [Issues](https://github.com/statdivlab/raoBust/issues) and label it as a
 “feature request”.
 
@@ -54,8 +57,9 @@ glm_test(dist ~ speed, data = cars, family=poisson(link="log"))
 
 ## People
 
-This software project was started by Amy D Willis, with input and
-insights from former lab member David S Clausen. Sarah Teichman is an
-amazing collaborator and coauthor.
+- Creator, maintainer: Amy D Willis
+- Author: Sarah Teichman
+- Author: David S Clausen
+- Author: Shirley Mathur
 
 All errors are Amy’s fault.
