@@ -31,7 +31,8 @@ Default is FALSE.}
 
 \item{j}{If \code{strong} is FALSE, this argument must be supplied. This gives the category \eqn{j} in the weak null hypothesis that \eqn{\beta_j = 0}.}
 
-\item{all_score}{This specifies is scores tests for each individual covariate and category pair should be run. Default is FALSE.}
+\item{all_score}{If TRUE, score tests for each individual covariate and category pair (i.e. null that \eqn{\beta_{jk} = 0} for each category \eqn{j = 1, \dots, J-1} and each covariate \eqn{k = 1, \dots, p} pair) will be
+run and reported in output coefficient table. Default is FALSE.}
 
 \item{penalty}{If TRUE will apply a Firth penalty to estimation under the alternative and under the null. Defaults to FALSE (ask Amy her preference)}
 
