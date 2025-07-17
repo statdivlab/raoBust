@@ -8,6 +8,8 @@
 #' If TRUE, this function instead computes the robust score statistic to test the strong null that \eqn{\beta_1 = \beta_2 = \dots = \beta_{J-1} = 0} for all length \eqn{p} vectors \eqn{\beta_j}, \eqn{j\in\{1,\ldots,J-1\}}. 
 #' Default is FALSE.
 #' @param null_j If `strong` is FALSE, this argument must be supplied. This gives the category \eqn{j} in the weak null hypothesis that \eqn{\beta_j = 0}.
+#' @param j_ind If `strong` is FALSE and `null_j` is NULL, this argument must be supplied. This gives the category index of the individual covariate that is tested in the weak null hypothesis that \eqn{\beta_{kj} = 0}.
+#' @param k_ind If `strong` is FALSE and `null_j` is NULL, this argument must be supplied. This gives the covariate index of the individual covariate that is tested in the weak null hypothesis that \eqn{\beta_{kj} = 0}.
 #' @param tol The tolerance used to determine how much better update function value must be prior to stopping algorithm.
 #' @param stepSize The size of the step to take during the parameter update step, used in the MLE step.
 #' @param arm_c Control parameter for checking Armijo condition, used in the MLE step.
@@ -19,7 +21,7 @@
 #' @author Sarah Teichman
 #'
 #' @export
-multinom_penalized_estimation <- function(beta, X, Y, null = TRUE, strong = FALSE, null_j = NULL, 
+multinom_penalized_estimation <- function(beta, X, Y, null = TRUE, strong = FALSE, null_j = NULL, j_ind = NULL, k_ind = NULL, 
                                           tol = 1e-5, stepSize = 0.5, arm_c = 0.5,
                                           maxit = 250, maxit_fs = 5, pseudo_inv = FALSE) {
   
@@ -62,7 +64,7 @@ multinom_penalized_estimation <- function(beta, X, Y, null = TRUE, strong = FALS
     # get new beta values
     beta_old <- beta_curr
     beta_curr <- multinom_fisher_scoring(beta = beta_old, X = X, Y = Y_curr,
-                                         null = null, strong = strong, null_j = null_j,
+                                         null = null, strong = strong, null_j = null_j, j_ind = j_ind, k_ind = k_ind,
                                          tol = tol, stepSize = stepSize, arm_c = arm_c,
                                          maxit = maxit_fs, pseudo_inv = pseudo_inv)
     
