@@ -18,5 +18,10 @@ score_contribution <- function(i, model_fits, yy, xx, family, link) { ### output
   if (family == "binomial" & link == "logit") {
     score_vec <- matrix(model_fits[i]*(1 - model_fits[i])^(-1)*(yy[i] - model_fits[i]) * xx[i,], ncol = 1)
   }
+  
+  # if (family == "gaussian" & link == "identity") {
+  #   score_vec <- 
+  # }
+  
   return(score_vec)
 }

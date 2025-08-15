@@ -28,7 +28,7 @@ glm_test <- function(...) {
 
   glm_family <- glm_result$family$family
   glm_link <- glm_result$family$link
-  if ((glm_family != "poisson" | glm_link != "log") & (glm_link != "binomial" | glm_link != "logit")) {
+  if ((glm_family != "poisson" | glm_link != "log") & (glm_family != "binomial" | glm_link != "logit")) {
     stop(paste("This is only implemented this for Poisson family with log link and Binomial family with logit link.\n",
                "You requested", glm_family, "family and", glm_link, "link \n",
                "Please open a GitHub issue if you're interested in other families."))
@@ -68,8 +68,14 @@ glm_test <- function(...) {
   
   output <- output[, c("Estimate", "Non-robust Std Error", "Robust Std Error", "Lower 95% CI", "Upper 95% CI", "Non-robust Wald p", "Robust Wald p", "Robust Score p")]
   
+  #compute robust score test for null of all coefs (except intercept) being 0
+  null_model_p <- robust_score_test(glm_object = glm_result,
+                                 call_to_model = cl,
+                                 param = 2:pp)
+  
   result <- list("call" = cl,
-                 "coef_tab" = output)
+                 "coef_tab" = output,
+                 "pval" = null_model_p)
   
   return(structure(result, class = "raoFit"))
 

@@ -23,7 +23,9 @@ robust_score_test <- function(glm_object, call_to_model, param = 1,
   pp <- ncol(xx)
   xx0 <- xx[ , -param]
   pp0 <- length(param)
+  
 
+ 
   # stop("no")
   withCallingHandlers({
     model0 <- glm.fit(x = xx0,
@@ -37,7 +39,6 @@ robust_score_test <- function(glm_object, call_to_model, param = 1,
     if (startsWith(conditionMessage(w), "non-integer x"))
       invokeRestart("muffleWarning")
   })
-
   model0_fits <- model0$fitted.values
 
   if (is.factor(id)) {
@@ -90,8 +91,12 @@ robust_score_test <- function(glm_object, call_to_model, param = 1,
                      (c_tilde %*% u_tilde_sum))
 
   } else if (is.na(id)) {
+    
     u_tilde <- sapply(1:nn, score_contribution, model_fits = model0_fits, 
                       family = model1family, link = model1link, xx = xx, yy = yy) ### p x n
+    
+    ##Need to reorder u tilde the way a is reordered??
+    u_tilde <- rbind(u_tilde[-param,], u_tilde[param,])
 
     aa0 <- Reduce("+", sapply(1:nn, fisher_info_contribution, simplify=F,  model_fits = model0_fits,
                               family = model1family, link = model1link, xx = xx, yy = yy)) ### p x p
