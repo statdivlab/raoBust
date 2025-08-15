@@ -1,4 +1,4 @@
-#' Test hypothesis of form A x beta = c
+#' Run robust wald test for null hypothesis of form A x beta = c
 #'
 #' @param test_object Object of type `raoFit`.
 #'
