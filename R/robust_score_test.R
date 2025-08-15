@@ -98,6 +98,7 @@ robust_score_test <- function(glm_object, call_to_model, param = 1,
     }
 
     u_tilde <- sapply(1:nn, score_contribution, model_fits = model0_fits) ### p x n
+    u_tilde <- rbind(u_tilde[-param,], u_tilde[param,]) ### reorder U_tilde the way A is reordered
 
     aa0 <- Reduce("+", sapply(1:nn, fisher_info_contribution, model_fits = model0_fits, simplify=F)) ### p x p
     aa0_11 <- aa0[setdiff(1:pp, param), setdiff(1:pp, param)]
