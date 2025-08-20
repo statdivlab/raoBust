@@ -15,7 +15,7 @@ fisher_info_contribution <- function(i, model_fits, yy, xx, family, link) { ### 
   }
   
   if (family == "binomial" & link == "logit") {
-    fisher_info_mat <- (1-model_fits[i])^(-1)*(model_fits[i])^3 * xx[i, ] %*% t(xx[i, ])
+    fisher_info_mat <- (1-model_fits[i])^(-1)*(model_fits[i])^(-1) * xx[i, ] %*% t(xx[i, ])
   }
   
   return(fisher_info_mat)
