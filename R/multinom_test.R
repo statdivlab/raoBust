@@ -8,7 +8,8 @@
 #' If TRUE, this function instead computes the robust score statistic to test the strong null that \eqn{\beta_1 = \beta_2 = \dots = \beta_{J-1} = 0} for all length \eqn{p} vectors \eqn{\beta_j}, \eqn{j\in\{1,\ldots,J-1\}}. 
 #' Default is FALSE.
 #' @param j If `strong` is FALSE, this argument must be supplied. This gives the category \eqn{j} in the weak null hypothesis that \eqn{\beta_j = 0}.
-#' @param all_score This specifies is scores tests for each individual covariate and category pair should be run. Default is FALSE.
+#' @param all_score If TRUE, score tests for each individual covariate and category pair (i.e. null that \eqn{\beta_{jk} = 0} for each category \eqn{j = 1, \dots, J-1} and each covariate \eqn{k = 1, \dots, p} pair) will be 
+#' run and reported in output coefficient table. Default is FALSE.
 #' @param penalty If TRUE will apply a Firth penalty to estimation under the alternative and under the null. Defaults to FALSE (ask Amy her preference)
 #' @param pseudo_inv Use pseudo inverse for inverted portion of the robust score test to avoid issues with nearly singular matrices.
 #'
