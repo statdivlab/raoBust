@@ -23,9 +23,9 @@ robust_score_test <- function(glm_object, call_to_model, param = 1,
   pp <- ncol(xx)
   xx0 <- xx[ , -param]
   pp0 <- length(param)
-  
 
- 
+
+
   # stop("no")
   withCallingHandlers({
     model0 <- glm.fit(x = xx0,
@@ -79,6 +79,8 @@ robust_score_test <- function(glm_object, call_to_model, param = 1,
     }
 
     u_tilde_sum <- Reduce("+", Umatrices) # p x 1
+    ## Reorder u tilde to match a
+    u_tilde_sum <- matrix(c(u_tilde_sum[-param,1], u_tilde_sum[param,1]), ncol = 1)
 
     aa0 <- Reduce("+", Amatrices) ### p x p
     aa0_11 <- aa0[setdiff(1:pp, param), setdiff(1:pp, param)]
@@ -91,11 +93,11 @@ robust_score_test <- function(glm_object, call_to_model, param = 1,
                      (c_tilde %*% u_tilde_sum))
 
   } else if (is.na(id)) {
-    
-    u_tilde <- sapply(1:nn, score_contribution, model_fits = model0_fits, 
+
+    u_tilde <- sapply(1:nn, score_contribution, model_fits = model0_fits,
                       family = model1family, link = model1link, xx = xx, yy = yy) ### p x n
-    
-    ##Need to reorder u tilde the way a is reordered??
+
+    ## Reorder u tilde to match a
     u_tilde <- rbind(u_tilde[-param,], u_tilde[param,])
 
     aa0 <- Reduce("+", sapply(1:nn, fisher_info_contribution, simplify=F,  model_fits = model0_fits,
