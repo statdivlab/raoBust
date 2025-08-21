@@ -12,6 +12,8 @@ robust_score_test <- function(glm_object, call_to_model, param = 1,
                               id = NA) {
 
   model1 <- glm_object
+  model1family <- glm_object$family$family
+  model1link <- glm_object$family$link
   model1_estimates <- model1$coef
   model1_fits <- model1$fitted.values
 
@@ -21,6 +23,8 @@ robust_score_test <- function(glm_object, call_to_model, param = 1,
   pp <- ncol(xx)
   xx0 <- xx[ , -param]
   pp0 <- length(param)
+
+
 
   # stop("no")
   withCallingHandlers({
@@ -35,7 +39,6 @@ robust_score_test <- function(glm_object, call_to_model, param = 1,
     if (startsWith(conditionMessage(w), "non-integer x"))
       invokeRestart("muffleWarning")
   })
-
   model0_fits <- model0$fitted.values
 
   if (is.factor(id)) {
@@ -76,6 +79,8 @@ robust_score_test <- function(glm_object, call_to_model, param = 1,
     }
 
     u_tilde_sum <- Reduce("+", Umatrices) # p x 1
+    ## Reorder u tilde to match a
+    u_tilde_sum <- matrix(c(u_tilde_sum[-param,1], u_tilde_sum[param,1]), ncol = 1)
 
     aa0 <- Reduce("+", Amatrices) ### p x p
     aa0_11 <- aa0[setdiff(1:pp, param), setdiff(1:pp, param)]
@@ -89,17 +94,14 @@ robust_score_test <- function(glm_object, call_to_model, param = 1,
 
   } else if (is.na(id)) {
 
-    score_contribution <- function(i, model_fits) { ### output is p x 1
-      matrix(model_fits[i]^2 * (yy[i] - model_fits[i]) * xx[i, ], ncol = 1)
-    }
+    u_tilde <- sapply(1:nn, score_contribution, model_fits = model0_fits,
+                      family = model1family, link = model1link, xx = xx, yy = yy) ### p x n
 
-    fisher_info_contribution <- function(i, model_fits) { ### output is p x p... Di^T Vi Di
-      model_fits[i] * xx[i, ] %*% t(xx[i, ])
-    }
+    ## Reorder u tilde to match a
+    u_tilde <- rbind(u_tilde[-param,], u_tilde[param,])
 
-    u_tilde <- sapply(1:nn, score_contribution, model_fits = model0_fits) ### p x n
-
-    aa0 <- Reduce("+", sapply(1:nn, fisher_info_contribution, model_fits = model0_fits, simplify=F)) ### p x p
+    aa0 <- Reduce("+", sapply(1:nn, fisher_info_contribution, simplify=F,  model_fits = model0_fits,
+                              family = model1family, link = model1link, xx = xx, yy = yy)) ### p x p
     aa0_11 <- aa0[setdiff(1:pp, param), setdiff(1:pp, param)]
     aa0_22 <- aa0[param, param]
     aa0_21 <- aa0[param, setdiff(1:pp, param)]

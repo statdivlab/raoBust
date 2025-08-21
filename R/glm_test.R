@@ -26,17 +26,14 @@ glm_test <- function(...) {
       invokeRestart("muffleWarning")
   })
 
-
-  if (glm_result$family$family != "poisson") {
-    stop(paste("Amy has only implemented this for Poisson families.\n",
-               "You requested", glm_result$family$family, "\n",
+  glm_family <- glm_result$family$family
+  glm_link <- glm_result$family$link
+  if ((glm_family != "poisson" | glm_link != "log") & (glm_family != "binomial" | glm_link != "logit")) {
+    stop(paste("This is only implemented this for Poisson family with log link and Binomial family with logit link.\n",
+               "You requested", glm_family, "family and", glm_link, "link \n",
                "Please open a GitHub issue if you're interested in other families."))
   }
-  if (glm_result$family$link != "log") {
-    stop(paste("Amy has only implemented this for Poisson families with log link.\n",
-               "You requested link", glm_result$family$link, "\n",
-               "Please open a GitHub issue if you're interested in other link functions"))
-  }
+
   
   output <- coef(summary(glm_result))[, -3]                 ## "z value"
   colnames(output)[3] <- "Non-robust Wald p"                ## "Pr(>|z|)"
@@ -49,11 +46,13 @@ glm_test <- function(...) {
   robust_score_p <- vector("numeric", length = pp)
   for (p_marginal in 1:pp) {
     robust_score_p[p_marginal] <- robust_score_test(glm_object = glm_result,
-                                                     call_to_model = cl,
-                                                     param = p_marginal)
+                                                    call_to_model = cl,
+                                                    param = p_marginal)
   }
-
+   
+  
   output <- cbind(output, "Robust Score p" = robust_score_p)
+  
 
   robust_wald_ses <- sqrt(diag(sandwich::sandwich(glm_result,
                                                   adjust=TRUE)))
@@ -69,8 +68,14 @@ glm_test <- function(...) {
   
   output <- output[, c("Estimate", "Non-robust Std Error", "Robust Std Error", "Lower 95% CI", "Upper 95% CI", "Non-robust Wald p", "Robust Wald p", "Robust Score p")]
   
+  #compute robust score test for null of all coefs (except intercept) being 0
+  null_model_p <- robust_score_test(glm_object = glm_result,
+                                 call_to_model = cl,
+                                 param = 2:pp)
+  
   result <- list("call" = cl,
-                 "coef_tab" = output)
+                 "coef_tab" = output,
+                 "pval" = null_model_p)
   
   return(structure(result, class = "raoFit"))
 
