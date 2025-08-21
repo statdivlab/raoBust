@@ -73,8 +73,9 @@ robust_score_test <- function(glm_object, call_to_model, param = 1,
 
       Si <- yy[indices] - model0_fits_i
 
-      Umatrices[[ii]] <- Di %*% solve(Vi) %*% matrix(Si, ncol = 1)
-      Amatrices[[ii]] <- Di %*% solve(Vi) %*% t(Di)
+      ## Recall solve(x1, x2) is the same as solve(x1) %*% x2
+      Umatrices[[ii]] <- Di %*% solve(Vi, matrix(Si, ncol = 1))
+      Amatrices[[ii]] <- Di %*% solve(Vi, t(Di))
 
     }
 
@@ -86,7 +87,7 @@ robust_score_test <- function(glm_object, call_to_model, param = 1,
     u_tilde_sum <- Pi %*% Reduce("+", Umatrices) # p x 1
     # u_tilde_sum <- matrix(c(u_tilde_sum[-param,1], u_tilde_sum[param,1]), ncol = 1)
 
-    ### Compute B and reorder
+    ### Compute B and reorde
     # Bhat <- (Reduce("+", lapply(FUN = function(x) { x %*% t(x) }, Umatrices)))
     Bhat <- Reduce("+", lapply(Umatrices, function(u) {
       up <- Pi %*% u
@@ -95,7 +96,7 @@ robust_score_test <- function(glm_object, call_to_model, param = 1,
 
     ### Compute A
     aa0 <- Reduce("+", Amatrices) ### p x p
-    ## Reorder a
+    ## Reorder A
     aa0_11 <- aa0[setdiff(seq_len(pp), param), setdiff(seq_len(pp), param)]
     aa0_22 <- aa0[param, param]
     aa0_21 <- aa0[param, setdiff(seq_len(pp), param)]
@@ -103,8 +104,8 @@ robust_score_test <- function(glm_object, call_to_model, param = 1,
 
     ## Reorder B
     test_stat <- c(t(c_tilde %*% u_tilde_sum) %*% ## (1 x p) x (p x 1)
-                     solve(c_tilde %*% Bhat %*% t(c_tilde)) %*% # (1 x p) x ((p x n) x (n x p)) x (p x 1)
-                     (c_tilde %*% u_tilde_sum))
+                     solve(c_tilde %*% Bhat %*% t(c_tilde), # (1 x p) x ((p x n) x (n x p)) x (p x 1)
+                           (c_tilde %*% u_tilde_sum)))
 
   } else if (is.na(id)) {
 
@@ -122,8 +123,8 @@ robust_score_test <- function(glm_object, call_to_model, param = 1,
     c_tilde <- cbind(-aa0_21 %*% solve(aa0_11), diag(rep(1, pp0))) # 1 x p
 
     test_stat <- c(t(c_tilde %*% matrix(rowSums(u_tilde), ncol = 1)) %*% ## (1 x p) x (p x 1)
-                     solve(c_tilde %*% (u_tilde %*% t(u_tilde)) %*% t(c_tilde)) %*% # (1 x p) x ((p x n) x (n x p)) x (p x 1)
-                     (c_tilde %*% matrix(rowSums(u_tilde), ncol = 1)))
+                     solve(c_tilde %*% (u_tilde %*% t(u_tilde)) %*% t(c_tilde), # (1 x p) x ((p x n) x (n x p)) x (p x 1)
+                           (c_tilde %*% matrix(rowSums(u_tilde), ncol = 1))))
   } else {
 
     stop("unsure what correlation structure is")
