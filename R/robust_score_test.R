@@ -1,9 +1,20 @@
-#' Robust score (Rao) test for Poisson regression
+#' Robust score (Rao) tests with finite-sample correction
+#'
+#' The default behavior is to do no finite sample correction (for the covariance of the score) for correlated data,
+#' but to do it for uncorrelated data. This choice performed best under a small simulation study. See Guo et al
+#' for details; the proposed modification is in equation 20.
 #'
 #' @param glm_object The fitted glm under the alternative.
 #' @param call_to_model The call used to fit the model. Used internally.
-#' @param param which parameter do you want to test?
+#' @param param which parameter do you want to test? Used internally.
 #' @param id observations with the same id are in the same cluster
+#'
+#' @references
+#' Guo, X., Pan, W., Connett, J. E., Hannan, P. J., & French, S. A. (2005).
+#' Small-sample performance of the robust score test and its modifications in
+#' generalized estimating equations. *Statistics in Medicine, 24*(22), 3479–3495.
+#' Wiley Online Library. <doi:10.1002/sim.2161>
+
 #'
 #' @importFrom stats glm poisson model.matrix glm.fit pchisq
 #'
@@ -88,23 +99,31 @@ robust_score_test <- function(glm_object, call_to_model, param = 1,
     # u_tilde_sum <- matrix(c(u_tilde_sum[-param,1], u_tilde_sum[param,1]), ncol = 1)
 
     ### Compute B and reorde
-    # Bhat <- (Reduce("+", lapply(FUN = function(x) { x %*% t(x) }, Umatrices)))
-    Bhat <- Reduce("+", lapply(Umatrices, function(u) {
+    # cov_U_hat <- (Reduce("+", lapply(FUN = function(x) { x %*% t(x) }, Umatrices)))
+    cov_U_hat <- Reduce("+", lapply(Umatrices, function(u) {
       up <- Pi %*% u
       up %*% t(up)
     }))
 
+    ## finite sample correction from Guo et al, addresses conservatism in small samples and improves power
+    ## under simulation with random effects, the test was actually anticonservative for small samples
+    ## for this reason, we don't do this by default
+    # if (length(ids) > 1L) {
+    #   cov_U_hat <- (length(ids) - 1) / length(ids) * cov_U_hat
+    # }
+
     ### Compute A
     aa0 <- Reduce("+", Amatrices) ### p x p
     ## Reorder A
-    aa0_11 <- aa0[setdiff(seq_len(pp), param), setdiff(seq_len(pp), param)]
-    aa0_22 <- aa0[param, param]
-    aa0_21 <- aa0[param, setdiff(seq_len(pp), param)]
-    c_tilde <- cbind(-aa0_21 %*% solve(aa0_11), diag(rep(1, pp0))) # 1 x p
+    aa0_11 <- aa0[setdiff(seq_len(pp), param), setdiff(seq_len(pp), param), drop = FALSE]
+    aa0_21 <- aa0[param, setdiff(seq_len(pp), param), drop = FALSE]
+    # c_tilde <- cbind(-aa0_21 %*% solve(aa0_11), diag(rep(1, pp0))) # 1 x p
+    c_tilde <- cbind(-t(solve(aa0_11, t(aa0_21))), diag(1, pp0))
+
 
     ## Reorder B
     test_stat <- c(t(c_tilde %*% u_tilde_sum) %*% ## (1 x p) x (p x 1)
-                     solve(c_tilde %*% Bhat %*% t(c_tilde), # (1 x p) x ((p x n) x (n x p)) x (p x 1)
+                     solve(c_tilde %*% cov_U_hat %*% t(c_tilde), # (1 x p) x ((p x n) x (n x p)) x (p x 1)
                            (c_tilde %*% u_tilde_sum)))
 
   } else if (is.na(id)) {
@@ -117,14 +136,16 @@ robust_score_test <- function(glm_object, call_to_model, param = 1,
 
     aa0 <- Reduce("+", sapply(1:nn, fisher_info_contribution, simplify=F,  model_fits = model0_fits,
                               family = model1family, link = model1link, xx = xx, yy = yy)) ### p x p
-    aa0_11 <- aa0[setdiff(seq_len(pp), param), setdiff(seq_len(pp), param)]
-    aa0_22 <- aa0[param, param]
-    aa0_21 <- aa0[param, setdiff(seq_len(pp), param)]
-    c_tilde <- cbind(-aa0_21 %*% solve(aa0_11), diag(rep(1, pp0))) # 1 x p
+    aa0_11 <- aa0[setdiff(seq_len(pp), param), setdiff(seq_len(pp), param), drop = FALSE]
+    aa0_21 <- aa0[param, setdiff(seq_len(pp), param), drop = FALSE]
+    # c_tilde <- cbind(-aa0_21 %*% solve(aa0_11), diag(rep(1, pp0))) # 1 x p
+    c_tilde <- cbind(-t(solve(aa0_11, t(aa0_21))), diag(1, pp0))
 
+    ## (nn - 1) / nn is finite sample correction from Guo et al, addresses conservatism in small samples and improves power
     test_stat <- c(t(c_tilde %*% matrix(rowSums(u_tilde), ncol = 1)) %*% ## (1 x p) x (p x 1)
-                     solve(c_tilde %*% (u_tilde %*% t(u_tilde)) %*% t(c_tilde), # (1 x p) x ((p x n) x (n x p)) x (p x 1)
+                     solve(c_tilde %*% ((nn - 1) / nn * u_tilde %*% t(u_tilde)) %*% t(c_tilde), # (1 x p) x ((p x n) x (n x p)) x (p x 1)
                            (c_tilde %*% matrix(rowSums(u_tilde), ncol = 1))))
+
   } else {
 
     stop("unsure what correlation structure is")
