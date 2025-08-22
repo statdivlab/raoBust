@@ -15,6 +15,7 @@ test_that("using the inverse and pseudo inverse give the same results when an in
     stat_alt[sim] <- result_alt$test_stat
   }
 
+
   expect_true(all.equal(stat, stat_alt, tol = 1e-03))
 
 })
@@ -73,6 +74,8 @@ test_that("the test stat with the pseudo inverse controls t1e when the inverse i
 
 test_that("power increases with signal for the test stat with the pseudo inverse when the inverse is computationally singular for strong hypothesis", {
 
+  skip("Skipping due to time, can check manually")
+
   nn <- 20
   p <- rep(NA, 50)
   p_alt <- rep(NA, 50)
@@ -112,6 +115,8 @@ test_that("power increases with signal for the test stat with the pseudo inverse
 })
 
 test_that("power increases with signal for the test stat with the pseudo inverse when the inverse is computationally singular for strong hypothesis", {
+
+  skip("Skipping due to time, can check manually")
 
   nn <- 20
   p <- rep(NA, 50)

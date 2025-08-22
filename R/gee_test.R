@@ -90,16 +90,12 @@ gee_test <- function(use_geeasy = TRUE, use_jack_se = FALSE, cluster_corr_coef =
     gee_result <- glm_result
   }
 
-
-  if (gee_result$family$family != "poisson") {
-    stop(paste("We have only implemented this for Poisson families.\n",
-               "You requested", gee_result$family$family, "\n",
+  gee_family <- gee_result$family$family
+  gee_link <- gee_result$family$link
+  if ((gee_family != "poisson" | gee_link != "log") & (gee_family != "binomial" | gee_link != "logit")) {
+    stop(paste("This is only implemented this for Poisson family with log link and Binomial family with logit link.\n",
+               "You requested", gee_family, "family and", gee_link, "link \n",
                "Please open a GitHub issue if you're interested in other families."))
-  }
-  if (gee_result$family$link != "log") {
-    stop(paste("We have only implemented this for Poisson families with log link.\n",
-               "You requested link", gee_result$family$link, "\n",
-               "Please open a GitHub issue if you're interested in other link functions"))
   }
 
   output <- coef(summary(gee_result))[, -3]                 ## "Wald"

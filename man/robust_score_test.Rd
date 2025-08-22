@@ -2,7 +2,7 @@
 % Please edit documentation in R/robust_score_test.R
 \name{robust_score_test}
 \alias{robust_score_test}
-\title{Robust score (Rao) test for Poisson regression}
+\title{Robust score (Rao) tests with finite-sample correction}
 \usage{
 robust_score_test(glm_object, call_to_model, param = 1, id = NA)
 }
@@ -11,10 +11,18 @@ robust_score_test(glm_object, call_to_model, param = 1, id = NA)
 
 \item{call_to_model}{The call used to fit the model. Used internally.}
 
-\item{param}{which parameter do you want to test?}
+\item{param}{which parameter do you want to test? Used internally.}
 
 \item{id}{observations with the same id are in the same cluster}
 }
 \description{
-Robust score (Rao) test for Poisson regression
+The default behavior is to do no finite sample correction (for the covariance of the score) for correlated data,
+but to do it for uncorrelated data. This choice performed best under a small simulation study. See Guo et al
+for details; the proposed modification is in equation 20.
+}
+\references{
+Guo, X., Pan, W., Connett, J. E., Hannan, P. J., & French, S. A. (2005).
+Small-sample performance of the robust score test and its modifications in
+generalized estimating equations. \emph{Statistics in Medicine, 24}(22), 3479–3495.
+Wiley Online Library. \url{doi:10.1002/sim.2161}
 }
