@@ -58,7 +58,7 @@ robust_score_test <- function(glm_object, call_to_model, param = 1,
 
       Di <- matrix(NA, nrow = pp, ncol = n_i)
       for (j in 1:n_i) {
-        for (k in 1:pp) {
+        for (k in seq_len(pp)) {
           Di[k, j] <- xxi[j, k] * model0_fits_i[j]
         }
       }
@@ -73,24 +73,39 @@ robust_score_test <- function(glm_object, call_to_model, param = 1,
 
       Si <- yy[indices] - model0_fits_i
 
-      Umatrices[[ii]] <- Di %*% solve(Vi) %*% matrix(Si, ncol = 1)
-      Amatrices[[ii]] <- Di %*% solve(Vi) %*% t(Di)
+      ## Recall solve(x1, x2) is the same as solve(x1) %*% x2
+      Umatrices[[ii]] <- Di %*% solve(Vi, matrix(Si, ncol = 1))
+      Amatrices[[ii]] <- Di %*% solve(Vi, t(Di))
 
     }
 
-    u_tilde_sum <- Reduce("+", Umatrices) # p x 1
-    ## Reorder u tilde to match a
-    u_tilde_sum <- matrix(c(u_tilde_sum[-param,1], u_tilde_sum[param,1]), ncol = 1)
+    ### Order of parameters matters. Set up permutation matrix
+    perm_idx <- c(setdiff(seq_len(pp), param), param)
+    Pi <- diag(pp)[perm_idx, , drop = FALSE]  # p x p permutation
 
+    ### Compute U and reorder
+    u_tilde_sum <- Pi %*% Reduce("+", Umatrices) # p x 1
+    # u_tilde_sum <- matrix(c(u_tilde_sum[-param,1], u_tilde_sum[param,1]), ncol = 1)
+
+    ### Compute B and reorde
+    # Bhat <- (Reduce("+", lapply(FUN = function(x) { x %*% t(x) }, Umatrices)))
+    Bhat <- Reduce("+", lapply(Umatrices, function(u) {
+      up <- Pi %*% u
+      up %*% t(up)
+    }))
+
+    ### Compute A
     aa0 <- Reduce("+", Amatrices) ### p x p
-    aa0_11 <- aa0[setdiff(1:pp, param), setdiff(1:pp, param)]
+    ## Reorder A
+    aa0_11 <- aa0[setdiff(seq_len(pp), param), setdiff(seq_len(pp), param)]
     aa0_22 <- aa0[param, param]
-    aa0_21 <- aa0[param, setdiff(1:pp, param)]
+    aa0_21 <- aa0[param, setdiff(seq_len(pp), param)]
     c_tilde <- cbind(-aa0_21 %*% solve(aa0_11), diag(rep(1, pp0))) # 1 x p
 
+    ## Reorder B
     test_stat <- c(t(c_tilde %*% u_tilde_sum) %*% ## (1 x p) x (p x 1)
-                     solve(c_tilde %*% (Reduce("+", lapply(FUN = function(x) { x %*% t(x) }, Umatrices))) %*% t(c_tilde)) %*% # (1 x p) x ((p x n) x (n x p)) x (p x 1)
-                     (c_tilde %*% u_tilde_sum))
+                     solve(c_tilde %*% Bhat %*% t(c_tilde), # (1 x p) x ((p x n) x (n x p)) x (p x 1)
+                           (c_tilde %*% u_tilde_sum)))
 
   } else if (is.na(id)) {
 
@@ -102,14 +117,14 @@ robust_score_test <- function(glm_object, call_to_model, param = 1,
 
     aa0 <- Reduce("+", sapply(1:nn, fisher_info_contribution, simplify=F,  model_fits = model0_fits,
                               family = model1family, link = model1link, xx = xx, yy = yy)) ### p x p
-    aa0_11 <- aa0[setdiff(1:pp, param), setdiff(1:pp, param)]
+    aa0_11 <- aa0[setdiff(seq_len(pp), param), setdiff(seq_len(pp), param)]
     aa0_22 <- aa0[param, param]
-    aa0_21 <- aa0[param, setdiff(1:pp, param)]
+    aa0_21 <- aa0[param, setdiff(seq_len(pp), param)]
     c_tilde <- cbind(-aa0_21 %*% solve(aa0_11), diag(rep(1, pp0))) # 1 x p
 
     test_stat <- c(t(c_tilde %*% matrix(rowSums(u_tilde), ncol = 1)) %*% ## (1 x p) x (p x 1)
-                     solve(c_tilde %*% (u_tilde %*% t(u_tilde)) %*% t(c_tilde)) %*% # (1 x p) x ((p x n) x (n x p)) x (p x 1)
-                     (c_tilde %*% matrix(rowSums(u_tilde), ncol = 1)))
+                     solve(c_tilde %*% (u_tilde %*% t(u_tilde)) %*% t(c_tilde), # (1 x p) x ((p x n) x (n x p)) x (p x 1)
+                           (c_tilde %*% matrix(rowSums(u_tilde), ncol = 1))))
   } else {
 
     stop("unsure what correlation structure is")
