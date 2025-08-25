@@ -92,4 +92,4 @@ in what names we give methods: we are more likely to name a method
 after a person if they are White, and more likely to name a method 
 after its purpose, details or another acronym if the developer was 
 a Person of Color. For this reason, I try to call score tests 
-``Rao tests'' whenever I can. I invite you to join me. 
+"Rao tests". I invite you to join me. 
