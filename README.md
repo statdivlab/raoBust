@@ -83,13 +83,13 @@ it is in tribute to Rao that this package is named. Many
 thanks to David Clausen for proposing and sharing the clever 
 portmanteau `raoBust' for a package implementing robust score tests. 
 
-**Comment from Amy** People of colour are consistently undervalued 
+**Comment from Amy** People of Color are consistently undervalued 
 in science and mathematics, including in statistical methodology. 
 The foundations of statistical methodology were built on 
-the desire to quantitatively show the inferiority of people of color 
+the desire to quantitatively show the inferiority of People of Color 
 and Jews. I believe that white supremacy continues to manifest 
 in what names we give methods: we are more likely to name a method 
 after a person if they are White, and more likely to name a method 
 after its purpose, details or another acronym if the developer was 
-a person of color. For this reason, I try to call score tests 
+a Person of Color. For this reason, I try to call score tests 
 ``Rao tests'' whenever I can. I invite you to join me. 
