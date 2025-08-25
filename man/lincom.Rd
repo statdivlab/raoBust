@@ -2,7 +2,7 @@
 % Please edit documentation in R/lincom.R
 \name{lincom}
 \alias{lincom}
-\title{Test hypothesis of form A x beta = c}
+\title{Run robust wald test for null hypothesis of form A x beta = c}
 \usage{
 lincom(test_object, A, c)
 }
@@ -17,7 +17,7 @@ lincom(test_object, A, c)
 Table with relevant quantities of interest for hypothesis tests.
 }
 \description{
-Test hypothesis of form A x beta = c
+Run robust wald test for null hypothesis of form A x beta = c
 }
 \examples{
 #set true value of beta for DGP
