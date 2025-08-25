@@ -20,7 +20,7 @@ generally conservative in small samples, which is a very good thing.
 You *should* err on conservative when you have few samples. Most 
 other tests are anti-conservative in small samples. 
 
-We currently have Rao tests for coefficients in Poisson GLMs (log 
+We currently have score tests for coefficients in Poisson GLMs (log 
 link), Binomial GLMs (logit link), and Multinomial GLMs (log link), 
 including for linear combinations of parameters and simultaneous testing
 ("ANOVA"). If you have another
