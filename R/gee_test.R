@@ -5,7 +5,7 @@
 #' @param cluster_corr_coef Optional within-cluster correlation coefficient. This will only be used when parameter estimation with a GEE fails and estimation must
 #' instead be performed with a GLM.
 #' @param skip_gee When TRUE doesn't try to optimize with a GEE (just uses a GLM). This should only be used internally for testing.
-#' @param ... Arguments that you would pass to a regular `geepack::geeglm` call. Any observations with `NA` values in the data (response or covariates) will be dropped.
+#' @param ... Arguments that you would pass to a regular `geepack::geeglm` call. Any observations with `NA` values in the data (response or covariates or id) will be dropped.
 #'
 #' @importFrom sandwich sandwich vcovJK
 #' @importFrom stats coef glm pnorm qnorm

@@ -130,4 +130,41 @@ test_that("see what happens with missing data", {
     use_geeasy = FALSE
   )
   all.equal(gee_res_no4_geelm$coef_tab, gee_res_geelm$coef_tab)
+  
+  # what if id is missing for gee?
+  covariate2 <- X[, 2]
+  df_re <- data.frame(
+    id = id,
+    covariate1, covariate2, covariate3, covariate4,
+    yy = yy
+  )
+  df_re$id[3] <- NA
+  gee_res_all <- gee_test(
+    formula = yy ~ covariate1 + covariate2 + covariate3 + covariate4,
+    family  = poisson(link = "log"),
+    id      = id,
+    data    = df_re
+  )
+  gee_res_no3 <- gee_test(
+    formula = yy ~ covariate1 + covariate2 + covariate3 + covariate4,
+    family  = poisson(link = "log"),
+    id      = id,
+    data    = df_re[-3, ]
+  )
+  all.equal(gee_res_no3$coef_tab, gee_res_all$coef_tab)
+  gee_res_geelm <- gee_test(
+    formula = yy ~ covariate1 + covariate2 + covariate3 + covariate4,
+    family  = poisson(link = "log"),
+    id      = id,
+    data    = df_re,
+    use_geeasy = FALSE
+  )
+  gee_res_no3_geelm <- gee_test(
+    formula = yy ~ covariate1 + covariate2 + covariate3 + covariate4,
+    family  = poisson(link = "log"),
+    id      = id,
+    data    = df_re[-3, ],
+    use_geeasy = FALSE
+  )
+  all.equal(gee_res_no3_geelm$coef_tab, gee_res_geelm$coef_tab)
 })
