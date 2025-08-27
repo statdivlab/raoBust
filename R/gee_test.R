@@ -60,7 +60,7 @@ gee_test <- function(use_geeasy = TRUE, use_jack_se = FALSE, cluster_corr_coef =
   id_clean  <- eval(cl$id, envir = rlang::caller_env())[the_reorder]
   
   # drop rows with any NA
-  keep_rows <- complete.cases(dat_clean)
+  keep_rows <- stats::complete.cases(dat_clean)
   dat_clean <- dat_clean[keep_rows, ]
   id_clean  <- id_clean[keep_rows]
   
