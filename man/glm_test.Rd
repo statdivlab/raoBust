@@ -7,7 +7,7 @@
 glm_test(...)
 }
 \arguments{
-\item{...}{Arguments that you would pass to a regular \code{glm} call. Note that for now we only have functionality for Poisson tests with log link}
+\item{...}{Arguments that you would pass to a regular \code{glm} call. Any observations with \code{NA} values in the data (response or covariates) will be dropped.}
 }
 \description{
 Generalized Linear Models with robust and non-robust Wald and Rao (score) tests

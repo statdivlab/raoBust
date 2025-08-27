@@ -89,7 +89,7 @@ multinom_fisher_scoring <- function(beta, X, Y, null = TRUE, strong = FALSE, nul
     if (!pseudo_inv) {
       step_dir <- tryCatch({solve(info_mat) %*% score},
                            error = function(cond) {
-                             print(cont)
+                             print(cond)
                              return(NA)
                             })
     } else {
