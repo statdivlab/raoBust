@@ -5,7 +5,7 @@
 #' @param cluster_corr_coef Optional within-cluster correlation coefficient. This will only be used when parameter estimation with a GEE fails and estimation must
 #' instead be performed with a GLM.
 #' @param skip_gee When TRUE doesn't try to optimize with a GEE (just uses a GLM). This should only be used internally for testing.
-#' @param ... Arguments that you would pass to a regular `geepack::geeglm` call. Note that for now we only have functionality for Poisson tests with log link
+#' @param ... Arguments that you would pass to a regular `geepack::geeglm` call. Any observations with `NA` values in the data (response or covariates) will be dropped.
 #'
 #' @importFrom sandwich sandwich vcovJK
 #' @importFrom stats coef glm pnorm qnorm
@@ -55,10 +55,19 @@ gee_test <- function(use_geeasy = TRUE, use_jack_se = FALSE, cluster_corr_coef =
     cl <- call_modify(cl, "std.err" = "jack")
   }
   the_reorder <- order(eval(cl$data, envir = rlang::caller_env())[[id_col]])
+  
+  dat_clean <- eval(cl$data, envir = rlang::caller_env())[the_reorder, ]
+  id_clean  <- eval(cl$id, envir = rlang::caller_env())[the_reorder]
+  
+  # drop rows with any NA
+  keep_rows <- complete.cases(dat_clean)
+  dat_clean <- dat_clean[keep_rows, ]
+  id_clean  <- id_clean[keep_rows]
+  
+  # update the call
   cl <- call_modify(cl,
-                    "data" = eval(cl$data, envir = rlang::caller_env())[the_reorder, ],
-                    "id" = eval(cl$id, envir = rlang::caller_env())[the_reorder])
-
+                    "data" = dat_clean,
+                    "id"   = id_clean)
 
   ### fit the gee, ignoring warnings about non integer inputs, as we take an estimating equations mindset
   withCallingHandlers({

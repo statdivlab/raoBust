@@ -1,6 +1,6 @@
 #' Generalized Linear Models with robust and non-robust Wald and Rao (score) tests
 #'
-#' @param ... Arguments that you would pass to a regular `glm` call. Note that for now we only have functionality for Poisson tests with log link
+#' @param ... Arguments that you would pass to a regular `glm` call. Any observations with `NA` values in the data (response or covariates) will be dropped.
 #'
 #' @importFrom sandwich sandwich
 #' @importFrom stats coef glm pnorm qnorm
