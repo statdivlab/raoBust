@@ -93,7 +93,7 @@ gee_test <- function(use_geeasy = TRUE, use_jack_se = FALSE, cluster_corr_coef =
   gee_family <- gee_result$family$family
   gee_link <- gee_result$family$link
   if ((gee_family != "poisson" | gee_link != "log") & (gee_family != "binomial" | gee_link != "logit") & (gee_family != "gaussian" | gee_link != "identity")) {
-    stop(paste("This is only implemented this for Poisson family with log link and Binomial family with logit link.\n",
+    stop(paste("This is only implemented this for Poisson family with log link, Binomial family with logit link, and Gaussian family with identity link.\n",
                "You requested", gee_family, "family and", gee_link, "link \n",
                "Please open a GitHub issue if you're interested in other families."))
   }
