@@ -26,6 +26,11 @@ glm_test <- function(...) {
       invokeRestart("muffleWarning")
   })
 
+  if (!(is.null(glm_result$na.action))) {
+    message(paste0(length(glm_result$na.action), 
+                   " of your observations contain missing values. These observations will be dropped from the analysis."))
+  }
+  
   glm_family <- glm_result$family$family
   glm_link <- glm_result$family$link
   if ((glm_family != "poisson" | glm_link != "log") & (glm_family != "binomial" | glm_link != "logit")) {

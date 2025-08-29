@@ -61,6 +61,12 @@ gee_test <- function(use_geeasy = TRUE, use_jack_se = FALSE, cluster_corr_coef =
   
   # drop rows with any NA
   keep_rows <- stats::complete.cases(dat_clean)
+  n_incomplete <- nrow(dat_clean) - sum(keep_rows)
+  if (n_incomplete > 0) {
+    message(paste0(n_incomplete, 
+                   " of your observations contain missing values. These observations will be dropped from the analysis."))
+  }
+
   dat_clean <- dat_clean[keep_rows, ]
   id_clean  <- id_clean[keep_rows]
   

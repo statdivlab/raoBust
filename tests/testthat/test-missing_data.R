@@ -35,11 +35,11 @@ test_that("see what happens with missing data", {
   )
   
   # see what happens for glm when missing y value
-  res_all <- glm_test(
+  expect_message(res_all <- glm_test(
     formula = yy ~ covariate1 + covariate2 + covariate3 + covariate4,
     family  = poisson(link = "log"),
     data    = df_re
-  )
+  ))
   res_no_5 <- glm_test(
     formula = yy ~ covariate1 + covariate2 + covariate3 + covariate4,
     family  = poisson(link = "log"),
@@ -48,25 +48,25 @@ test_that("see what happens with missing data", {
   expect_true(all.equal(res_all$coef_tab, res_no_5$coef_tab))
   
   # how about gee? 
-  gee_res_all <- gee_test(
+  expect_message(gee_res_all <- gee_test(
     formula = yy ~ covariate1 + covariate2 + covariate3 + covariate4,
     family  = poisson(link = "log"),
     id      = id,
     data    = df_re
-  )
+  ))
   gee_res_no5 <- gee_test(
     formula = yy ~ covariate1 + covariate2 + covariate3 + covariate4,
     family  = poisson(link = "log"),
     id      = id,
     data    = df_re[-5, ]
   )
-  gee_res_geelm <- gee_test(
+  expect_message(gee_res_geelm <- gee_test(
     formula = yy ~ covariate1 + covariate2 + covariate3 + covariate4,
     family  = poisson(link = "log"),
     id      = id,
     data    = df_re,
     use_geeasy = FALSE
-  )
+  ))
   gee_res_geelm_no5 <- gee_test(
     formula = yy ~ covariate1 + covariate2 + covariate3 + covariate4,
     family  = poisson(link = "log"),
@@ -89,11 +89,11 @@ test_that("see what happens with missing data", {
   )
   
   # see what happens for glm when missing y value
-  res_all <- glm_test(
+  expect_message(res_all <- glm_test(
     formula = yy ~ covariate1 + covariate2 + covariate3 + covariate4,
     family  = poisson(link = "log"),
     data    = df_re
-  )
+  ))
   res_no_4 <- glm_test(
     formula = yy ~ covariate1 + covariate2 + covariate3 + covariate4,
     family  = poisson(link = "log"),
@@ -102,12 +102,12 @@ test_that("see what happens with missing data", {
   expect_true(all.equal(res_all$coef_tab, res_no_4$coef_tab))
   
   # how about gee? 
-  gee_res_all <- gee_test(
+  expect_message(gee_res_all <- gee_test(
     formula = yy ~ covariate1 + covariate2 + covariate3 + covariate4,
     family  = poisson(link = "log"),
     id      = id,
     data    = df_re
-  )
+  ))
   gee_res_no4 <- gee_test(
     formula = yy ~ covariate1 + covariate2 + covariate3 + covariate4,
     family  = poisson(link = "log"),
@@ -115,13 +115,13 @@ test_that("see what happens with missing data", {
     data    = df_re[-4, ]
   )
   all.equal(gee_res_no4$coef_tab, gee_res_all$coef_tab)
-  gee_res_geelm <- gee_test(
+  expect_message(gee_res_geelm <- gee_test(
     formula = yy ~ covariate1 + covariate2 + covariate3 + covariate4,
     family  = poisson(link = "log"),
     id      = id,
     data    = df_re,
     use_geeasy = FALSE
-  )
+  ))
   gee_res_no4_geelm <- gee_test(
     formula = yy ~ covariate1 + covariate2 + covariate3 + covariate4,
     family  = poisson(link = "log"),
@@ -139,12 +139,12 @@ test_that("see what happens with missing data", {
     yy = yy
   )
   df_re$id[3] <- NA
-  gee_res_all <- gee_test(
+  expect_message(gee_res_all <- gee_test(
     formula = yy ~ covariate1 + covariate2 + covariate3 + covariate4,
     family  = poisson(link = "log"),
     id      = id,
     data    = df_re
-  )
+  ))
   gee_res_no3 <- gee_test(
     formula = yy ~ covariate1 + covariate2 + covariate3 + covariate4,
     family  = poisson(link = "log"),
@@ -152,13 +152,13 @@ test_that("see what happens with missing data", {
     data    = df_re[-3, ]
   )
   all.equal(gee_res_no3$coef_tab, gee_res_all$coef_tab)
-  gee_res_geelm <- gee_test(
+  expect_message(gee_res_geelm <- gee_test(
     formula = yy ~ covariate1 + covariate2 + covariate3 + covariate4,
     family  = poisson(link = "log"),
     id      = id,
     data    = df_re,
     use_geeasy = FALSE
-  )
+  ))
   gee_res_no3_geelm <- gee_test(
     formula = yy ~ covariate1 + covariate2 + covariate3 + covariate4,
     family  = poisson(link = "log"),
