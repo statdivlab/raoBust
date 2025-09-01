@@ -1,6 +1,6 @@
 #' Generalized Linear Models with robust and non-robust Wald and Rao (score) tests
 #'
-#' @param ... Arguments that you would pass to a regular `glm` call. Note that for now we only have functionality for Poisson tests with log link
+#' @param ... Arguments that you would pass to a regular `glm` call. Any observations with `NA` values in the data (response or covariates) will be dropped.
 #'
 #' @importFrom sandwich sandwich
 #' @importFrom stats coef glm pnorm qnorm
@@ -26,6 +26,11 @@ glm_test <- function(...) {
       invokeRestart("muffleWarning")
   })
 
+  if (!(is.null(glm_result$na.action))) {
+    message(paste0(length(glm_result$na.action), 
+                   " of your observations contain missing values. These observations will be dropped from the analysis."))
+  }
+  
   glm_family <- glm_result$family$family
   glm_link <- glm_result$family$link
   if ((glm_family != "poisson" | glm_link != "log") & (glm_family != "binomial" | glm_link != "logit") & (glm_family != "gaussian" | glm_link != "identity")) {
