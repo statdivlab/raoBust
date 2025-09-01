@@ -48,12 +48,22 @@ test_that("test logistic example", {
   expect_type(glm_test((dist > 43) ~ speed, data = cars, family=binomial(link = "logit"))$coef_tab,
               "double")
   
+  cars$id <- rep(1:5, 10)
+  expect_type(gee_test(formula = (dist > 43) ~ speed, data = cars, id = "id", 
+                       family=gaussian(link = "identity"))$coef_tab,
+              "list")
+  
 })
 
 test_that("test gaussian example", {
   
   expect_type(glm_test(dist ~ speed, data = cars, family=gaussian(link = "identity"))$coef_tab,
               "double")
+  
+  cars$id <- rep(1:5, 10)
+  expect_type(gee_test(formula = dist ~ speed, data = cars, id = "id", 
+                       family=gaussian(link = "identity"))$coef_tab,
+              "list")
   
 })
 
