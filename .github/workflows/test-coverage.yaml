@@ -42,5 +42,6 @@ jobs:
         shell: Rscript {0}
 
       - name: Test coverage
-        run: covr::codecov(token = Sys.getenv("CODECOV_TOKEN"))
-        shell: Rscript {0}
+        run: Rscript -e 'covr::codecov(token = Sys.getenv("CODECOV_TOKEN"))'
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
