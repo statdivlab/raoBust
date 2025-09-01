@@ -67,3 +67,9 @@ test_that("test gaussian example", {
   
 })
 
+test_that("error with other model", {
+  
+  expect_error(glm_test(dist ~ speed, data = cars, family=gaussian(link = "log")))
+
+})
+
