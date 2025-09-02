@@ -9,18 +9,17 @@
 #' 
 
 D_matrix_contribution <- function(indices, model_fits, yy, xx, family, link) {
-  D_i <- matrix(NA, nrow = ncol(xx), ncol = length(model_fits))
   
   if (family == "poisson" & link == "log") {
-    D_i <- t(model_fits[indices]*xx[indices,])
+    D_i <- t(model_fits[indices]*xx[indices, , drop = FALSE])
   }
   
   if (family == "binomial" & link == "logit") {
-    D_i <- t(model_fits[indices]*(1-model_fits[indices])*xx[indices,])
+    D_i <- t(model_fits[indices]*(1-model_fits[indices])*xx[indices, , drop = FALSE])
   }
   
   if (family == "gaussian" & link == "identity") {
-    D_i <- t(xx[indices,])
+    D_i <- t(xx[indices, , drop = FALSE])
   }
   
   return (D_i)
