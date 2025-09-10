@@ -4,6 +4,7 @@
 #' @param model_fits The fitted glm under the null hypothesis for the given indices.
 #' @param yy Vector of observed responses.
 #' @param xx Design matrix for model.
+#' @param pp0 Number of fixed parameters under null hypothesis.
 #' @param corr_mat Working correlation matrix for model fit.
 #' @param family The model family for the fitted glm.
 #' @param link The link function utilized in the fitted glm.

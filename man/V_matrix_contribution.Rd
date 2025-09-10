@@ -24,6 +24,8 @@ V_matrix_contribution(
 
 \item{xx}{Design matrix for model.}
 
+\item{pp0}{Number of fixed parameters under null hypothesis.}
+
 \item{corr_mat}{Working correlation matrix for model fit.}
 
 \item{family}{The model family for the fitted glm.}
