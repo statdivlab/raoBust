@@ -4,7 +4,16 @@
 \alias{V_matrix_contribution}
 \title{Compute V matrix contribution to robust score statistic for glm robust score tests.}
 \usage{
-V_matrix_contribution(indices, model_fits, yy, xx, corr_mat, family, link)
+V_matrix_contribution(
+  indices,
+  model_fits,
+  yy,
+  xx,
+  pp0 = 1,
+  corr_mat,
+  family,
+  link
+)
 }
 \arguments{
 \item{indices}{Indices of observations for cluster.}
