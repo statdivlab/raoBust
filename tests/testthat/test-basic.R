@@ -66,7 +66,9 @@ test_that("test gaussian example", {
               "double")
   
   cars$id <- c(rep(1:5, 9), 6:10)
-  expect_type(gee_test(formula = dist ~ speed, data = cars, id = "id", 
+  cars$bin <- rep(0:1, each = 25)
+  cars$cat <- rep(c("A", "B", "C", "D", "E"), 10)
+  expect_type(gee_test(formula = dist ~ speed + bin + cat, data = cars, id = "id", 
                        family=gaussian(link = "identity"))$coef_tab,
               "list")
   

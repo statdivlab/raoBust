@@ -33,7 +33,10 @@ V_matrix_contribution <- function(indices, model_fits, yy, xx, pp0 = 1, corr_mat
   if (family == "gaussian" & link == "identity") {
     n <- length(yy)
     m <- ncol(xx) - pp0
-    sigma2_tilde <- sum((yy - model_fits)^2)/(n - m)
+    # note, while sigma^2_tilde should in theory have a denominator, this would cancel out
+    # in the test statistic, so we set it to 1
+    # sigma2_tilde <- sum((yy - model_fits)^2)/(n - m)
+    sigma2_tilde <- sum((yy - model_fits)^2)
     if (n_i > 1) {
       V_i <- sqrt(diag(sigma2_tilde, n_i)) %*% corr_mat %*% sqrt(diag(sigma2_tilde, n_i))
     } else {
