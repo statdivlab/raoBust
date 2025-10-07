@@ -85,8 +85,37 @@ robust_score_test <- function(glm_object, call_to_model, param = 1,
       Si <- yy[indices] - model0_fits_i
 
       ## Recall solve(x1, x2) is the same as solve(x1) %*% x2
-      Umatrices[[ii]] <- Di %*% solve(Vi, matrix(Si, ncol = 1))
-      Amatrices[[ii]] <- Di %*% solve(Vi, t(Di))
+      
+      # ensure Vi is invertible (add small penalty if not)
+      lambda <- 0
+      solve_ok <- FALSE
+      scale <- max(abs(Matrix::diag(Vi)))
+      repeat {
+        if (lambda > 0) {
+          Vi_reg <- Vi +
+            lambda * Matrix::Diagonal(n = nrow(Vi), x = scale)
+        } else {
+          Vi_reg <- Vi
+        }
+        
+        Umatrices[[ii]] <- try({
+          as.matrix(Di %*% Matrix::solve(Vi_reg, matrix(Si, ncol = 1), method = "cholmod_solve"))
+          }, silent = TRUE)
+        Amatrices[[ii]] <- try({
+          as.matrix(Di %*% Matrix::solve(Vi_reg, t(Di), method = "cholmod_solve"))
+          }, silent = TRUE)
+        if (!inherits(Umatrices[[ii]], "try-error")) {
+          solve_ok <- TRUE
+          break
+        }
+        lambda <- if (lambda == 0) 1e-14 else 10 * lambda
+        if (lambda > 1e-2) {
+          stop("Unable to regularise Vi matrix for inversion")
+        }
+      }
+      
+      #Umatrices[[ii]] <- Di %*% solve(Vi, matrix(Si, ncol = 1))
+      #Amatrices[[ii]] <- Di %*% solve(Vi, t(Di))
 
     }
 
