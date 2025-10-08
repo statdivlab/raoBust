@@ -9,19 +9,8 @@
 #' 
 
 S_matrix_contribution <- function(indices, model_fits, yy, xx, family, link) {
-  S_i <- matrix(NA, nrow = length(indices), ncol = 1)
-  
-  if (family == "poisson" & link == "log") {
-    S_i <- matrix(yy[indices] - model_fits[indices], ncol = 1)
-  }
-  
-  if (family == "binomial" & link == "logit") {
-    S_i <- matrix(yy[indices] - model_fits[indices], ncol = 1)
-  }
-  
-  if (family == "gaussian" & link == "identity") {
-    S_i <- matrix(yy[indices] - model_fits[indices], ncol = 1)
-  }
-  
+
+  S_i <- matrix(yy[indices] - model_fits[indices], ncol = 1)
+
   return (S_i)
 }

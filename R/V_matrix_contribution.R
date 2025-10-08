@@ -30,7 +30,7 @@ V_matrix_contribution <- function(indices, model_fits, yy, xx, m = 1, corr_mat, 
     }
   }
   
-  if (family == "gaussian" & link == "identity") {
+  if (family == "gaussian") {
     n <- length(yy)
     mod_df <- ncol(xx) - m
     sigma2_tilde <- sum((yy - model_fits)^2)/(n - mod_df)
@@ -39,7 +39,6 @@ V_matrix_contribution <- function(indices, model_fits, yy, xx, m = 1, corr_mat, 
     } else {
       V_i <- sigma2_tilde * corr_mat
     }
-    
   }
   
   return (V_i)

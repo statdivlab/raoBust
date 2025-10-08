@@ -32,19 +32,30 @@ robust_score_test <- function(glm_object, call_to_model, param = 1,
   yy <- model1$y
   nn <- nrow(xx)
   pp <- ncol(xx)
-  xx0 <- xx[ , -param]
+  xx0 <- xx[ , -param, drop = FALSE]
   pp0 <- length(param)
 
 
 
   # stop("no")
   withCallingHandlers({
-    model0 <- glm.fit(x = xx0,
-                      y = yy,
-                      intercept = FALSE,
-                      offset = with(model1$data, eval(call_to_model$offset)),
-                      weights = with(model1$data, eval(call_to_model$weights)),
-                      family = eval(call_to_model$family))
+    if (model1family == "gaussian" & model1link == "log") {
+      model0 <- glm.fit(x = xx0,
+                        y = yy,
+                        intercept = FALSE,
+                        offset = with(model1$data, eval(call_to_model$offset)),
+                        weights = with(model1$data, eval(call_to_model$weights)),
+                        family = eval(call_to_model$family),
+                        start = rep(1, ncol(xx0)))
+    } else {
+      model0 <- glm.fit(x = xx0,
+                        y = yy,
+                        intercept = FALSE,
+                        offset = with(model1$data, eval(call_to_model$offset)),
+                        weights = with(model1$data, eval(call_to_model$weights)),
+                        family = eval(call_to_model$family))
+    }
+    
 
   }, warning = function(w) {
     if (startsWith(conditionMessage(w), "non-integer x"))
@@ -52,7 +63,7 @@ robust_score_test <- function(glm_object, call_to_model, param = 1,
   })
   model0_fits <- model0$fitted.values
 
-  if (is.factor(id)) {
+  if (length(id) == nn) {
 
     ## assume exchangeable
 
@@ -120,16 +131,17 @@ robust_score_test <- function(glm_object, call_to_model, param = 1,
                      solve(c_tilde %*% cov_U_hat %*% t(c_tilde), # (1 x p) x ((p x n) x (n x p)) x (p x 1)
                            (c_tilde %*% u_tilde_sum)))
 
-  } else if (is.na(id)) {
+  } else if (length(id) != nn) {
 
     u_tilde <- sapply(1:nn, score_contribution, model_fits = model0_fits,
                       family = model1family, link = model1link, xx = xx, yy = yy) ### p x n
 
     ## Reorder u tilde to match a
     u_tilde <- rbind(u_tilde[-param,], u_tilde[param,])
-
+  
     aa0 <- Reduce("+", sapply(1:nn, fisher_info_contribution, simplify=F,  model_fits = model0_fits,
-                              family = model1family, link = model1link, xx = xx, yy = yy)) ### p x p
+                              family = model1family, link = model1link, xx = xx, yy = yy, m = pp0)) ### p x p
+    
     aa0_11 <- aa0[setdiff(seq_len(pp), param), setdiff(seq_len(pp), param), drop = FALSE]
     aa0_21 <- aa0[param, setdiff(seq_len(pp), param), drop = FALSE]
     # c_tilde <- cbind(-aa0_21 %*% solve(aa0_11), diag(rep(1, pp0))) # 1 x p
