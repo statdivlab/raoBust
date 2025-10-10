@@ -84,7 +84,7 @@ robust_score_test <- function(glm_object, call_to_model, param = 1,
       corr_matrix <- matrix(rep(glm_object$geese$alpha, n_i^2), nrow = n_i)
       diag(corr_matrix) <- 1
       Vi <- V_matrix_contribution(indices = indices, model_fits = model0_fits, corr_mat = corr_matrix,
-                                  yy = yy, xx = xx, m = pp0, family = model1family, link = model1link)
+                                  yy = yy, xx = xx, family = model1family, link = model1link)
 
       Si <- S_matrix_contribution(indices = indices, model_fits = model0_fits,
                                   yy = yy, xx = xx, family = model1family, link = model1link)
