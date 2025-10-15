@@ -19,7 +19,7 @@
 #'
 #'
 #' @export
-gee_test <- function(use_geeasy = TRUE, use_jack_se = FALSE, cluster_corr_coef = NULL, skip_gee = FALSE, ...) {
+gee_test <- function(..., use_geeasy = TRUE, use_jack_se = FALSE, cluster_corr_coef = NULL, skip_gee = FALSE) {
 
   cl_orig <- match.call()
   cl_orig <- call_modify(cl_orig, use_geeasy = zap(), use_jack_se = zap(),
