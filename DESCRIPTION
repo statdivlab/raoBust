@@ -1,6 +1,6 @@
 Package: raoBust
 Title: Robust score tests for generalized linear models
-Version: 1.1.3.0
+Version: 1.1.4.0
 Authors@R: 
     c(person("Amy", "Willis", , "adwillis@uw.edu", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-2802-4317")), 
@@ -15,7 +15,9 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Suggests: 
     testthat (>= 3.0.0),
-    nnet
+    nnet,
+    knitr,
+    rmarkdown
 Config/testthat/edition: 3
 Imports: 
     geepack, 
@@ -25,3 +27,4 @@ Imports:
     geeasy,
     Matrix,
     MASS
+VignetteBuilder: knitr
