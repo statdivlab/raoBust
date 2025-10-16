@@ -80,7 +80,7 @@ We additionally have a `pkgdown`
 versions of our function
 [documentation](https://statdivlab.github.io/raoBust/reference/index.html)
 and an introductory
-[vignette](https://statdivlab.github.io/radEmu/articles/intro_raoBust.html).
+[vignette](https://statdivlab.github.io/raoBust/articles/intro_raoBust.html).
 
 ## People
 
