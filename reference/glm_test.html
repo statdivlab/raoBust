@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">raoBust</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -16,6 +16,10 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/intro_raoBust.html">Introduction to raoBust</a></li>
+  </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
       </ul></div>
@@ -51,8 +55,19 @@
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># glm_test(dist ~ speed, data = cars, family=poisson(link="log"))</span></span></span>
-<span class="r-in"><span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">glm_test</span><span class="op">(</span><span class="va">dist</span> <span class="op">~</span> <span class="va">speed</span>, data <span class="op">=</span> <span class="va">cars</span>, family<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">poisson</a></span><span class="op">(</span>link<span class="op">=</span><span class="st">"log"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Call:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> glm(dist ~ speed, data = cars, family = poisson(link = "log"))</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Coefficient estimates:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>               Estimate Non-robust Std Error Robust Std Error Lower 95% CI</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> (Intercept) 2.15096109          0.081774352      0.180014289     1.798140</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> speed       0.09650242          0.004404885      0.009234056     0.078404</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             Upper 95% CI Non-robust Wald p Robust Wald p Robust Score p</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> (Intercept)    2.5037826     1.743527e-152             0   4.945013e-07</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> speed          0.1146008     2.177435e-106             0   3.956496e-05</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
