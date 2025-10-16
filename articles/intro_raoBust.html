@@ -79,7 +79,9 @@ and then loading it.</p>
 <span><span class="co">#&gt;   method       from   </span></span>
 <span><span class="co">#&gt;   drop1.geeglm MESS   </span></span>
 <span><span class="co">#&gt;   drop1.geem   MESS   </span></span>
-<span><span class="co">#&gt;   plot.geeglm  geepack</span></span></code></pre></div>
+<span><span class="co">#&gt;   plot.geeglm  geepack</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">geeasy</span><span class="op">)</span> <span class="co"># also load geeasy, which raoBust uses in the back-end</span></span>
+<span><span class="co">#&gt; Loading required package: geepack</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
@@ -108,15 +110,7 @@ Poisson GLMs (log link), Binomial GLMs (logit link), linear models
 <span><span class="co">#&gt; Datsun 710        22.8   4  108  93 3.85 2.320 18.61  1  1    4    1</span></span>
 <span><span class="co">#&gt; Hornet 4 Drive    21.4   6  258 110 3.08 3.215 19.44  1  0    3    1</span></span>
 <span><span class="co">#&gt; Hornet Sportabout 18.7   8  360 175 3.15 3.440 17.02  0  0    3    2</span></span>
-<span><span class="co">#&gt; Valiant           18.1   6  225 105 2.76 3.460 20.22  1  0    3    1</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">iris</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species</span></span>
-<span><span class="co">#&gt; 1          5.1         3.5          1.4         0.2  setosa</span></span>
-<span><span class="co">#&gt; 2          4.9         3.0          1.4         0.2  setosa</span></span>
-<span><span class="co">#&gt; 3          4.7         3.2          1.3         0.2  setosa</span></span>
-<span><span class="co">#&gt; 4          4.6         3.1          1.5         0.2  setosa</span></span>
-<span><span class="co">#&gt; 5          5.0         3.6          1.4         0.2  setosa</span></span>
-<span><span class="co">#&gt; 6          5.4         3.9          1.7         0.4  setosa</span></span></code></pre></div>
+<span><span class="co">#&gt; Valiant           18.1   6  225 105 2.76 3.460 20.22  1  0    3    1</span></span></code></pre></div>
 <p>First, let’s consider fitting a Poisson GLM to estimate and test the
 expected fold-difference in <code>mpg</code> associated with a one-unit
 increase in horsepower, account for type of transmission. We choose
@@ -178,215 +172,8 @@ robust standard errors or robust Wald and Rao tests.</p>
 for clustered observations. Let’s add a cluster variable to
 <code>mtcars</code>.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mtcars</span><span class="op">$</span><span class="va">cluster</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">8</span>, each <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">mtcars</span><span class="op">$</span><span class="va">cluster</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">8</span>, <span class="fl">4</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/gee_test.html">gee_test</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="va">mpg</span> <span class="op">~</span> <span class="va">hp</span> <span class="op">+</span> <span class="va">am</span>, data <span class="op">=</span> <span class="va">mtcars</span>, family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">poisson</a></span><span class="op">(</span>link <span class="op">=</span> <span class="st">"log"</span><span class="op">)</span>, id <span class="op">=</span> <span class="va">cluster</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in geelm(formula = mpg ~ hp + am, data = structure(list(mpg = c(21,  : </span></span>
-<span><span class="co">#&gt;   could not find function "geelm"</span></span>
-<span><span class="co">#&gt; Warning in gee_test(formula = mpg ~ hp + am, data = mtcars, family =</span></span>
-<span><span class="co">#&gt; poisson(link = "log"), : GEE solver failed. Estimation will be done with a GLM,</span></span>
-<span><span class="co">#&gt; which will provide consistent parameter estimates but will not be as efficient</span></span>
-<span><span class="co">#&gt; as estimates from a GEE. Robust standard errors will be estimated using a</span></span>
-<span><span class="co">#&gt; clustered jackknife procedure.</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 18.700000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 18.100000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 14.300000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 24.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 22.800000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 19.200000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 17.800000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 16.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 17.300000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 15.200000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 10.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 10.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 14.700000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 32.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 30.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 33.900000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 21.500000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 15.500000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 15.200000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 13.300000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 19.200000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 27.300000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 30.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 15.800000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 19.700000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 21.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 22.800000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 21.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 22.800000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 19.200000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 17.800000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 16.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 17.300000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 15.200000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 10.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 10.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 14.700000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 32.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 30.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 33.900000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 21.500000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 15.500000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 15.200000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 13.300000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 19.200000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 27.300000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 30.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 15.800000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 19.700000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 21.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 22.800000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 21.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 18.700000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 18.100000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 14.300000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 24.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 17.300000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 15.200000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 10.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 10.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 14.700000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 32.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 30.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 33.900000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 21.500000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 15.500000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 15.200000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 13.300000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 19.200000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 27.300000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 30.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 15.800000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 19.700000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 21.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 22.800000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 21.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 18.700000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 18.100000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 14.300000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 24.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 22.800000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 19.200000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 17.800000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 16.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 14.700000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 32.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 30.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 33.900000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 21.500000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 15.500000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 15.200000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 13.300000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 19.200000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 27.300000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 30.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 15.800000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 19.700000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 21.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 22.800000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 21.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 18.700000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 18.100000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 14.300000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 24.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 22.800000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 19.200000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 17.800000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 16.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 17.300000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 15.200000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 10.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 10.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 21.500000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 15.500000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 15.200000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 13.300000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 19.200000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 27.300000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 30.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 15.800000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 19.700000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 21.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 22.800000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 21.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 18.700000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 18.100000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 14.300000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 24.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 22.800000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 19.200000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 17.800000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 16.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 17.300000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 15.200000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 10.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 10.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 14.700000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 32.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 30.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 33.900000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 19.200000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 27.300000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 30.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 15.800000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 19.700000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 21.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 22.800000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 21.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 18.700000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 18.100000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 14.300000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 24.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 22.800000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 19.200000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 17.800000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 16.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 17.300000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 15.200000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 10.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 10.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 14.700000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 32.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 30.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 33.900000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 21.500000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 15.500000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 15.200000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 13.300000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 15.800000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 19.700000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 21.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 22.800000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 21.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 18.700000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 18.100000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 14.300000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 24.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 22.800000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 19.200000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 17.800000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 16.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 17.300000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 15.200000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 10.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 10.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 14.700000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 32.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 30.400000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 33.900000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 21.500000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 15.500000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 15.200000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 13.300000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 19.200000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 27.300000</span></span>
-<span><span class="co">#&gt; Warning in dpois(y, mu, log = TRUE): non-integer x = 30.400000</span></span>
-<span><span class="co">#&gt; Warning: Because estimation has been done with a GLM, there is no estimated</span></span>
-<span><span class="co">#&gt; cluster correlation coefficient. Therefore the robust score test cannot be run.</span></span>
-<span><span class="co">#&gt; In order to run a robust score test for this model, please input a</span></span>
-<span><span class="co">#&gt; within-cluster correlation coefficient to use.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Call:</span></span>
 <span><span class="co">#&gt; gee_test(formula = mpg ~ hp + am, data = mtcars, family = poisson(link = "log"), </span></span>
@@ -394,15 +181,15 @@ for clustered observations. Let’s add a cluster variable to
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Coefficient estimates:</span></span>
-<span><span class="co">#&gt;                       Estimate Robust Std Error Lower 95% CI Upper 95% CI</span></span>
-<span><span class="co">#&gt; (Intercept)        3.327082221     0.0889250810  3.152792264  3.501372177</span></span>
-<span><span class="co">#&gt; hp                -0.003110758     0.0006219336 -0.004329726 -0.001891791</span></span>
-<span><span class="co">#&gt; am                 0.234033015     0.0683527788  0.100064030  0.368001999</span></span>
-<span><span class="co">#&gt; correlation:alpha           NA               NA           NA           NA</span></span>
+<span><span class="co">#&gt;                      Estimate Robust Std Error Lower 95% CI Upper 95% CI</span></span>
+<span><span class="co">#&gt; (Intercept)        3.32490495     0.0660228787  3.195502488  3.454307417</span></span>
+<span><span class="co">#&gt; hp                -0.00309798     0.0003224075 -0.003729887 -0.002466073</span></span>
+<span><span class="co">#&gt; am                 0.23472057     0.0560260439  0.124911541  0.344529597</span></span>
+<span><span class="co">#&gt; correlation:alpha  0.09206717               NA           NA           NA</span></span>
 <span><span class="co">#&gt;                   Robust Wald p Robust Score p</span></span>
-<span><span class="co">#&gt; (Intercept)        0.000000e+00             NA</span></span>
-<span><span class="co">#&gt; hp                 5.681147e-07             NA</span></span>
-<span><span class="co">#&gt; am                 6.172955e-04             NA</span></span>
+<span><span class="co">#&gt; (Intercept)        0.000000e+00    0.005722124</span></span>
+<span><span class="co">#&gt; hp                 0.000000e+00    0.016360642</span></span>
+<span><span class="co">#&gt; am                 2.795817e-05    0.022199182</span></span>
 <span><span class="co">#&gt; correlation:alpha            NA             NA</span></span></code></pre></div>
 <p>Again we have the same estimates, but different standard errors and
 robust Wald and Rao test p-values once we account for clustering.</p>
