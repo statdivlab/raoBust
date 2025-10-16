@@ -12,7 +12,7 @@
 #' @importFrom rlang call_match caller_env
 #' @importFrom geepack geeglm
 #' @importFrom stats glm
-#' @import geeasy
+#' @importFrom geeasy geelm
 #'
 #' @examples
 #' cars$id <- rep(1:5, each = 10)
@@ -27,9 +27,9 @@ gee_test <- function(..., use_geeasy = TRUE, use_jack_se = FALSE, cluster_corr_c
 
   cl <- cl_orig
   if (use_geeasy) {
-    cl[1] <- call("geelm")
+    cl[[1]] <- quote(geeasy::geelm)
   } else {
-    cl[1] <- call("geeglm")
+    cl[[1]] <- quote(geepack::geeglm)
   }
 
   if (is.null(cl$id)) {
