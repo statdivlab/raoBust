@@ -1,11 +1,11 @@
 #' Generalized Estimating Equations under technical replication with robust and non-robust Wald and Rao (score) tests
 #'
+#' @param ... Arguments that you would pass to a regular `geepack::geeglm` call. Any observations with `NA` values in the data (response or covariates or id) will be dropped.
 #' @param use_geeasy When TRUE, uses `geeasy` for gee estimation, when FALSE uses `geepack`
 #' @param use_jack_se When TRUE uses jackknife standard errors (which take longer), when FALSE uses sandwich standard errors
 #' @param cluster_corr_coef Optional within-cluster correlation coefficient. This will only be used when parameter estimation with a GEE fails and estimation must
 #' instead be performed with a GLM.
 #' @param skip_gee When TRUE doesn't try to optimize with a GEE (just uses a GLM). This should only be used internally for testing.
-#' @param ... Arguments that you would pass to a regular `geepack::geeglm` call. Any observations with `NA` values in the data (response or covariates or id) will be dropped.
 #'
 #' @importFrom sandwich sandwich vcovJK
 #' @importFrom stats coef glm pnorm qnorm
@@ -15,8 +15,8 @@
 #' @import geeasy
 #'
 #' @examples
-#' # TODO
-#'
+#' cars$id <- rep(1:5, each = 10)
+#' gee_test(dist ~ speed, data = cars, family=poisson(link="log"), id = id)
 #'
 #' @export
 gee_test <- function(..., use_geeasy = TRUE, use_jack_se = FALSE, cluster_corr_coef = NULL, skip_gee = FALSE) {
@@ -74,7 +74,7 @@ gee_test <- function(..., use_geeasy = TRUE, use_jack_se = FALSE, cluster_corr_c
   cl <- call_modify(cl,
                     "data" = dat_clean,
                     "id"   = id_clean)
-
+  
   ### fit the gee, ignoring warnings about non integer inputs, as we take an estimating equations mindset
   withCallingHandlers({
     gee_result <- try({eval(cl, envir = rlang::caller_env())})

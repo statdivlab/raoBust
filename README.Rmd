@@ -44,8 +44,36 @@ library(raoBust)
 glm_test(dist ~ speed, data = cars, family=poisson(link="log"))
 ```
 
+## Documentation 
+
+We additionally have a `pkgdown` [website](https://statdivlab.github.io/raoBust/) that contains pre-built versions of our function [documentation](https://statdivlab.github.io/raoBust/reference/index.html) and an introductory [vignette](https://statdivlab.github.io/radEmu/articles/intro_raoBust.html).
+
 ## People
 
-This software project was started by Amy D Willis, with input and insights from former lab member David S Clausen. Sarah Teichman is an amazing collaborator and coauthor. 
+- Creator, maintainer: Amy D Willis
+- Author: Sarah Teichman
+- Author: David S Clausen
+- Author: Shirley Mathur
 
-All errors are Amy's fault. 
+All errors are Amy’s fault. 
+
+## Naming
+
+Score tests were pioneered by C.R. Rao, an outstanding 
+statistician and methodologist. Score tests are sometimes, 
+but increasingly rarely, called Rao tests. While Rao's work 
+focused on non-robust score tests (not robust score tests) 
+it is in tribute to Rao that this package is named. Many 
+thanks to David Clausen for proposing and sharing the clever 
+portmanteau `raoBust' for a package implementing robust score tests. 
+
+**Comment from Amy** People of Color are consistently undervalued 
+in science and mathematics, including in statistical methodology. 
+The foundations of statistical methodology were built on 
+the desire to quantitatively show the inferiority of People of Color 
+and Jews. I believe that white supremacy continues to manifest 
+in what names we give methods: we are more likely to name a method 
+after a person if they are White, and more likely to name a method 
+after its purpose, details or another acronym if the developer was 
+a Person of Color. For this reason, I try to call score tests 
+"Rao tests". I invite you to join me. 

@@ -15,7 +15,9 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Suggests: 
     testthat (>= 3.0.0),
-    nnet
+    nnet,
+    knitr,
+    rmarkdown
 Config/testthat/edition: 3
 Imports: 
     geepack, 
@@ -25,3 +27,4 @@ Imports:
     geeasy,
     Matrix,
     MASS
+VignetteBuilder: knitr

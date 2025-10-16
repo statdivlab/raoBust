@@ -28,7 +28,7 @@ instead be performed with a GLM.}
 Generalized Estimating Equations under technical replication with robust and non-robust Wald and Rao (score) tests
 }
 \examples{
-# TODO
-
+cars$id <- rep(1:5, each = 10)
+gee_test(dist ~ speed, data = cars, family=poisson(link="log"), id = id)
 
 }

@@ -8,3 +8,4 @@
 README.Rmd
 .gitignore
 docs
+inst/doc
