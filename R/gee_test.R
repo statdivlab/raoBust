@@ -12,7 +12,7 @@
 #' @importFrom rlang call_match caller_env
 #' @importFrom geepack geeglm
 #' @importFrom stats glm
-#' @import geeasy
+#' @importFrom geeasy geelm
 #'
 #' @examples
 #' cars$id <- rep(1:5, each = 10)

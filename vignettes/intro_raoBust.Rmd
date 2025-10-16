@@ -25,6 +25,7 @@ We'll start by installing `raoBust` if we haven't already, and then loading it.
 # remotes::install_github("statdivlab/raoBust")
 
 library(raoBust)
+library(geeasy) # also load geeasy, which raoBust uses in the back-end
 ```
 
 ## Introduction
@@ -41,7 +42,6 @@ We will demonstrate `raoBust` using the `mtcars` dataset.
 
 ```{r}
 head(mtcars)
-head(iris)
 ```
 
 First, let's consider fitting a Poisson GLM to estimate and test the expected fold-difference in `mpg` associated with a one-unit increase in horsepower, account for type of transmission. We choose Poisson regression because we want to estimate a fold-difference in means, and because we are using robust tests we will not worry about whether we actually expect `mpg` measurements to follow a Poisson distribution.
@@ -62,8 +62,8 @@ Here we see the same estimates, but `glm` does not give us robust standard error
 
 In `raoBust` we can also use a GEE framework to account for clustered observations. Let's add a cluster variable to `mtcars`.
 
-```{r, message=FALSE}
-mtcars$cluster <- rep(1:8, each = 4)
+```{r, warning=FALSE}
+mtcars$cluster <- rep(1:8, 4)
 gee_test(formula = mpg ~ hp + am, data = mtcars, family = poisson(link = "log"), id = cluster)
 ```
 
