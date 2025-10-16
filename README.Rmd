@@ -20,20 +20,42 @@ knitr::opts_chunk$set(
 [![codecov](https://codecov.io/github/statdivlab/raoBust/coverage.svg?branch=main)](https://app.codecov.io/github/statdivlab/raoBust)
 <!-- badges: end -->
 
-`raoBust`, at its core, gives you all the important information from `glm()`, but also with model misspecification-robust Rao tests (also called score tests) and Wald tests. 
+`raoBust`, at its core, gives you all the important information from
+`glm()`, but also with robust score tests. Robust score tests are 
+robust (in error rate control) to many forms of model misspecification. 
 
-Robust score tests have outstanding error rate performance in small samples, **and** when your data is not drawn from a parametric family (i.e., always). It's shocking to me (Amy) how well they perform. They have a reputation for being conservative in small samples, but I would argue that this is a *very good thing*. 
+Robust score tests have outstanding error rate performance in small
+samples, **and** when your data is not drawn from a parametric family
+(i.e., always). It is shocking how well they perform. They are
+generally conservative in small samples, which is a very good thing. 
+You *should* err on conservative when you have few samples. Most 
+other tests are anti-conservative in small samples. 
 
-For now (because it's what I need for my work) I only have implementations for Poisson GLMs with log links. If you have another specific case you'd like to request, please let me know at [Issues](https://github.com/statdivlab/raoBust/issues) and label it as a "feature request". 
+We currently have score tests for coefficients in Poisson GLMs (log 
+link), Binomial GLMs (logit link), and Multinomial GLMs (log link), 
+including for linear combinations of parameters and simultaneous testing
+("ANOVA"). If you have another
+specific case you’d like to request, please let us know at
+[Issues](https://github.com/statdivlab/raoBust/issues) and label it as a
+“feature request”.
+
+This package also implements robust Wald tests. 
+Many other packages implement robust Wald tests -- it is general 
+methodology for robust score tests that are the unique contribution 
+of this package. 
 
 ## Installation
 
-You can install the development version of raoBust from [GitHub](https://github.com/) with:
+You can install the development version of raoBust from
+[GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
 devtools::install_github("statdivlab/raoBust")
 ```
+
+If it would be helpful for you for this package to be on CRAN, 
+please let us know. 
 
 ## Example
 
