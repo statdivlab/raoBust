@@ -27,9 +27,9 @@ gee_test <- function(..., use_geeasy = TRUE, use_jack_se = FALSE, cluster_corr_c
 
   cl <- cl_orig
   if (use_geeasy) {
-    cl[[1]] <- quote(geeasy::geelm)
+    cl[1] <- call("geelm")
   } else {
-    cl[[1]] <- quote(geepack::geeglm)
+    cl[1] <- call("geeglm")
   }
 
   if (is.null(cl$id)) {
