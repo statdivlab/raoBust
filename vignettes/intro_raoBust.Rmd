@@ -46,14 +46,14 @@ head(iris)
 
 First, let's consider fitting a Poisson GLM to estimate and test the expected fold-difference in `mpg` associated with a one-unit increase in horsepower, account for type of transmission. We choose Poisson regression because we want to estimate a fold-difference in means, and because we are using robust tests we will not worry about whether we actually expect `mpg` measurements to follow a Poisson distribution.
 
-```{r}
-glm_test(mpg ~ hp + am, data = mtcars, family = poisson(link = "log"))
+```{r, message = FALSE}
+glm_test(formula = mpg ~ hp + am, data = mtcars, family = poisson(link = "log"))
 ```
 
 Looking at the output, we can see our estimated fold-difference in `mpg` associated with a one-unit increase in horsepower is `exp(-0.003) = 0.997`, with a robust Rao test p-value of $0.002$. We can compare this to the results we would get if we ran a typical `glm`.
 
-```{r}
-summary(glm(mpg ~ hp + am, data = mtcars, family = poisson(link = "log")))
+```{r, warning = FALSE}
+summary(glm(formula = mpg ~ hp + am, data = mtcars, family = poisson(link = "log")))
 ```
 
 Here we see the same estimates, but `glm` does not give us robust standard errors or robust Wald and Rao tests. 
@@ -62,9 +62,9 @@ Here we see the same estimates, but `glm` does not give us robust standard error
 
 In `raoBust` we can also use a GEE framework to account for clustered observations. Let's add a cluster variable to `mtcars`.
 
-```{r}
+```{r, message=FALSE}
 mtcars$cluster <- rep(1:8, each = 4)
-gee_test(mpg ~ hp + am, data = mtcars, family = poisson(link = "log"), id = cluster)
+gee_test(formula = mpg ~ hp + am, data = mtcars, family = poisson(link = "log"), id = cluster)
 ```
 
 Again we have the same estimates, but different standard errors and robust Wald and Rao test p-values once we account for clustering.
@@ -100,14 +100,14 @@ We can now fit our model. We'll start by testing the strong null hypothesis that
 
 ```{r}
 strong_test <- multinom_test(Y = Y, X = X, strong = TRUE)
-strong$coef_tab
-strong$test_stat
-strong$p
+strong_test$coef_tab
+strong_test$test_stat
+strong_test$p
 
 weak_test <- multinom_test(Y = Y, X = X, strong = FALSE, j = 3)
-weak$coef_tab
-weak$test_stat
-weak$p
+weak_test$coef_tab
+weak_test$test_stat
+weak_test$p
 ```
 
 We can see that the strong test has a larger robust Rao test statistic and smaller p-value, compared to the weak test. This makes sense, as it tests a stronger hypothesis that is more likely to be false (since it contains all possible weak hypotheses). 
