@@ -5,14 +5,16 @@
 \title{Generalized Estimating Equations under technical replication with robust and non-robust Wald and Rao (score) tests}
 \usage{
 gee_test(
+  ...,
   use_geeasy = TRUE,
   use_jack_se = FALSE,
   cluster_corr_coef = NULL,
-  skip_gee = FALSE,
-  ...
+  skip_gee = FALSE
 )
 }
 \arguments{
+\item{...}{Arguments that you would pass to a regular \code{geepack::geeglm} call. Any observations with \code{NA} values in the data (response or covariates or id) will be dropped.}
+
 \item{use_geeasy}{When TRUE, uses \code{geeasy} for gee estimation, when FALSE uses \code{geepack}}
 
 \item{use_jack_se}{When TRUE uses jackknife standard errors (which take longer), when FALSE uses sandwich standard errors}
@@ -28,7 +30,7 @@ instead be performed with a GLM.}
 Generalized Estimating Equations under technical replication with robust and non-robust Wald and Rao (score) tests
 }
 \examples{
-# TODO
-
+cars$id <- rep(1:5, each = 10)
+gee_test(dist ~ speed, data = cars, family=poisson(link="log"), id = id)
 
 }

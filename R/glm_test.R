@@ -7,8 +7,7 @@
 #' @import rlang
 #'
 #' @examples
-#' # glm_test(dist ~ speed, data = cars, family=poisson(link="log"))
-#'
+#' glm_test(dist ~ speed, data = cars, family=poisson(link="log"))
 #'
 #' @export
 #'
