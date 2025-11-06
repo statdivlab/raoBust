@@ -67,22 +67,16 @@ robust_score_test <- function(glm_object, call_to_model, param = 1,
       xxi <- xx[indices, , drop = FALSE]
       model0_fits_i <- model0_fits[indices]
 
-      Di <- matrix(NA, nrow = pp, ncol = n_i)
-      for (j in 1:n_i) {
-        for (k in seq_len(pp)) {
-          Di[k, j] <- xxi[j, k] * model0_fits_i[j]
-        }
-      }
+      Di <- D_matrix_contribution(indices = indices, model_fits = model0_fits,
+                                  yy = yy, xx = xx, family = model1family, link = model1link)
 
       corr_matrix <- matrix(rep(glm_object$geese$alpha, n_i^2), nrow = n_i)
       diag(corr_matrix) <- 1
-      if (n_i > 1) {
-        Vi <- diag(sqrt(model0_fits_i)) %*% corr_matrix %*% diag(sqrt(model0_fits_i))
-      } else {
-        Vi <- sqrt(model0_fits_i) * corr_matrix * sqrt(model0_fits_i)
-      }
+      Vi <- V_matrix_contribution(indices = indices, model_fits = model0_fits, corr_mat = corr_matrix,
+                                  yy = yy, xx = xx, pp0 = pp0, family = model1family, link = model1link)
 
-      Si <- yy[indices] - model0_fits_i
+      Si <- S_matrix_contribution(indices = indices, model_fits = model0_fits,
+                                  yy = yy, xx = xx, family = model1family, link = model1link)
 
       ## Recall solve(x1, x2) is the same as solve(x1) %*% x2
       

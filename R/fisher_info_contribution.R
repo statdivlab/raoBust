@@ -18,5 +18,12 @@ fisher_info_contribution <- function(i, model_fits, yy, xx, family, link) { ### 
     fisher_info_mat <- (1-model_fits[i])^(-1)*(model_fits[i])^(-1) * xx[i, ] %*% t(xx[i, ])
   }
   
+  if (family == "gaussian" & link == "identity") {
+    n <- length(yy)
+    p <- ncol(xx)
+    sigma2_tilde <- sum(yy - model_fits)/(n - p)
+    fisher_info_mat <- (1/sigma2_tilde)*xx[i, ] %*% t(xx[i, ])
+  }
+  
   return(fisher_info_mat)
 }

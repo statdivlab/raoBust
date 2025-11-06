@@ -32,8 +32,8 @@ glm_test <- function(...) {
   
   glm_family <- glm_result$family$family
   glm_link <- glm_result$family$link
-  if ((glm_family != "poisson" | glm_link != "log") & (glm_family != "binomial" | glm_link != "logit")) {
-    stop(paste("This is only implemented this for Poisson family with log link and Binomial family with logit link.\n",
+  if ((glm_family != "poisson" | glm_link != "log") & (glm_family != "binomial" | glm_link != "logit") & (glm_family != "gaussian" | glm_link != "identity")) {
+    stop(paste("This is only implemented this for Poisson family with log link, Binomial family with logit link, and Gaussian family with identity link.\n",
                "You requested", glm_family, "family and", glm_link, "link \n",
                "Please open a GitHub issue if you're interested in other families."))
   }
