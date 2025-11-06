@@ -9,7 +9,7 @@ V_matrix_contribution(
   model_fits,
   yy,
   xx,
-  m = 1,
+  pp0 = 1,
   corr_mat,
   family,
   link
@@ -24,7 +24,7 @@ V_matrix_contribution(
 
 \item{xx}{Design matrix for model.}
 
-\item{m}{Number of parameters fixed under null hypothesis.}
+\item{pp0}{Number of fixed parameters under null hypothesis.}
 
 \item{corr_mat}{Working correlation matrix for model fit.}
 

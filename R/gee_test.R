@@ -1,25 +1,25 @@
 #' Generalized Estimating Equations under technical replication with robust and non-robust Wald and Rao (score) tests
 #'
+#' @param ... Arguments that you would pass to a regular `geepack::geeglm` call. Any observations with `NA` values in the data (response or covariates or id) will be dropped.
 #' @param use_geeasy When TRUE, uses `geeasy` for gee estimation, when FALSE uses `geepack`
 #' @param use_jack_se When TRUE uses jackknife standard errors (which take longer), when FALSE uses sandwich standard errors
 #' @param cluster_corr_coef Optional within-cluster correlation coefficient. This will only be used when parameter estimation with a GEE fails and estimation must
 #' instead be performed with a GLM.
 #' @param skip_gee When TRUE doesn't try to optimize with a GEE (just uses a GLM). This should only be used internally for testing.
-#' @param ... Arguments that you would pass to a regular `geepack::geeglm` call. Note that for now we only have functionality for Poisson tests with log link
 #'
 #' @importFrom sandwich sandwich vcovJK
 #' @importFrom stats coef glm pnorm qnorm
 #' @importFrom rlang call_match caller_env
 #' @importFrom geepack geeglm
 #' @importFrom stats glm
-#' @import geeasy
+#' @importFrom geeasy geelm
 #'
 #' @examples
-#' # TODO
-#'
+#' cars$id <- rep(1:5, each = 10)
+#' gee_test(dist ~ speed, data = cars, family=poisson(link="log"), id = id)
 #'
 #' @export
-gee_test <- function(use_geeasy = TRUE, use_jack_se = FALSE, cluster_corr_coef = NULL, skip_gee = FALSE, ...) {
+gee_test <- function(..., use_geeasy = TRUE, use_jack_se = FALSE, cluster_corr_coef = NULL, skip_gee = FALSE) {
 
   cl_orig <- match.call()
   cl_orig <- call_modify(cl_orig, use_geeasy = zap(), use_jack_se = zap(),
@@ -55,11 +55,26 @@ gee_test <- function(use_geeasy = TRUE, use_jack_se = FALSE, cluster_corr_coef =
     cl <- call_modify(cl, "std.err" = "jack")
   }
   the_reorder <- order(eval(cl$data, envir = rlang::caller_env())[[id_col]])
+  
+  dat_clean <- eval(cl$data, envir = rlang::caller_env())[the_reorder, ]
+  id_clean  <- eval(cl$id, envir = rlang::caller_env())[the_reorder]
+  
+  # drop rows with any NA
+  keep_rows <- stats::complete.cases(dat_clean)
+  n_incomplete <- nrow(dat_clean) - sum(keep_rows)
+  if (n_incomplete > 0) {
+    message(paste0(n_incomplete, 
+                   " of your observations contain missing values. These observations will be dropped from the analysis."))
+  }
+
+  dat_clean <- dat_clean[keep_rows, ]
+  id_clean  <- id_clean[keep_rows]
+  
+  # update the call
   cl <- call_modify(cl,
-                    "data" = eval(cl$data, envir = rlang::caller_env())[the_reorder, ],
-                    "id" = eval(cl$id, envir = rlang::caller_env())[the_reorder])
-
-
+                    "data" = dat_clean,
+                    "id"   = id_clean)
+  
   ### fit the gee, ignoring warnings about non integer inputs, as we take an estimating equations mindset
   withCallingHandlers({
     gee_result <- try({eval(cl, envir = rlang::caller_env())})

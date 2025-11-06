@@ -84,14 +84,43 @@ robust_score_test <- function(glm_object, call_to_model, param = 1,
       corr_matrix <- matrix(rep(glm_object$geese$alpha, n_i^2), nrow = n_i)
       diag(corr_matrix) <- 1
       Vi <- V_matrix_contribution(indices = indices, model_fits = model0_fits, corr_mat = corr_matrix,
-                                  yy = yy, xx = xx, family = model1family, link = model1link)
+                                  yy = yy, xx = xx, pp0 = pp0, family = model1family, link = model1link)
 
       Si <- S_matrix_contribution(indices = indices, model_fits = model0_fits,
                                   yy = yy, xx = xx, family = model1family, link = model1link)
 
       ## Recall solve(x1, x2) is the same as solve(x1) %*% x2
-      Umatrices[[ii]] <- Di %*% solve(Vi, Si)
-      Amatrices[[ii]] <- Di %*% solve(Vi, t(Di))
+      
+      # ensure Vi is invertible (add small penalty if not)
+      lambda <- 0
+      solve_ok <- FALSE
+      scale <- max(abs(Matrix::diag(Vi)))
+      repeat {
+        if (lambda > 0) {
+          Vi_reg <- Vi +
+            lambda * Matrix::Diagonal(n = nrow(Vi), x = scale)
+        } else {
+          Vi_reg <- Vi
+        }
+        
+        Umatrices[[ii]] <- try({
+          as.matrix(Di %*% Matrix::solve(Vi_reg, matrix(Si, ncol = 1), method = "cholmod_solve"))
+          }, silent = TRUE)
+        Amatrices[[ii]] <- try({
+          as.matrix(Di %*% Matrix::solve(Vi_reg, t(Di), method = "cholmod_solve"))
+          }, silent = TRUE)
+        if (!inherits(Umatrices[[ii]], "try-error")) {
+          solve_ok <- TRUE
+          break
+        }
+        lambda <- if (lambda == 0) 1e-14 else 10 * lambda
+        if (lambda > 1e-2) {
+          stop("Unable to regularise Vi matrix for inversion")
+        }
+      }
+      
+      #Umatrices[[ii]] <- Di %*% solve(Vi, matrix(Si, ncol = 1))
+      #Amatrices[[ii]] <- Di %*% solve(Vi, t(Di))
 
     }
 

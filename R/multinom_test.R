@@ -332,7 +332,7 @@ covariates in formula must be provided.")
   if (!is.null(formula)) {
 
     #get names of variables used for model fit, and then use these to populate covariate column of output table
-    coef_names <- c(labels(terms(as.formula(formula), data = data)))
+    coef_names <- c(labels(stats::terms(stats::as.formula(formula), data = data)))
     coef_tab$Covariate <- rep(c("(intercept)",coef_names), J-1)
 
   } else {

@@ -9,7 +9,6 @@
 #' 
 
 D_matrix_contribution <- function(indices, model_fits, yy, xx, family, link) {
-  D_i <- matrix(NA, nrow = ncol(xx), ncol = length(model_fits))
   
   if (family == "poisson" & link == "log") {
     D_i <- t(model_fits[indices]*xx[indices, , drop = FALSE])
