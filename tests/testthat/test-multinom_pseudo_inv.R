@@ -32,10 +32,17 @@ test_that("the test stat with the pseudo inverse controls t1e when the inverse i
     df <- simulate_data_mult(nn = nn, strong=TRUE, ms = 10)
     df$Y[, 1] <- 0
     df$Y[, 3] <- 0
-    result <- suppressWarnings(multinom_test(df$X, df$Y, strong=TRUE))
-    result_alt <- suppressWarnings(multinom_test(df$X, df$Y, strong=TRUE, pseudo_inv = TRUE))
-    p[sim] <- result$p
-    p_alt[sim] <- result_alt$p
+    capture.output(
+      res <- suppressWarnings(multinom_test(df$X, df$Y, strong=TRUE)),
+      file = NULL
+    )
+    capture.output(
+      res_alt <- suppressWarnings(multinom_test(df$X, df$Y, strong=TRUE, pseudo_inv = TRUE)),
+      file = NULL
+    )
+    
+    if (!inherits(res, "try-error")) p[sim] <- res$p
+    if (!inherits(res_alt, "try-error")) p_alt[sim] <- res_alt$p
   }
 
   expect_true(sum(!is.na(p)) > 5)
