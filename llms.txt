@@ -1,0 +1,169 @@
+# raoBust: Robust Rao (score) tests for Generalized Linear Models
+
+`raoBust`, at its core, gives you all the important information from
+[`glm()`](https://rdrr.io/r/stats/glm.html), but also with robust score
+tests. Robust score tests are robust (in error rate control) to many
+forms of model misspecification.
+
+Robust score tests have outstanding error rate performance in small
+samples, **and** when your data is not drawn from a parametric family
+(i.e., always). It is shocking how well they perform. They are generally
+conservative in small samples, which is a very good thing. You *should*
+err on conservative when you have few samples. Most other tests are
+anti-conservative in small samples.
+
+We currently have score tests for coefficients in Poisson GLMs (log
+link), Binomial GLMs (logit link), and Multinomial GLMs (log link),
+including for linear combinations of parameters and simultaneous testing
+(“ANOVA”). If you have another specific case you’d like to request,
+please let us know at
+[Issues](https://github.com/statdivlab/raoBust/issues) and label it as a
+“feature request”.
+
+This package also implements robust Wald tests. Many other packages
+implement robust Wald tests – it is general methodology for robust score
+tests that are the unique contribution of this package.
+
+## Installation
+
+You can install the development version of raoBust from
+[GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("statdivlab/raoBust")
+```
+
+If it would be helpful for you for this package to be on CRAN, please
+let us know.
+
+## Example
+
+This is a really silly example to show you the syntax. It looks just
+like [`glm()`](https://rdrr.io/r/stats/glm.html) on the input side, but
+outputs a summary table that includes robust Wald and Rao tests as well
+as others.
+
+``` r
+library(raoBust)
+#> Registered S3 methods overwritten by 'geeasy':
+#>   method       from   
+#>   drop1.geeglm MESS   
+#>   drop1.geem   MESS   
+#>   plot.geeglm  geepack
+glm_test(dist ~ speed, data = cars, family=poisson(link="log"))
+#> 
+#> Call:
+#> glm(dist ~ speed, data = cars, family = poisson(link = "log"))
+#> 
+#> 
+#> Coefficient estimates:
+#>               Estimate Non-robust Std Error Robust Std Error Lower 95% CI
+#> (Intercept) 2.15096109          0.081774352      0.180014289     1.798140
+#> speed       0.09650242          0.004404885      0.009234056     0.078404
+#>             Upper 95% CI Non-robust Wald p Robust Wald p Robust Score p
+#> (Intercept)    2.5037826     1.743527e-152             0   4.945013e-07
+#> speed          0.1146008     2.177435e-106             0   3.956496e-05
+```
+
+## Documentation
+
+We additionally have a `pkgdown`
+[website](https://statdivlab.github.io/raoBust/) that contains pre-built
+versions of our function
+[documentation](https://statdivlab.github.io/raoBust/reference/index.html)
+and an introductory
+[vignette](https://statdivlab.github.io/raoBust/articles/intro_raoBust.html).
+
+## People
+
+- Creator, maintainer: Amy D Willis
+- Author: Sarah Teichman
+- Author: David S Clausen
+- Author: Shirley Mathur
+
+All errors are Amy’s fault.
+
+## Naming
+
+Score tests were pioneered by C.R. Rao, an outstanding statistician and
+methodologist. Score tests are sometimes, but increasingly rarely,
+called Rao tests. While Rao’s work focused on non-robust score tests
+(not robust score tests) it is in tribute to Rao that this package is
+named. Many thanks to David Clausen for proposing and sharing the clever
+portmanteau \`raoBust’ for a package implementing robust score tests.
+
+**Comment from Amy** People of Color are consistently undervalued in
+science and mathematics, including in statistical methodology. The
+foundations of statistical methodology were built on the desire to
+quantitatively show the inferiority of People of Color and Jews. I
+believe that white supremacy continues to manifest in what names we give
+methods: we are more likely to name a method after a person if they are
+White, and more likely to name a method after its purpose, details or
+another acronym if the developer was a Person of Color. For this reason,
+I try to call score tests “Rao tests”. I invite you to join me.
+
+# Package index
+
+## All functions
+
+- [`D_matrix_contribution()`](D_matrix_contribution.md) : Compute D
+  matrix contribution for a given cluster to robust score statistic for
+  glm robust score tests.
+- [`S_matrix_contribution()`](S_matrix_contribution.md) : Compute S
+  matrix contribution for a given cluster to robust score statistic for
+  glm robust score tests.
+- [`V_matrix_contribution()`](V_matrix_contribution.md) : Compute V
+  matrix contribution to robust score statistic for glm robust score
+  tests.
+- [`combine_independent_p_values()`](combine_independent_p_values.md) :
+  Combine independent p-values that test the same null hypothesis into
+  an overall summary
+- [`fisher_info_contribution()`](fisher_info_contribution.md) : Compute
+  fisher information contribution to robust score statistic for glm
+  robust score tests.
+- [`gee_test()`](gee_test.md) : Generalized Estimating Equations under
+  technical replication with robust and non-robust Wald and Rao (score)
+  tests
+- [`get_test_statistic()`](get_test_statistic.md) : Just in case anyone
+  wants to invert a p-value to recover the chi-squared distributed test
+  statistic
+- [`glm_test()`](glm_test.md) : Generalized Linear Models with robust
+  and non-robust Wald and Rao (score) tests
+- [`jackknife_se()`](jackknife_se.md) : Jackknife standard errors
+- [`lincom()`](lincom.md) : Run robust wald test for null hypothesis of
+  form A x beta = c
+- [`multinom_beta_vector_to_matrix()`](multinom_beta_vector_to_matrix.md)
+  : Create \\\beta\\ matrix from vector of \\\beta\\ for \\\beta_k : k
+  \neq j\\
+- [`multinom_fisher_scoring()`](multinom_fisher_scoring.md) :
+  Optimization under null or alternative for multinomial model via
+  Fisher scoring.
+- [`multinom_get_probs()`](multinom_get_probs.md) : Compute multinomial
+  probabilities for a given value of model parameters.
+- [`multinom_info_mat()`](multinom_info_mat.md) : Compute Information
+  matrix for model parameters.
+- [`multinom_log_lik()`](multinom_log_lik.md) : Negative log-likelihood
+  for multinomial data under the alternative
+- [`multinom_penalized_estimation()`](multinom_penalized_estimation.md)
+  : Optimization under null or alternative for multinomial model with a
+  Firth penalty.
+- [`multinom_score_vector()`](multinom_score_vector.md) : Compute score
+  for model parameters.
+- [`multinom_test()`](multinom_test.md) : Robust score (Rao) tests for
+  multinomial regression.
+- [`print(`*`<raoFit>`*`)`](print.raoFit.md) : Print function
+- [`robust_score_test()`](robust_score_test.md) : Robust score (Rao)
+  tests with finite-sample correction
+- [`score_contribution()`](score_contribution.md) : Compute score
+  contribution to robust score statistic for glm robust score tests.
+- [`set_up_lin_com()`](set_up_lin_com.md) : Create matrix to be
+  populated with coefficients for user-specified number of hypotheses.
+- [`simulate_data_mult()`](simulate_data_mult.md) : Simulate multinomial
+  data under the null (strong or weak) or alternative
+
+# Articles
+
+### All vignettes
+
+- [Introduction to raoBust](intro_raoBust.md):
