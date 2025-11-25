@@ -23,7 +23,7 @@ fisher_info_contribution <- function(i, model_fits, yy, xx, m = 1, family, link)
     n <- length(yy)
     p <- ncol(xx)
     mod_df <- p-m
-    sigma2_tilde <- sum(yy - model_fits)/(n - mod_df)
+    sigma2_tilde <- sum((yy - model_fits)^2)/(n - mod_df)
     fisher_info_mat <- (1/sigma2_tilde)*xx[i, ] %*% t(xx[i, ])
   }
   
@@ -31,7 +31,7 @@ fisher_info_contribution <- function(i, model_fits, yy, xx, m = 1, family, link)
     n <- length(yy)
     p <- ncol(xx)
     mod_df <- p-m
-    sigma2_tilde <- sum(yy - model_fits)/(n - mod_df)
+    sigma2_tilde <- sum((yy - model_fits)^2)/(n - mod_df)
     fisher_info_mat <- ((model_fits[i]^2)/sigma2_tilde)*xx[i, ] %*% t(xx[i, ])
   }
   
