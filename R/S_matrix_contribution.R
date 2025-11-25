@@ -9,8 +9,8 @@
 #' 
 
 S_matrix_contribution <- function(indices, model_fits, yy, xx, family, link) {
-  
+
   S_i <- matrix(yy[indices] - model_fits[indices], ncol = 1)
-  
+
   return (S_i)
 }

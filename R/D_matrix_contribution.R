@@ -22,5 +22,9 @@ D_matrix_contribution <- function(indices, model_fits, yy, xx, family, link) {
     D_i <- t(xx[indices, , drop = FALSE])
   }
   
+  if (family == "gaussian" & link == "log") {
+    D_i <- t(model_fits[indices]*xx[indices, , drop = FALSE])
+  }
+  
   return (D_i)
 }

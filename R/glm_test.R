@@ -16,10 +16,9 @@ glm_test <- function(...) {
   # https://stackoverflow.com/questions/20680399/how-to-wrap-glm-in-a-function-pass-dotdotdot-directly-to-another-function-fail
   cl <- match.call()
   cl[1] <- call("glm")
-
   ### fit the glm, ignoring warnings about non integer inputs, as we take an estimating equations mindset
   withCallingHandlers({
-    glm_result <- eval(cl, envir = rlang::caller_env()) ### is the issue here??
+    glm_result <- eval(cl, envir = rlang::caller_env()) ### is the issue here?? 
   }, warning=function(w) {
     if (startsWith(conditionMessage(w), "non-integer x"))
       invokeRestart("muffleWarning")
@@ -32,8 +31,9 @@ glm_test <- function(...) {
   
   glm_family <- glm_result$family$family
   glm_link <- glm_result$family$link
-  if ((glm_family != "poisson" | glm_link != "log") & (glm_family != "binomial" | glm_link != "logit") & (glm_family != "gaussian" | glm_link != "identity")) {
-    stop(paste("This is only implemented this for Poisson family with log link, Binomial family with logit link, and Gaussian family with identity link.\n",
+  if ((glm_family != "poisson" | glm_link != "log") & (glm_family != "binomial" | glm_link != "logit") 
+      & (glm_family != "gaussian" | glm_link != "identity") & (glm_family != "gaussian" | glm_link != "log")) {
+    stop(paste("This is only implemented this for Poisson family with log link, Binomial family with logit link, and Gaussian family with identity or log link.\n",
                "You requested", glm_family, "family and", glm_link, "link \n",
                "Please open a GitHub issue if you're interested in other families."))
   }

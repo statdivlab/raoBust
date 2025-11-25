@@ -4,7 +4,7 @@
 \alias{fisher_info_contribution}
 \title{Compute fisher information contribution to robust score statistic for glm robust score tests.}
 \usage{
-fisher_info_contribution(i, model_fits, yy, xx, family, link)
+fisher_info_contribution(i, model_fits, yy, xx, m = 1, family, link)
 }
 \arguments{
 \item{i}{Index of observation.}
@@ -14,6 +14,8 @@ fisher_info_contribution(i, model_fits, yy, xx, family, link)
 \item{yy}{Vector of observed responses.}
 
 \item{xx}{Design matrix for model.}
+
+\item{m}{Number of parameters fixed under null hypothesis.}
 
 \item{family}{The model family for the fitted glm.}
 

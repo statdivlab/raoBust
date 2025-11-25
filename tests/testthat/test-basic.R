@@ -64,6 +64,9 @@ test_that("test gaussian example", {
   
   expect_type(glm_test(dist ~ speed, data = cars, family=gaussian(link = "identity"))$coef_tab,
               "double")
+
+  expect_type(glm_test(dist ~ speed, data = cars, family=gaussian(link = "log"))$coef_tab,
+              "double")
   
   cars$id <- c(rep(1:5, 9), 6:10)
   cars$bin <- rep(0:1, each = 25)
@@ -76,7 +79,7 @@ test_that("test gaussian example", {
 
 test_that("error with other model", {
   
-  expect_error(glm_test(dist ~ speed, data = cars, family=gaussian(link = "log")))
+  expect_error(glm_test(dist ~ speed, data = cars, family=gaussian(link = "logit")))
 
 })
 
