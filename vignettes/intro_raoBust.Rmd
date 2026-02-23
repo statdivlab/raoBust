@@ -32,84 +32,60 @@ library(geeasy) # also load geeasy, which raoBust uses in the back-end
 
 `raoBust` is an R package that implements robust Wald tests and Rao (score) tests for generalized linear models. We like robust tests because they are robust (retain error rate control) to many forms of model misspecification. We especially like robust Rao tests because they have strong error rate control in small samples. 
 
-`raoBust` implements robust tests for coefficients in Poisson GLMs (log link), Binomial GLMs (logit link), linear models (identity link), and Multinomial GLMs (log link).
+`raoBust` implements robust tests for coefficients in Poisson GLMs (log link), binomial GLMs (logit link), linear models (identity link), and multinomial GLMs (log link).
 
 ## Model fitting
 
 ### GLMs
 
-We will demonstrate `raoBust` using the `mtcars` dataset.
+We will demonstrate the function `glm_test()` in `raoBust` using the `light_presence` dataset.
 
 ```{r}
-head(mtcars)
+data("light_presence")
+head(light_presence)
 ```
 
-First, let's consider fitting a Poisson GLM to estimate and test the expected fold-difference in `mpg` associated with a one-unit increase in horsepower, account for type of transmission. We choose Poisson regression because we want to estimate a fold-difference in means, and because we are using robust tests we will not worry about whether we actually expect `mpg` measurements to follow a Poisson distribution.
+This dataset provides presence/absence data for COG 4251 with a set of *Prochlorococcus* genomes. COG 4251 has the function Bacteriophytochrome (light-regulated signal transduction histidine kinase). We would like to test whether the presence or absence of this COG is associated with a genome being from a high light or low light condition. We will use a binomial GLM model to investigate this. 
 
 ```{r, message = FALSE}
-glm_test(formula = mpg ~ hp + am, data = mtcars, family = poisson(link = "log"))
+glm_test(formula = presence ~ light, data = light_presence, family = binomial(link = "logit"))
 ```
 
-Looking at the output, we can see our estimated fold-difference in `mpg` associated with a one-unit increase in horsepower is `exp(-0.003) = 0.997`, with a robust Rao test p-value of $0.002$. We can compare this to the results we would get if we ran a typical `glm`.
+From the output, we can see that we have an estimated log odds of COG 4251 being present in a low light compared to a high light condition of $-20.75$, with a robust Rao test p-value of $0.003$. This means that COG 4251 is present far less often in low light compared to high light. This makes sense if we look at the presence/absence breakdown for this COG. 
 
-```{r, warning = FALSE}
-summary(glm(formula = mpg ~ hp + am, data = mtcars, family = poisson(link = "log")))
+```{r}
+table(light_presence[, c("presence", "light")])
+```
+
+We can see that this COG is present in all samples from the high light condition, and only in 5 out of 11 samples from the low light condition. 
+
+We can compare the results from `glm_test()` to the results we would get if we ran a typical `glm()`.
+
+```{r}
+summary(glm(formula = presence ~ light, data = light_presence, family = binomial(link = "logit")))
 ```
 
 Here we see the same estimates, but `glm` does not give us robust standard errors or robust Wald and Rao tests. 
 
 ### GEEs, accounting for clusters
 
-In `raoBust` we can also use a GEE framework to account for clustered observations. Let's add a cluster variable to `mtcars`.
-
-```{r, warning=FALSE}
-mtcars$cluster <- rep(1:8, 4)
-gee_test(formula = mpg ~ hp + am, data = mtcars, family = poisson(link = "log"), id = cluster)
-```
-
-Again we have the same estimates, but different standard errors and robust Wald and Rao test p-values once we account for clustering.
-
-### Multinomial models 
-
-In `raoBust`, we have a function `multinom_test()` to run robust tests for multinomial regression. Important arguments are `strong` and `j`. When we set `strong = TRUE`, we test the strong null hypothesis that $\beta_{kj} = 0$ for all $k$ and $j$, where $k$ represents a covariate and $j$ represents a level of the outcome variable. This means that we're testing the hypothesis that all non-intercept coefficients are equal to $0$. When `strong = FALSE` then we must specify a outcome level to test with the `j` argument. In this case, we test the hypothesis that $\beta_{kj} = 0$ for the `j` specified and all covariates $k$. 
-
-`multinom_test` takes in a `Y` matrix, with `n` rows and `J` columns for a dataset with `n` samples and a multi-category outcome with `J` categories, and a design matrix `X` that includes metadata. We will simulate data to demonstrate `multinom_test()` on. 
+Next, we will use the function `gee_test()` to account for clustered observations. We will apply this to the `ddPCR` dataset, which gives digital droplet PCR measurements from participants in a study of people living with cystic fibrosis. 
 
 ```{r}
-set.seed(123)  # for reproducibility
-
-# design matrix: 30 samples x 2 covariates
-n <- 30
-p <- 2
-J <- 5
-X <- cbind(1, rep(0:1, each = n / 2), rnorm(n))
-
-# coefficient matrix B: 3 rows x 5 columns
-B <- matrix(rnorm(3 * J, mean = 0, sd = 0.5), nrow = 3, ncol = 5)
-B[1, ] <- B[1, ] + 3
-
-# generate Poisson outcomes
-Y <- matrix(NA, nrow = n, ncol = J)
-for (j in 1:J) {
-  lambda <- exp(X %*% B[, j])
-  Y[, j] <- rpois(n, lambda)
-}
+data("ddPCR")
+head(ddPCR)
 ```
 
-We can now fit our model. We'll start by testing the strong null hypothesis that all non-intercept coefficients are equal to $0$. 
+We will fit a Poisson GEE model to estimate and test the expected fold-difference in the `ddPCR` measurement associated with whether or not the participant is receiving the treatment, accounting for the specimen type (specimens are collected either from sputum or saliva). We choose Poisson regression because we want to estimate a fold-difference in means, and because we are using robust tests we will not worry about whether we actually expect `ddPCR` measurements to follow a Poisson distribution. We use a GEE instead of a GLM because we have multiple observations from the same samples. 
 
 ```{r}
-strong_test <- multinom_test(Y = Y, X = X, strong = TRUE)
-strong_test$coef_tab
-strong_test$test_stat
-strong_test$p
-
-weak_test <- multinom_test(Y = Y, X = X, strong = FALSE, j = 3)
-weak_test$coef_tab
-weak_test$test_stat
-weak_test$p
+gee_test(formula = Value ~ Treatment + SpecimenType, data = ddPCR, family = poisson(link = "log"), id = Subject)
 ```
 
-We can see that the strong test has a larger robust Rao test statistic and smaller p-value, compared to the weak test. This makes sense, as it tests a stronger hypothesis that is more likely to be false (since it contains all possible weak hypotheses). 
+We estimate an expected fold-difference of $\exp(-0.32) = 0.72$ in the `ddPCR` measurement for participants who have received the treatment, accounting for sample type, with a robust Rao p-value of $0.44$. We can compare these results to what we would get if we ran a GLM, ignoring correlation of samples from the same subjects. 
 
+```{r}
+glm_test(formula = Value ~ Treatment + SpecimenType, data = ddPCR, family = poisson(link = "log"))
+```
 
+We can see that we get the same estimates as in the `gee_test()`, but different standard errors and p-values because we have not appropriately accounted for the clustering. 
