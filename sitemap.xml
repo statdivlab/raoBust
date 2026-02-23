@@ -10,12 +10,14 @@
 <url><loc>/reference/S_matrix_contribution.html</loc></url>
 <url><loc>/reference/V_matrix_contribution.html</loc></url>
 <url><loc>/reference/combine_independent_p_values.html</loc></url>
+<url><loc>/reference/ddpcr.html</loc></url>
 <url><loc>/reference/fisher_info_contribution.html</loc></url>
 <url><loc>/reference/gee_test.html</loc></url>
 <url><loc>/reference/get_test_statistic.html</loc></url>
 <url><loc>/reference/glm_test.html</loc></url>
 <url><loc>/reference/index.html</loc></url>
 <url><loc>/reference/jackknife_se.html</loc></url>
+<url><loc>/reference/light_presence.html</loc></url>
 <url><loc>/reference/lincom.html</loc></url>
 <url><loc>/reference/multinom_beta_vector_to_matrix.html</loc></url>
 <url><loc>/reference/multinom_fisher_scoring.html</loc></url>

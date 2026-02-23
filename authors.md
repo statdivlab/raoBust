@@ -16,12 +16,12 @@
 
 ## Citation
 
-Willis A, Clausen D, Teichman S, Mathur S (2025). *raoBust: Robust score
-tests for generalized linear models*. R package version 1.2.0.0.
+Willis A, Clausen D, Teichman S, Mathur S (2026). *raoBust: Robust Score
+Tests for Generalized Linear Models*. R package version 1.3.0.0.
 
     @Manual{,
-      title = {raoBust: Robust score tests for generalized linear models},
+      title = {raoBust: Robust Score Tests for Generalized Linear Models},
       author = {Amy Willis and David Clausen and Sarah Teichman and Shirley Mathur},
-      year = {2025},
-      note = {R package version 1.2.0.0},
+      year = {2026},
+      note = {R package version 1.3.0.0},
     }
